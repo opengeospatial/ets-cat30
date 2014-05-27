@@ -18,8 +18,12 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+
 import org.apache.xerces.util.XMLCatalogResolver;
 import org.opengis.cite.validation.SchematronValidator;
+import org.opengis.cite.validation.XmlSchemaCompiler;
+import org.xml.sax.SAXException;
 
 /**
  * A utility class that provides convenience methods to support schema
@@ -27,6 +31,7 @@ import org.opengis.cite.validation.SchematronValidator;
  */
 public class ValidationUtils {
 
+    private static final String ROOT_PKG = "/org/opengis/cite/cat30/";
     private static final XMLCatalogResolver SCH_RESOLVER = initCatalogResolver();
 
     private static XMLCatalogResolver initCatalogResolver() {
@@ -134,5 +139,31 @@ public class ValidationUtils {
             schemaURIs.add(schemaURI);
         }
         return schemaURIs;
+    }
+
+    /**
+     * Creates a Schema object representing the complete set of constraints
+     * defined in the CSW 3.0 schema. It incorporates schema components from all
+     * relevant namespaces.
+     * 
+     * @return An immutable Schema object, or <code>null</code> if it cannot be
+     *         constructed.
+     */
+    public static Schema createCSWSchema() {
+        URL entityCatalog = ValidationUtils.class.getResource(ROOT_PKG
+                + "schema-catalog.xml");
+        XmlSchemaCompiler xsdCompiler = new XmlSchemaCompiler(entityCatalog);
+        Schema appSchema = null;
+        try {
+            URL schemaRef = ValidationUtils.class.getResource(ROOT_PKG
+                    + "xsd/opengis/cat/csw/3.0/csw-3.0.xsd");
+            Source xsdSource = new StreamSource(schemaRef.toString());
+            appSchema = xsdCompiler
+                    .compileXmlSchema(new Source[] { xsdSource });
+        } catch (SAXException e) {
+            TestSuiteLogger.log(Level.WARNING,
+                    "Failed to create CSW Schema object.", e);
+        }
+        return appSchema;
     }
 }

@@ -2,21 +2,15 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="${ets-code}-${version}" verbose="0" configfailurepolicy="skip">
   <parameter name="iut"  value=""/>
-  <parameter name="ics"  value=""/>
 
   <listeners>
     <listener class-name="org.opengis.cite.cat30.TestRunListener" />
     <listener class-name="org.opengis.cite.cat30.SuiteFixtureListener" />
   </listeners>
 
-  <test name="Conformance Level 1">
+  <test name="Basic-Catalogue">
     <classes>
-      <class name="org.opengis.cite.cat30.level1.Capability1Tests" />
-    </classes>
-  </test>
-  <test name="Conformance Level 2">
-    <classes>
-      <class name="org.opengis.cite.cat30.level2.Capability2Tests" />
+      <class name="org.opengis.cite.cat30.service.BasicServiceTests" />
     </classes>
   </test>
 </suite>

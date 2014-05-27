@@ -1,5 +1,7 @@
 package org.opengis.cite.cat30;
 
+import javax.xml.validation.Schema;
+
 import org.w3c.dom.Document;
 
 /**
@@ -9,6 +11,10 @@ import org.w3c.dom.Document;
 @SuppressWarnings("rawtypes")
 public enum SuiteAttribute {
 
+    /**
+     * An immutable Schema object representing the complete CSW 3.0 schema.
+     */
+    CSW_SCHEMA("cswSchema", Schema.class),
     /**
      * A DOM Document representation of the test subject or metadata about it.
      */
