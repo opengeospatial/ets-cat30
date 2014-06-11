@@ -1,6 +1,7 @@
 package org.opengis.cite.cat30.basic;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
@@ -13,12 +14,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.opengis.cite.cat30.SuiteAttribute;
-import org.opengis.cite.cat30.basic.OGCServiceTests;
 import org.opengis.cite.cat30.util.ValidationUtils;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import com.sun.jersey.api.client.ClientHandlerException;
 
 public class VerifyOGCServiceTests {
 
@@ -42,14 +44,17 @@ public class VerifyOGCServiceTests {
     }
 
     @Test
-    public void testValidCapabilities() throws SAXException, IOException {
+    public void getFullCapabilities_noService() throws SAXException,
+            IOException {
+        thrown.expect(ClientHandlerException.class);
+        thrown.expectMessage("Connection refused");
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/capabilities-basic.xml"));
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);
         OGCServiceTests iut = new OGCServiceTests();
-        iut.obtainServiceCapabilities(testContext);
+        iut.initOGCServiceTests(testContext);
         iut.getFullCapabilities(testContext);
     }
 }

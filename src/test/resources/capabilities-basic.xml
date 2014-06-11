@@ -7,8 +7,7 @@
   xmlns:xlink="http://www.w3.org/1999/xlink">
   <ows:ServiceIdentification>
     <ows:Title>Catalogue Service for Spatial Information</ows:Title>
-    <ows:Abstract>terraCatalog 3.2 based OGC CSW 3.0 Catalogue Service for OGC core and ISO metadata
-      (describing geospatial services, datasets and series)</ows:Abstract>
+    <ows:Abstract>Sample service description.</ows:Abstract>
     <ows:Keywords>
       <ows:Keyword>Catalog Service</ows:Keyword>
       <ows:Type codeSpace="http://www.someGeospatialVocabulary.com">theme</ows:Type>
@@ -18,7 +17,7 @@
   </ows:ServiceIdentification>
   <ows:ServiceProvider>
     <ows:ProviderName>con terra GmbH</ows:ProviderName>
-    <ows:ProviderSite xlink:type="simple" xlink:href="http://www.conterra.de"/>
+    <ows:ProviderSite xlink:type="simple" xlink:href="http://example.org"/>
     <ows:ServiceContact>
       <ows:IndividualName/>
       <ows:PositionName/>
@@ -35,7 +34,7 @@
           <ows:Country>Germany</ows:Country>
           <ows:ElectronicMailAddress>conterra@conterra.de</ows:ElectronicMailAddress>
         </ows:Address>
-        <ows:OnlineResource xlink:href="mailto:conterra@conterra.de"/>
+        <ows:OnlineResource xlink:href="mailto:user@example.org"/>
       </ows:ContactInfo>
     </ows:ServiceContact>
   </ows:ServiceProvider>
@@ -43,7 +42,7 @@
     <ows:Operation name="GetCapabilities">
       <ows:DCP>
         <ows:HTTP>
-          <ows:Get xlink:href="http://www.sdisuite.de/terraCatalog/soapServices/CSWStartup?"/>
+          <ows:Get xlink:href="http://localhost:9090/csw"/>
         </ows:HTTP>
       </ows:DCP>
       <ows:Parameter name="AcceptVersions">
@@ -56,7 +55,7 @@
     <ows:Operation name="GetRecordById">
       <ows:DCP>
         <ows:HTTP>
-          <ows:Get xlink:href="http://www.sdisuite.de/terraCatalog/soapServices/CSWStartup?"/>
+          <ows:Get xlink:href="http://localhost:9090/csw"/>
         </ows:HTTP>
       </ows:DCP>
       <ows:Parameter name="ElementSetName">
