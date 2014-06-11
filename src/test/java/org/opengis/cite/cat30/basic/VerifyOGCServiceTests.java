@@ -1,8 +1,9 @@
-package org.opengis.cite.cat30.service;
+package org.opengis.cite.cat30.basic;
 
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
@@ -12,13 +13,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.opengis.cite.cat30.SuiteAttribute;
+import org.opengis.cite.cat30.basic.OGCServiceTests;
 import org.opengis.cite.cat30.util.ValidationUtils;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class VerifyBasicServiceTests {
+public class VerifyOGCServiceTests {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -46,8 +48,8 @@ public class VerifyBasicServiceTests {
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);
-        BasicServiceTests iut = new BasicServiceTests();
+        OGCServiceTests iut = new OGCServiceTests();
         iut.obtainServiceCapabilities(testContext);
-        iut.verifyValidCapabilities(testContext);
+        iut.getFullCapabilities(testContext);
     }
 }

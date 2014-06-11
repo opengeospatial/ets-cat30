@@ -1,4 +1,4 @@
-package org.opengis.cite.cat30.service;
+package org.opengis.cite.cat30.basic;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -15,16 +15,17 @@ import org.w3c.dom.Document;
 
 /**
  * <p>
- * Tests service capabilities corresponding to the <code>Basic-Catalogue</code>
- * conformance class. The following requests are covered:
+ * Provides tests that apply to the <code>OGC_Service</code> interface defined
+ * in the common model as adapted for HTTP-based catalogue implementations. The
+ * following service requests are covered:
  * </p>
  * 
  * <ul>
- * <li>GetCapabilities - GET method</li>
- * <li>GetRecordById - GET method</li>
+ * <li>GetCapabilities: KVP syntax</li>
+ * <li>GetRecordById: KVP syntax</li>
  * </ul>
  */
-public class BasicServiceTests {
+public class OGCServiceTests {
 
     private Document cswCapabilities;
 
@@ -62,8 +63,8 @@ public class BasicServiceTests {
     }
 
     /**
-     * [{@code Test}] Verifies that the service capabilities document is
-     * schema-valid.
+     * [{@code Test}] Verifies that the complete service capabilities document
+     * is schema-valid.
      * 
      * @param testContext
      *            The test context containing the
@@ -71,7 +72,7 @@ public class BasicServiceTests {
      *            complete CSW grammar.
      */
     @Test(description = "Requirement-076")
-    public void verifyValidCapabilities(ITestContext testContext) {
+    public void getFullCapabilities(ITestContext testContext) {
         Schema cswSchema = (Schema) testContext.getSuite().getAttribute(
                 SuiteAttribute.CSW_SCHEMA.getName());
         Validator validator = cswSchema.newValidator();

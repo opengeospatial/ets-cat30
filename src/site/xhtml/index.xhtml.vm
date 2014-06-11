@@ -144,9 +144,8 @@ dt {
 	<ul>
 	  <li style="list-style: square;">Integrated development environment (IDE): The main Java class is <code>
 	  TestNGController</code>.</li>
-	  <li style="list-style: square;">RESTful API: Submit a request that includes the necessary arguments 
-    to the <a href="../../../../rest/suites/cat30/${project.version}/run" target="_blank" 
-      type="application/xml">test run controller</a>
+	  <li style="list-style: square;">RESTful API: Submit a request that includes the necessary
+    arguments to the test run controller (/rest/suites/cat30/${project.version}/run).
     </li>
     <li style="list-style: square;">TEAM-Engine: Run the CTL script located in the <code>/src/main/ctl/</code> 
 	  directory.</li>
