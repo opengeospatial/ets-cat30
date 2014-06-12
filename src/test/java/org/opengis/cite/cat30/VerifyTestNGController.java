@@ -1,6 +1,6 @@
 package org.opengis.cite.cat30;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,7 +53,7 @@ public class VerifyTestNGController {
 
     @Test
     public void doTestRun() throws Exception {
-        URL testSubject = getClass().getResource("/atom-feed-2.xml");
+        URL testSubject = getClass().getResource("/capabilities-basic.xml");
         this.testRunProps.setProperty(TestRunArg.IUT.toString(), testSubject
                 .toURI().toString());
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(1024);
@@ -66,6 +66,6 @@ public class VerifyTestNGController {
         XdmValue failed = XMLUtils.evaluateXPath2(results, xpath, null);
         int numFailed = Integer.parseInt(failed.getUnderlyingValue()
                 .getStringValue());
-        assertEquals("Unexpected number of fail verdicts.", 1, numFailed);
+        assertTrue("Expected one or more fail verdicts.", numFailed > 0);
     }
 }

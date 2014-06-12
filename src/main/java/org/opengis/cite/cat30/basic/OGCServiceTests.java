@@ -68,7 +68,7 @@ public class OGCServiceTests {
      * </p>
      * 
      * @param testContext
-     *            The test (group) context.
+     *            The test context containing various suite attributes.
      */
     @BeforeClass
     public void initOGCServiceTests(ITestContext testContext) {
@@ -103,20 +103,15 @@ public class OGCServiceTests {
      * [{@code Test}] Verifies that the complete service capabilities document
      * is schema-valid. All catalogue services must support the GET method for a
      * GetCapabilities request.
-     * 
-     * @param testContext
-     *            The test context containing the
-     *            {@link SuiteAttribute#CSW_SCHEMA} attribute containing the
-     *            complete CSW grammar.
      */
-    @Test(description = "Requirement-043")
-    public void getFullCapabilities(ITestContext testContext) {
+    @Test(description = "Requirement-043,Requirement-045")
+    public void getFullCapabilities() {
         URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add("request", CAT3.GET_CAPABILITIES);
-        qryParams.add("service", CAT3.SERVICE_TYPE_CODE);
-        qryParams.add("version", CAT3.VERSION);
+        qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
         WebResource resource = httpClient.resource(endpoint);
         resource.accept(MediaType.TEXT_XML_TYPE);
         ClientResponse rsp = resource.queryParams(qryParams).get(
@@ -127,5 +122,62 @@ public class OGCServiceTests {
         Validator validator = this.cswSchema.newValidator();
         Source source = new DOMSource(rsp.getEntity(Document.class));
         ETSAssert.assertSchemaValid(validator, source);
+    }
+
+    /**
+     * [{@code Test}] Verifies that a request for an unsupported version of a
+     * capabilities document produces an exception report containing the
+     * exception code "VersionNegotiationFailed".
+     * 
+     * The status code must be 400 (Bad Request) and the response entity must be
+     * an XML document having {http://www.opengis.net/ows/2.0}ExceptionReport as
+     * the document element.
+     * 
+     * @see "OGC 06-121r9: 7.3.2, 8.6"
+     */
+    @Test(description = "Requirement-036,Requirement-037,Requirement-042")
+    public void getCapabilitiesForUnsupportedVersion() {
+        URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
+                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
+        qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.add(CAT3.ACCEPT_VERSIONS, "2014.06.21");
+        WebResource resource = httpClient.resource(endpoint);
+        resource.accept(MediaType.TEXT_XML_TYPE);
+        ClientResponse rsp = resource.queryParams(qryParams).get(
+                ClientResponse.class);
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
+                CAT3.ERR_VER_NEGOTIATION_FAILED);
+        ETSAssert.assertXPath(xpath, rsp.getEntity(Document.class), null);
+    }
+
+    /**
+     * [{@code Test}] Verifies that a request for a record by identifier
+     * produces a response with status code 404 (Not Found) if no matching
+     * resource is found. A response entity (an exception report) is optional;
+     * if present, the exception code shall be "InvalidParameterValue".
+     * 
+     * @see "OGC 06-121r9: 9.3.3.2"
+     */
+    @Test(description = "Requirement-127,Requirement-141")
+    public void getRecordById_noMatchingRecord() {
+        URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
+                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
+        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.add(CAT3.ID, "urn:example:" + System.currentTimeMillis());
+        WebResource resource = httpClient.resource(endpoint);
+        resource.accept(MediaType.TEXT_XML_TYPE);
+        ClientResponse rsp = resource.queryParams(qryParams).get(
+                ClientResponse.class);
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.NOT_FOUND.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
     }
 }

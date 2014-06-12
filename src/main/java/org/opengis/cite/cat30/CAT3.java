@@ -13,8 +13,18 @@ public class CAT3 {
 
     public static final String SCHEMA_URI = "http://schemas.opengis.net/cat/csw/3.0/cswAll.xsd";
     public static final String SERVICE_TYPE_CODE = "CSW";
-    public static final String VERSION = "3.0.0";
+    public static final String SPEC_VERSION = "3.0.0";
     public static final String GET_CAPABILITIES = "GetCapabilities";
     public static final String GET_RECORD_BY_ID = "GetRecordById";
     public static final String GET_RECORDS = "GetRecords";
+
+    // query parameters
+    public static final String REQUEST = "request";
+    public static final String SERVICE = "service";
+    public static final String VERSION = "version";
+    public static final String ACCEPT_VERSIONS = "acceptVersions";
+    public static final String ID = "id";
+
+    // exception codes
+    public static final String ERR_VER_NEGOTIATION_FAILED = "VersionNegotiationFailed";
 }

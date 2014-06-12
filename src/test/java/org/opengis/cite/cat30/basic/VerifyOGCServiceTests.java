@@ -33,7 +33,7 @@ public class VerifyOGCServiceTests {
     private static Schema cswSchema;
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void initFixture() throws Exception {
         testContext = mock(ITestContext.class);
         suite = mock(ISuite.class);
         when(testContext.getSuite()).thenReturn(suite);
@@ -55,6 +55,6 @@ public class VerifyOGCServiceTests {
                 .thenReturn(cswSchema);
         OGCServiceTests iut = new OGCServiceTests();
         iut.initOGCServiceTests(testContext);
-        iut.getFullCapabilities(testContext);
+        iut.getFullCapabilities();
     }
 }
