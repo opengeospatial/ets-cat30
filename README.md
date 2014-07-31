@@ -18,8 +18,7 @@ Detailed information about this test suite is available at the [project document
 
 ## License
 
-[Apache 2.0 License](license.txt)
-
+[Apache 2.0 License](LICENSE.txt)
 
 ## Bugs
 
