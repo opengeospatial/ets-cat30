@@ -1,34 +1,37 @@
-# OGC Catalog Service 3.0 Test-Suite
+## OGC Catalogue 3.0 Conformance Test Suite
 
-The OGC Catalog Service 3.0 Test-Suite provides the Executable Test Script (ETS) to test implementations against the following specification(s):
-   * [Catalog Services 3.0 - General Model - 12-168r4](https://portal.opengeospatial.org/files/?artifact_id=57626)
-   * [OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding -- Abstract Test Suite - 14-014r2](https://portal.opengeospatial.org/files/?artifact_id=57617)
-   * [OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding 12-176r4] (https://portal.opengeospatial.org/files/?artifact_id=57616)
+### Scope
 
+The OGC Catalogue 3.0 test suite verifies catalog implementations for conformance 
+against the following specifications:
 
+* _OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding_ 
+([OGC 12-176r5](https://portal.opengeospatial.org/files/?artifact_id=61521&version=1))
+* Catalog Services Specification 3.0 - General Model 
+([OGC 12-168r5](https://portal.opengeospatial.org/files/?artifact_id=61522&version=1))
+* _OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding - Abstract Test Suite_ 
+([OGC 14-014r3](https://portal.opengeospatial.org/files/?artifact_id=61520&version=1))
+* _OGC OpenSearch Geo and Time Extensions_ 
+([OGC 10-032r8](https://portal.opengeospatial.org/files/?artifact_id=56866&version=2))
+* _OpenSearch 1.1_ ([Draft 5](http://www.opensearch.org/Specifications/OpenSearch/1.1))
+* _The Atom Syndication Format_ ([RFC 4287](http://tools.ietf.org/html/rfc4287))
 
-Tests for the following conformance classes are currently 
-under development: 
+Tests for the following conformance classes are currently under development: 
 
-* Basic-Catalogue (applies to all catalogue implementations)
+* Basic-Catalogue (mandatory for all implementations)
 * OpenSearch
 
+Visit the [project documentation website](http://opengeospatial.github.io/ets-cat30/) 
+for more information, including the API documentation.
 
-Detailed information about this test suite is available at the [project documentation website](http://opengeospatial.github.io/ets-cat30/) 
 
-## License
+### How to contribute
 
-[Apache 2.0 License](LICENSE.txt)
+If you would like to get involved, you can:
 
-## Bugs
-
-Issue tracker is available at [github](https://github.com/opengeospatial/ets-cat30/issues).
-
-## Mailing Lists
-
-The [cite-forum](http://cite.opengeospatial.org/forum) is where software developers discuss issues and solutions related to OGC tests. 
-
-## More Information
-
-Visit the [CITE website](http://cite.opengeospatial.org/) to get more information about the CITE program and tools.
-
+* [Report an issue](https://github.com/opengeospatial/ets-cat30/issues) such as a defect or 
+an enhancement request
+* Help to resolve an [open issue](https://github.com/opengeospatial/ets-cat30/issues?q=is%3Aopen)
+* Fix a bug: Fork the repository, apply the fix, and create a pull request
+* Add new tests: Fork the repository, implement (and verify) the tests on a new topic branch, 
+and create a pull request

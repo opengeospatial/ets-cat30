@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="${ets-code}-${version}" verbose="0" configfailurepolicy="skip">
 
-  <parameter name="iut" value="" />
+  <parameter name="iut"  value=""/>
 
   <listeners>
     <listener class-name="org.opengis.cite.cat30.TestRunListener" />
@@ -12,6 +11,12 @@
   <test name="Basic-Catalogue">
     <packages>
       <package name="org.opengis.cite.cat30.basic" />
+    </packages>
+  </test>
+
+  <test name="OpenSearch">
+    <packages>
+      <package name="org.opengis.cite.cat30.opensearch" />
     </packages>
   </test>
 </suite>

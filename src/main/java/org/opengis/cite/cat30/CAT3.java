@@ -2,7 +2,7 @@ package org.opengis.cite.cat30;
 
 /**
  * Contains various constants pertaining to Catalogue 3.0 (HTTP) service
- * interfaces as specified in OGC 12-176r4 and related standards.
+ * interfaces as specified in OGC 12-176r5 and related standards.
  * 
  * @see "OGC Catalogue Services 3.0 Specification -- HTTP Protocol Binding, Version 3.0"
  */

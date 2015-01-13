@@ -18,7 +18,7 @@
 	</ctl:function>
 
    <ctl:suite name="tns:ets-cat30-${version}">
-     <ctl:title>Test suite ets-cat30</ctl:title>
+     <ctl:title>OGC Catalogue 3.0 Conformance Test Suite</ctl:title>
      <ctl:description>Describe scope of testing.</ctl:description>
      <ctl:starting-test>tns:Main</ctl:starting-test>
    </ctl:suite>
@@ -28,7 +28,7 @@
 	  <ctl:code>
         <xsl:variable name="form-data">
            <ctl:form method="POST" width="800" height="600" xmlns="http://www.w3.org/1999/xhtml">
-             <h2>Test suite ets-cat30</h2>
+             <h2>OGC Catalogue 3.0 Conformance Test Suite</h2>
              <div style="background:#F0F8FF" bgcolor="#F0F8FF">
                <p>The implementation under test (IUT) is checked against the following specifications:</p>
                <ul>
@@ -78,7 +78,7 @@
           <entry key="iut">
             <xsl:choose>
               <xsl:when test="empty($iut-file)">
-                <xsl:value-of select="$form-data/values/value[@key='uri']"/>
+                <xsl:value-of select="normalize-space($form-data/values/value[@key='uri'])"/>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:copy-of select="concat('file:///', $iut-file)" />

@@ -21,8 +21,11 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 
 import org.apache.xerces.util.XMLCatalogResolver;
+import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.validation.SchematronValidator;
 import org.opengis.cite.validation.XmlSchemaCompiler;
+
+import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,12 +34,32 @@ import org.xml.sax.SAXException;
  */
 public class ValidationUtils {
 
-    private static final String ROOT_PKG = "/org/opengis/cite/cat30/";
+    static final String ROOT_PKG = "/org/opengis/cite/cat30/";
     private static final XMLCatalogResolver SCH_RESOLVER = initCatalogResolver();
 
     private static XMLCatalogResolver initCatalogResolver() {
-        URL catalogURL = ValidationUtils.class
-                .getResource("/org/opengis/cite/cat30/schematron-catalog.xml");
+        return (XMLCatalogResolver) createSchemaResolver(Namespaces.SCH);
+    }
+
+    /**
+     * Creates a resource resolver suitable for locating schemas using an entity
+     * catalog. In effect, local copies of standard schemas are returned instead
+     * of retrieving them from external repositories.
+     * 
+     * @param schemaLanguage
+     *            A URI that identifies a schema language by namespace name.
+     * @return A {@code LSResourceResolver} object that is configured to use an
+     *         OASIS entity catalog.
+     */
+    public static LSResourceResolver createSchemaResolver(URI schemaLanguage) {
+        String catalogFileName;
+        if (schemaLanguage.equals(Namespaces.XSD)) {
+            catalogFileName = "schema-catalog.xml";
+        } else {
+            catalogFileName = "schematron-catalog.xml";
+        }
+        URL catalogURL = ValidationUtils.class.getResource(ROOT_PKG
+                + catalogFileName);
         XMLCatalogResolver resolver = new XMLCatalogResolver();
         resolver.setCatalogList(new String[] { catalogURL.toString() });
         return resolver;
@@ -166,4 +189,5 @@ public class ValidationUtils {
         }
         return appSchema;
     }
+    
 }

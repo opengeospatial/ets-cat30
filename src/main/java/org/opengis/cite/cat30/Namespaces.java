@@ -1,10 +1,12 @@
 package org.opengis.cite.cat30;
 
+import java.net.URI;
+
 /**
  * XML namespace names.
  * 
  * @see <a href="http://www.w3.org/TR/xml-names/">Namespaces in XML 1.0</a>
- * 
+ *
  */
 public class Namespaces {
 
@@ -31,4 +33,11 @@ public class Namespaces {
     public static final String DCMES = "http://purl.org/dc/elements/1.1/";
     /** Atom Syndication Format (RFC 4287) */
     public static final String ATOM = "http://www.w3.org/2005/Atom";
+    /** W3C XML Schema namespace */
+    public static final URI XSD = URI
+            .create("http://www.w3.org/2001/XMLSchema");
+    /** Schematron (ISO 19757-3) namespace */
+    public static final URI SCH = URI
+            .create("http://purl.oclc.org/dsdl/schematron");
+
 }

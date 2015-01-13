@@ -1,6 +1,6 @@
 package org.opengis.cite.cat30;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 /**
  * Verifies the results of executing a test run using the main controller
  * (TestNGController).
- * 
+ *
  */
 public class VerifyTestNGController {
 
@@ -53,7 +53,7 @@ public class VerifyTestNGController {
 
     @Test
     public void doTestRun() throws Exception {
-        URL testSubject = getClass().getResource("/capabilities-basic.xml");
+        URL testSubject = getClass().getResource("/atom-feed-2.xml");
         this.testRunProps.setProperty(TestRunArg.IUT.toString(), testSubject
                 .toURI().toString());
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(1024);

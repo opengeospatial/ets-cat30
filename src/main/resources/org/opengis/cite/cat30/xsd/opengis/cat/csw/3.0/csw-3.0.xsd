@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema elementFormDefault="qualified" version="3.0" id="csw-3.0-rc1"
-  targetNamespace="http://www.opengis.net/cat/csw/3.0" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+<xsd:schema targetNamespace="http://www.opengis.net/cat/csw/3.0"
   xmlns:csw30="http://www.opengis.net/cat/csw/3.0" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:ows2="http://www.opengis.net/ows/2.0" 
   xmlns:fes="http://www.opengis.net/fes/2.0"
-  xmlns:ows="http://www.opengis.net/ows/2.0" 
-  xmlns:gml="http://www.opengis.net/gml/3.2"
-  xmlns:dc="http://purl.org/dc/elements/1.1/" 
-  xmlns:dct="http://purl.org/dc/terms/">
+  xmlns:gml="http://www.opengis.net/gml/3.2" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dct="http://purl.org/dc/terms/" 
+  elementFormDefault="qualified" 
+  version="3.0" id="cswAll">
 
   <xsd:import namespace="http://www.opengis.net/ows/2.0"
     schemaLocation="http://schemas.opengis.net/ows/2.0/owsAll.xsd"/>
@@ -18,40 +19,6 @@
   <xsd:import namespace="http://purl.org/dc/terms/" />
   <xsd:import namespace="http://purl.org/dc/elements/1.1/" />
 
-  <!-- cswCommon.xsd -->
-  <xsd:complexType name="RequestBaseType" abstract="true" id="RequestBaseType">
-    <xsd:annotation>
-      <xsd:documentation> Base type for all request messages except GetCapabilities. The attributes
-        identify the relevant service type and version. </xsd:documentation>
-    </xsd:annotation>
-    <xsd:attribute name="service" type="ows:ServiceType" use="optional" default="CSW"/>
-    <xsd:attribute name="version" type="ows:VersionType" use="optional" default="3.0.0"/>
-  </xsd:complexType>
-  <xsd:element name="Acknowledgement" type="csw30:AcknowledgementType" id="Acknowledgement"/>
-  <xsd:complexType name="AcknowledgementType" id="AcknowledgementType">
-    <xsd:annotation>
-      <xsd:documentation xml:lang="en"> This is a general acknowledgement response message for all
-        requests that may be processed in an asynchronous manner. EchoedRequest - Echoes the
-        submitted request message RequestId - identifier for polling purposes (if no response
-        handler is available, or the URL scheme is unsupported) </xsd:documentation>
-    </xsd:annotation>
-    <xsd:sequence>
-      <xsd:element name="EchoedRequest" type="csw30:EchoedRequestType"/>
-      <xsd:element name="RequestId" type="xsd:anyURI" minOccurs="0"/>
-    </xsd:sequence>
-    <xsd:attribute name="timeStamp" type="xsd:dateTime" use="required"/>
-  </xsd:complexType>
-  <xsd:complexType name="EchoedRequestType" id="EchoedRequestType">
-    <xsd:annotation>
-      <xsd:documentation xml:lang="en"> Includes a copy of the request message body.
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:sequence>
-      <xsd:any namespace="##any" processContents="lax"/>
-    </xsd:sequence>
-  </xsd:complexType>
-
-  <!-- cswGetCapabilities.xsd -->
   <xsd:element name="GetCapabilities" type="csw30:GetCapabilitiesType" id="GetCapabilities"/>
   <xsd:complexType name="GetCapabilitiesType" id="GetCapabilitiesType">
     <xsd:annotation>
@@ -59,8 +26,8 @@
         more information. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="ows:GetCapabilitiesType">
-        <xsd:attribute name="service" type="ows:ServiceType" use="optional" default="CSW">
+      <xsd:extension base="ows2:GetCapabilitiesType">
+        <xsd:attribute name="service" type="ows2:ServiceType" use="optional" default="CSW">
           <xsd:annotation>
             <xsd:documentation> OGC service type identifier (CSW). </xsd:documentation>
           </xsd:annotation>
@@ -71,12 +38,12 @@
   <xsd:element name="Capabilities" type="csw30:CapabilitiesType" id="Capabilities"/>
   <xsd:complexType name="CapabilitiesType" id="CapabilitiesType">
     <xsd:annotation>
-      <xsd:documentation> This type extends ows:CapabilitiesBaseType defined in OGC 06-121r9 to
+      <xsd:documentation> This type extends ows2:CapabilitiesBaseType defined in OGC 06-121r9 to
         include information about supported OGC filter components. A profile may extend this type to
         describe additional capabilities. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="ows:CapabilitiesBaseType">
+      <xsd:extension base="ows2:CapabilitiesBaseType">
         <xsd:sequence>
           <xsd:annotation>
             <xsd:documentation> If sections parameter not specified, then Filter_Capabilities is
@@ -89,8 +56,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
-  <!-- cswGetDomain.xsd -->
   <xsd:element name="GetDomain" type="csw30:GetDomainType" id="GetDomain"/>
   <xsd:complexType name="GetDomainType" id="GetDomainType">
     <xsd:complexContent>
@@ -157,7 +122,6 @@
     </xsd:sequence>
     <xsd:attribute name="type" type="xsd:QName" use="required"/>
     <xsd:attribute name="resultType" type="csw30:ResultTypeType" use="required"/>
-
   </xsd:complexType>
   <xsd:complexType name="ListOfValuesType" id="ListOfValuesType">
     <xsd:sequence>
@@ -187,8 +151,6 @@
       <xsd:element name="MaxValue" type="xsd:anyType" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
-
-  <!-- cswGetRecords.xsd -->
   <xsd:element name="GetRecords" type="csw30:GetRecordsType" id="GetRecords"/>
   <xsd:complexType name="GetRecordsType" id="GetRecordsType">
     <xsd:annotation>
@@ -454,13 +416,11 @@
     <xsd:complexContent>
       <xsd:extension base="csw30:FederatedSearchResultBaseType">
         <xsd:sequence>
-          <xsd:element ref="ows:ExceptionReport" maxOccurs="unbounded"/>
+          <xsd:element ref="ows2:ExceptionReport" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
-  <!-- cswGetRecordById.xsd -->
   <xsd:element name="GetRecordById" type="csw30:GetRecordByIdType" id="GetRecordById"/>
   <xsd:complexType name="GetRecordByIdType" id="GetRecordByIdType">
     <xsd:annotation>
@@ -481,8 +441,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
-  <!-- cswTransaction.xsd -->
   <xsd:element name="Transaction" type="csw30:TransactionType" id="Transaction"/>
   <xsd:complexType name="TransactionType" id="TransactionType">
     <xsd:annotation>
@@ -609,8 +567,6 @@
     </xsd:sequence>
     <xsd:attribute name="handleRef" type="xsd:anyURI" use="optional"/>
   </xsd:complexType>
-
-  <!-- cswHarvest.xsd -->
   <xsd:element name="Harvest" type="csw30:HarvestType" id="Harvest"/>
   <xsd:complexType name="HarvestType">
     <xsd:annotation>
@@ -658,8 +614,6 @@
       <xsd:element ref="csw30:TransactionResponse"/>
     </xsd:choice>
   </xsd:complexType>
-
-  <!-- cswUnHarvest.xsd -->
   <xsd:element name="Source" type="csw30:SourceType" id="SourceType"/>
   <xsd:complexType name="SourceType">
     <xsd:simpleContent>
@@ -701,8 +655,6 @@
       <xsd:element ref="csw30:Source" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
-  <!-- record.xsd -->
   <xsd:element name="AbstractRecord" type="csw30:AbstractRecordType" abstract="true"
     id="AbstractRecord"/>
   <xsd:complexType name="AbstractRecordType" abstract="true" id="AbstractRecordType">
@@ -766,7 +718,7 @@
           <xsd:element ref="dc:identifier" maxOccurs="unbounded"/>
           <xsd:element ref="dc:title" maxOccurs="unbounded"/>
           <xsd:element ref="dc:type" minOccurs="0"/>
-          <xsd:element ref="ows:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element ref="ows2:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -791,7 +743,7 @@
           <xsd:element ref="dct:modified" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element ref="dct:abstract" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element ref="dct:spatial" minOccurs="0" maxOccurs="unbounded"/>
-          <xsd:element ref="ows:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element ref="ows2:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element name="TemporalExtent" type="csw30:TemporalExtentType" minOccurs="0"
             maxOccurs="unbounded"/>
         </xsd:sequence>
@@ -801,14 +753,14 @@
   <xsd:element name="Record" type="csw30:RecordType" substitutionGroup="csw30:AbstractRecord"/>
   <xsd:complexType name="RecordType" final="#all">
     <xsd:annotation>
-      <xsd:documentation xml:lang="en"> This type extends DCMIRecordType to add ows:BoundingBox; it
+      <xsd:documentation xml:lang="en"> This type extends DCMIRecordType to add ows2:BoundingBox; it
         may be used to specify a spatial envelope for the catalogued resource. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
       <xsd:extension base="csw30:DCMIRecordType">
         <xsd:sequence>
           <xsd:element name="AnyText" type="csw30:EmptyType" minOccurs="0" maxOccurs="unbounded"/>
-          <xsd:element ref="ows:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element ref="ows2:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element name="TemporalExtent" type="csw30:TemporalExtentType" minOccurs="0"
             maxOccurs="unbounded"/>
         </xsd:sequence>
@@ -816,4 +768,35 @@
     </xsd:complexContent>
   </xsd:complexType>
   <xsd:complexType name="EmptyType"/>
+  <xsd:complexType name="RequestBaseType" abstract="true" id="RequestBaseType">
+    <xsd:annotation>
+      <xsd:documentation> Base type for all request messages except GetCapabilities. The attributes
+        identify the relevant service type and version. </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="service" type="ows2:ServiceType" use="optional" default="CSW"/>
+    <xsd:attribute name="version" type="ows2:VersionType" use="optional" default="3.0.0"/>
+  </xsd:complexType>
+  <xsd:element name="Acknowledgement" type="csw30:AcknowledgementType" id="Acknowledgement"/>
+  <xsd:complexType name="AcknowledgementType" id="AcknowledgementType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en"> This is a general acknowledgement response message for all
+        requests that may be processed in an asynchronous manner. EchoedRequest - Echoes the
+        submitted request message RequestId - identifier for polling purposes (if no response
+        handler is available, or the URL scheme is unsupported) </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="EchoedRequest" type="csw30:EchoedRequestType"/>
+      <xsd:element name="RequestId" type="xsd:anyURI" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="timeStamp" type="xsd:dateTime" use="required"/>
+  </xsd:complexType>
+  <xsd:complexType name="EchoedRequestType" id="EchoedRequestType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en"> Includes a copy of the request message body.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##any" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
 </xsd:schema>

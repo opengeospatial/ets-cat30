@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
-    <title>Test suite ets-cat30</title>
+    <title>OGC Catalogue 3.0 Conformance Test Suite</title>
     <meta charset="UTF-8" />
     <style type="text/css">
 body {
@@ -54,28 +54,34 @@ dt {
     </style>
   </head>
   <body>
-  <h1>Test suite ets-cat30</h1>
+  <h1>OGC Catalogue 3.0 Conformance Test Suite</h1>
 	<h2>Scope</h2>
 	<p>This executable test suite (ETS) verifies the conformance of the implementation 
-	under test (IUT) with respect to the set of relevant specifications depicted in 
-	Figure 1. Conformance testing is a kind of "black box" testing that examines 
-	externally visible characteristics or behaviors of the IUT and is independent 
+	under test (IUT) with respect to the set of specifications depicted in Figure 1. 
+  Conformance testing is a kind of "black box" testing that examines only the 
+  externally visible characteristics or behaviors of the IUT and is independent 
 	of any implementation details.</p>
 
-	<figure>
-	  <img src="./img/specifications.png" alt="Set of relevant specifications"/>
-	  <figcaption><p><strong>Figure 1</strong> - Relevant specifications</p></figcaption>
+  <figure>
+    <img src="./img/specifications.png" alt="Set of relevant specifications"/>
+    <figcaption><p><strong>Figure 1</strong> - Relevant specifications</p></figcaption>
   </figure>
 
-	<p>There are 24 conformance classes defined in the HTTP binding (CSW) profile; the most 
-  significant ones are listed below.</p>
+	<p>There are 24 conformance classes defined in the principal specification 
+  (OGC 12-176r5); only a subset of these are covered by this test suite:</p>
 	<dl>
-    <dt>Basic Catalogue</dt>
-    <dd>Implements the GET method for the GetCapabilities, GetRecordById, and GetRecords 
-    requests; this represents the lowest level of conformance.</dd>
-
+    <dt>Basic-Catalogue</dt>
+    <dd>Basic search and retrieval functionality required of all implementations; 
+    there are several subsidiary conformance classes:
+    <ul>
+	    <li>Filter-FES-KVP</li>
+      <li>CSW-response</li>
+      <li>ATOM-response</li>
+    </ul>
+    </dd>
     <dt>OpenSearch</dt>
-    <dd>Presents an OpenSearch description document.</dd>
+    <dd>Supports OpenSearch 1.1 parameters, including extensions for simple 
+    spatial (bounding box) queries.</dd>
   </dl>
 
   <h2>Test suite structure</h2>
@@ -95,18 +101,18 @@ dt {
     </thead>
     <tbody>
       <tr style="vertical-align: top;">
-        <td>Conformance Level 1</td>
+        <td>Basic-Catalogue</td>
         <td>
           <ul style="list-style: none;">
-            <li>org.opengis.cite.cat30.level1.Capability1Tests</li>
+            <li>org.opengis.cite.cat30.basic.*</li>
           </ul>
         </td>
       </tr>
       <tr style="vertical-align: top;">
-        <td>Conformance Level 2</td>
+        <td>OpenSearch</td>
         <td>
           <ul style="list-style: none;">
-            <li>org.opengis.cite.cat30.level2.Capability2Tests</li>
+            <li>org.opengis.cite.cat30.opensearch.*</li>
           </ul>
         </td>
       </tr>
@@ -120,23 +126,25 @@ dt {
 	<p>The documents listed below stipulate requirements that must be satisfied 
 	by a conforming implementation.</p>
 	<ul>
-	  <li style="list-style: square;"><a href="https://portal.opengeospatial.org/files/?artifact_id=57616&amp;version=1" 
-    target="_blank">OGC 12-176r4:</a> <em>OGC Catalogue Services 3.0 Specification -- HTTP Protocol 
-    Binding</em>
-	  </li>
-    <li style="list-style: square;"><a href="https://portal.opengeospatial.org/files/?artifact_id=57617&amp;version=1" 
-    target="_blank">OGC 14-014r2:</a> <em>OGC Catalogue Services 3.0 Specification -- HTTP Protocol 
-    Binding -- Abstract Test Suite</em>
-	  </li>
-    <li style="list-style: square;"><a href="https://portal.opengeospatial.org/files/?artifact_id=57626&amp;version=1" 
-    target="_blank">OGC 12-168r4:</a> <em>OGC Catalogue Services 3.0 Specification -- General Model</em>
-	  </li>
-    <li style="list-style: square;"><a href="http://portal.opengeospatial.org/files/?artifact_id=38867" 
-    target="_blank">OGC 06-121r9:</a> <em>OGC Web Services Common Standard, Version 2.0</em>
-	  </li>
-    <li style="list-style: square;"><a href="http://tools.ietf.org/html/rfc4287" 
-    target="_blank">RFC 4287:</a> <em>The Atom Syndication Format</em>
-	  </li>
+	  <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=61521&amp;version=1">
+    OGC 12-176r5</a> OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
+    Binding</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=61522&amp;version=1">
+    OGC 12-168r5</a> Catalog Services Specification 3.0 &#x2013; General Model</li>
+	  <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=61520&amp;version=1">
+    OGC 14-014r3</a> OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
+    Binding &#x2013; Abstract Test Suite</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=56866&amp;version=2">
+    OGC 10-032r8</a> OGC OpenSearch Geo and Time Extensions, Version 1.0</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="http://www.opensearch.org/Specifications/OpenSearch/1.1">OpenSearch</a> 
+    OpenSearch 1.1, Draft 5</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="http://tools.ietf.org/html/rfc4287">RFC 4287</a> The Atom Syndication Format</li>
 	</ul>
 
 	<h2>How to run the tests</h2>
@@ -144,9 +152,8 @@ dt {
 	<ul>
 	  <li style="list-style: square;">Integrated development environment (IDE): The main Java class is <code>
 	  TestNGController</code>.</li>
-	  <li style="list-style: square;">RESTful API: Submit a request that includes the necessary
-    arguments to the test run controller (/rest/suites/cat30/${project.version}/run).
-    </li>
+	  <li style="list-style: square;">RESTful API: Submit a request that includes the necessary arguments 
+    to the test run controller (/rest/suites/cat30/${project.version}/run).</li>
     <li style="list-style: square;">TEAM-Engine: Run the CTL script located in the <code>/src/main/ctl/</code> 
 	  directory.</li>
 	</ul>
@@ -172,13 +179,6 @@ dt {
 		<td>A URI that refers to the implementation under test or metadata about it.
     Ampersand ('&amp;') characters must be percent-encoded as '%26'.</td>
       </tr>
-	  <tr>
-      <td>ics</td>
-      <td>A comma-separated list of string values.</td>
-      <td>O</td>
-      <td>An implementation conformance statement that indicates which conformance 
-      classes or options are supported.</td>
-    </tr>
 	  </tbody>
     </table>
 

@@ -5,16 +5,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.logging.Level;
-
-import javax.xml.validation.Schema;
-
+import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.URIUtils;
-import org.opengis.cite.cat30.util.ValidationUtils;
-import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
-import org.testng.Reporter;
 import org.w3c.dom.Document;
 
 /**
@@ -23,29 +18,22 @@ import org.w3c.dom.Document;
  * listener is loaded using the ServiceLoader mechanism, its methods will be
  * called before those of other suite listeners listed in the test suite
  * definition and before any annotated configuration methods.
- * 
+ *
  * Attributes set on an ISuite instance are not inherited by constituent test
  * group contexts (ITestContext). However, suite attributes are still accessible
  * from lower contexts.
- * 
+ *
  * @see org.testng.ISuite ISuite interface
  */
 public class SuiteFixtureListener implements ISuiteListener {
 
     @Override
     public void onStart(ISuite suite) {
-        Schema cswSchema = ValidationUtils.createCSWSchema();
-        if (null != cswSchema) {
-            suite.setAttribute(SuiteAttribute.CSW_SCHEMA.getName(), cswSchema);
-        }
         processSuiteParameters(suite);
     }
 
     @Override
     public void onFinish(ISuite suite) {
-        Reporter.clear(); // clear output from previous test runs
-        Reporter.log("Test suite parameters:");
-        Reporter.log(suite.getXmlSuite().getAllParameters().toString());
     }
 
     /**
@@ -72,15 +60,15 @@ public class SuiteFixtureListener implements ISuiteListener {
         try {
             entityFile = URIUtils.dereferenceURI(iutRef);
         } catch (IOException iox) {
-            throw new RuntimeException(
-                    "Failed to dereference resource located at " + iutRef, iox);
+            throw new RuntimeException("Failed to dereference resource located at "
+                    + iutRef, iox);
         }
         Document iutDoc = null;
         try {
             iutDoc = URIUtils.parseURI(entityFile.toURI());
         } catch (Exception x) {
-            throw new RuntimeException(
-                    "Failed to parse resource retrieved from " + iutRef, x);
+            throw new RuntimeException("Failed to parse resource retrieved from "
+                    + iutRef, x);
         }
         suite.setAttribute(SuiteAttribute.TEST_SUBJECT.getName(), iutDoc);
         if (TestSuiteLogger.isLoggable(Level.FINE)) {

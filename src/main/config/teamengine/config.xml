@@ -4,7 +4,7 @@
 <organization>
   <name>OGC</name>
   <standard>
-    <name>Test suite ets-cat30</name>
+    <name>OGC Catalogue 3.0 Conformance Test Suite</name>
     <version>
       <name>${spec-version}</name>
       <suite>

@@ -1,15 +1,22 @@
 package org.opengis.cite.cat30.util;
 
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -44,6 +51,22 @@ import org.w3c.dom.NodeList;
  * representations.
  */
 public class XMLUtils {
+
+    private static final Logger LOGR = Logger.getLogger(XMLUtils.class
+            .getPackage().getName());
+    private static final XMLInputFactory STAX_FACTORY = initXMLInputFactory();
+    private static final XPathFactory XPATH_FACTORY = initXPathFactory();
+
+    private static XPathFactory initXPathFactory() {
+        XPathFactory factory = XPathFactory.newInstance();
+        return factory;
+    }
+
+    private static XMLInputFactory initXMLInputFactory() {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
+        return factory;
+    }
 
     /**
      * Writes the content of a DOM Node to a String. The XML declaration is
@@ -124,13 +147,24 @@ public class XMLUtils {
     public static NodeList evaluateXPath(Node context, String expr,
             Map<String, String> namespaceBindings)
             throws XPathExpressionException {
-        return (NodeList) evaluateXPath(context, expr, namespaceBindings,
+        Object result = evaluateXPath(context, expr, namespaceBindings,
                 XPathConstants.NODESET);
+        if (!NodeList.class.isInstance(result)) {
+            throw new XPathExpressionException(
+                    "Expression does not evaluate to a NodeList: " + expr);
+        }
+        return (NodeList) result;
     }
 
     /**
-     * Evaluates an XPath 1.0 expression using the given context and returns the
+     * Evaluates an XPath expression using the given context and returns the
      * result as the specified type.
+     * 
+     * <p>
+     * <strong>Note:</strong> The Saxon implementation supports XPath 2.0
+     * expressions when using the JAXP XPath APIs (the default implementation
+     * will throw an exception).
+     * </p>
      * 
      * @param context
      *            The context node.
@@ -153,9 +187,13 @@ public class XMLUtils {
             throws XPathExpressionException {
         NamespaceBindings bindings = NamespaceBindings.withStandardBindings();
         bindings.addAllBindings(namespaceBindings);
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathFactory factory = XPATH_FACTORY;
+        // WARNING: If context node is Saxon NodeOverNodeInfo, the factory must
+        // use the same Configuration object to avoid IllegalArgumentException
+        XPath xpath = factory.newXPath();
         xpath.setNamespaceContext(bindings);
-        return xpath.evaluate(expr, context, returnType);
+        Object result = xpath.evaluate(expr, context, returnType);
+        return result;
     }
 
     /**
@@ -283,5 +321,29 @@ public class XMLUtils {
             throw new RuntimeException(e);
         }
         return resultDoc;
+    }
+
+    /**
+     * Expands character entity (&name;) and numeric references (&#xhhhh; or
+     * &dddd;) that occur within a given string value. It may be necessary to do
+     * this before processing an XPath expression.
+     * 
+     * @param value
+     *            A string representing text content.
+     * @return A string with all included references expanded.
+     */
+    public static String expandReferencesInText(String value) {
+        StringBuilder wrapper = new StringBuilder("<value>");
+        wrapper.append(value).append("</value>");
+        Reader reader = new StringReader(wrapper.toString());
+        String str = null;
+        try {
+            XMLStreamReader xsr = STAX_FACTORY.createXMLStreamReader(reader);
+            xsr.nextTag(); // document element
+            str = xsr.getElementText();
+        } catch (XMLStreamException xse) {
+            LOGR.log(Level.WARNING, xse.getMessage(), xse);
+        }
+        return str;
     }
 }

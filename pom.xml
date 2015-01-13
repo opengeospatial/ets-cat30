@@ -2,20 +2,21 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>ets-common</artifactId>
-    <version>1</version>
+    <version>3</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opengis.cite</groupId>
   <artifactId>ets-cat30</artifactId>
-  <version>3.0.0-r01-SNAPSHOT</version>
+  <version>1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Catalogue 3.0 Conformance Test Suite -- HTTP Protocol Binding</name>
-  <description>Checks catalogue service implementations for conformance to "OGC 
-  Catalogue Services 3.0 Specification -- HTTP Protocol Binding" (OGC 12-176r4) 
-  and related specifications.</description>
+  <name>OGC Catalogue 3.0 Conformance Test Suite</name>
+  <description>Checks a catalogue service implementation for conformance to 
+  "OGC Catalogue Services 3.0 Specification -- HTTP Protocol Binding" (OGC 
+  12-176r5) and related specifications.</description>
   <url>http://opengeospatial.github.io/ets-cat30/</url>
   <licenses>
     <license>
@@ -40,15 +41,15 @@
   </issueManagement>
   <developers>
     <developer>
-      <name>R. Martell</name>
-      <url>https://github.com/rjmartell</url>
-      <timezone>America/Vancouver</timezone>
+      <name>Alpha Beta</name>
+      <url>https://github.com/</url>
+      <timezone>UTC</timezone>
     </developer>
   </developers>
 
   <properties>
     <ets-code>cat30</ets-code>
-    <spec-version>3.0.0</spec-version>
+    <spec-version>1.0</spec-version>
   </properties>
 
   <dependencies>
@@ -78,7 +79,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>2.10.1</version>
         <configuration>
           <docfilessubdirs>true</docfilessubdirs>
           <show>package</show>
@@ -109,6 +110,9 @@
       </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagNameFormat>r@{project.version}</tagNameFormat>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
