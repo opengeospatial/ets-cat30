@@ -55,10 +55,28 @@ dt {
   </head>
   <body>
     <h1>OGC Catalogue 3.0 Conformance Test Suite</h1>
-    <p>This executable test suite (ETS) verifies the conformance of the implementation 
-	under test (IUT) with respect to all relevant specifications. Conformance testing 
-  is a kind of "black box" testing that examines externally visible characteristics 
-  or behaviors of the IUT and is independent of any implementation details.</p>
+    <p>This executable test suite (ETS) verifies the conformance of catalog implementations 
+	with respect to all relevant specifications. Conformance testing is a kind of "black box" 
+  testing that examines externally visible characteristics or behaviors of the IUT and is 
+  independent of any implementation details.</p>
+
+    <p>Conformance classes are defined to encapsulate coherent sets of functional 
+    requirements. Five conformance classes are covered by this test suite:</p>
+    <dl>
+      <dt>http://www.opengis.net/spec/csw/3.0/conf/Basic-Catalogue</dt>
+      <dd>Basic search and retrieval functionality that is required of all 
+      implementations; several subsidiary conformance classes impose additional 
+      requirements:
+        <ul>
+          <li>http://www.opengis.net/spec/csw/3.0/conf/Filter-FES-KVP</li>
+          <li>http://www.opengis.net/spec/csw/3.0/conf/CSW-response</li>
+          <li>http://www.opengis.net/spec/csw/3.0/conf/ATOM-response</li>
+        </ul>
+      </dd>
+      <dt>http://www.opengis.net/spec/csw/3.0/conf/OpenSearch</dt>
+      <dd>Support for OpenSearch 1.1 parameters, including extensions for simple 
+    spatial (bounding box) queries.</dd>
+    </dl>
 
     <p>The test run arguments are summarized in the following table. The <em>Obligation</em> 
 	descriptor can have the following values: M (mandatory), O (optional), or C 
