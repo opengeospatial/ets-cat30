@@ -21,6 +21,28 @@ Tests for the following conformance classes are currently under development:
 * Basic-Catalogue (mandatory for all implementations)
 * OpenSearch
 
+### Plan 2015
+
+The OGC [Testbed 11](http://www.opengeospatial.org/projects/initiatives/testbed11) is funding the development of this test suite. The plan is as follows:
+
+* January -  GetCapabilities - KVP Syntax  and open search
+* February - GetRecords 1st draft of the test with query options
+* March - May - Refinement of the test 
+* June - Submission for TC approval
+* Aug - Test available for OGC Certification
+
+### First Implementers and Reference Implemenations
+
+To help develop the test suite, implementations are exercised to test the test suite. Implementations also get improved in the process. The following implementations are participating in the development of the test suite:
+
+- PyCSW
+- ESRI GeoPortal
+- GMU LAITS
+- CubeWerx
+- GI-cat
+
+### More Information
+
 Visit the [project documentation website](http://opengeospatial.github.io/ets-cat30/) 
 for more information, including the API documentation.
 
