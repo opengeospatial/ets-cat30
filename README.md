@@ -35,7 +35,7 @@ The OGC [Testbed 11](http://www.opengeospatial.org/projects/initiatives/testbed1
 
 To help develop the test suite, implementations are exercised to test the test suite. Implementations also get improved in the process. The following implementations are participating in the development of the test suite:
 
-- PyCSW
+- pycsw
 - ESRI GeoPortal
 - GMU LAITS
 - CubeWerx
