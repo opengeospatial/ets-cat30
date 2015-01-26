@@ -1,5 +1,9 @@
 package org.opengis.cite.cat30;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -30,6 +34,7 @@ public class SuiteFixtureListener implements ISuiteListener {
     @Override
     public void onStart(ISuite suite) {
         processSuiteParameters(suite);
+        buildClientComponent(suite);
     }
 
     @Override
@@ -38,12 +43,12 @@ public class SuiteFixtureListener implements ISuiteListener {
 
     /**
      * Processes test suite arguments and sets suite attributes accordingly. The
-     * entity referenced by the {@link TestRunArg#IUT iut} argument is parsed
-     * and the resulting Document is set as the value of the "testSubject"
-     * attribute.
-     * 
-     * @param suite
-     *            An ISuite object representing a TestNG test suite.
+     * entity referenced by the {@link TestRunArg#IUT iut} argument--expected to
+     * be an OGC service capabilities document--is parsed and the resulting
+     * Document is set as the value of the
+     * {@link SuiteAttribute#TEST_SUBJECT testSubject} attribute.
+     *
+     * @param suite An ISuite object representing a TestNG test suite.
      */
     void processSuiteParameters(ISuite suite) {
         Map<String, String> params = suite.getXmlSuite().getParameters();
@@ -53,7 +58,7 @@ public class SuiteFixtureListener implements ISuiteListener {
         if ((null == iutParam) || iutParam.isEmpty()) {
             throw new IllegalArgumentException(
                     "Required test run parameter not found: "
-                            + TestRunArg.IUT.toString());
+                    + TestRunArg.IUT.toString());
         }
         URI iutRef = URI.create(iutParam.trim());
         File entityFile = null;
@@ -78,5 +83,28 @@ public class SuiteFixtureListener implements ISuiteListener {
             logMsg.append(XMLUtils.writeNodeToString(iutDoc));
             TestSuiteLogger.log(Level.FINE, logMsg.toString());
         }
+    }
+
+    /**
+     * Builds a client component for interacting with HTTP endpoints. The client
+     * will automatically redirect to the URI declared in 3xx responses. The
+     * component is added to the suite fixture as the
+     * {@link SuiteAttribute#CLIENT} attribute; it may be subsequently accessed
+     * via the {@link org.testng.ITestContext#getSuite()} method.
+     *
+     * <p>
+     * The request and response messages may be logged to a default JDK logger
+     * (in the namespace "com.sun.jersey.api.client").
+     * </p>
+     *
+     * @param suite The test suite instance.
+     */
+    void buildClientComponent(ISuite suite) {
+        ClientConfig config = new DefaultClientConfig();
+        config.getProperties().put(
+                ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
+        Client client = Client.create(config);
+        client.addFilter(new LoggingFilter());
+        suite.setAttribute(SuiteAttribute.CLIENT.getName(), client);
     }
 }

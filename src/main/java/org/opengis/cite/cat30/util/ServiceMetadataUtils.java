@@ -18,17 +18,14 @@ public class ServiceMetadataUtils {
     /**
      * Extracts a request endpoint from a service capabilities document. If the
      * request URI contains a query component it is ignored.
-     * 
-     * @param cswMetadata
-     *            A DOM Document node containing service metadata (OGC
-     *            capabilities document).
-     * @param opName
-     *            The operation (request) name.
-     * @param httpMethod
-     *            The HTTP method to use (if {@code null} or empty the first
-     *            supported method will be used).
+     *
+     * @param cswMetadata A DOM Document node containing service metadata (OGC
+     * capabilities document).
+     * @param opName The operation (request) name.
+     * @param httpMethod The HTTP method to use (if {@code null} or empty the
+     * first method listed will be used).
      * @return A URI denoting a service endpoint; the URI is empty if no
-     *         matching endpoint was found.
+     * matching endpoint was found.
      */
     public static URI getOperationEndpoint(final Document cswMetadata,
             String opName, String httpMethod) {
@@ -39,7 +36,7 @@ public class ServiceMetadataUtils {
                     "//ows:Operation[@name='%s']//ows:HTTP/*[1]/@xlink:href",
                     opName);
         } else {
-            // method name in OWS content model is "Get" | "Post"
+            // method name in OWS content model is "Get" or "Post"
             StringBuilder method = new StringBuilder(httpMethod);
             method.replace(1, method.length(), method.substring(1)
                     .toLowerCase());
@@ -60,10 +57,10 @@ public class ServiceMetadataUtils {
             // XPath expression is correct
             TestSuiteLogger.log(Level.INFO, ex.getMessage());
         }
-        if (null != endpoint.getQuery()) {
+        if (null != endpoint && null != endpoint.getQuery()) {
             // prune query component if present
-            String uri = endpoint.toString();
-            endpoint = URI.create(uri.substring(0, uri.indexOf('?')));
+            String uriRef = endpoint.toString();
+            endpoint = URI.create(uriRef.substring(0, uriRef.indexOf('?')));
         }
         return endpoint;
     }

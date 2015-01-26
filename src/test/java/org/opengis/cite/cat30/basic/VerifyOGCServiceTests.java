@@ -1,5 +1,6 @@
 package org.opengis.cite.cat30.basic;
 
+import com.sun.jersey.api.client.Client;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,7 @@ public class VerifyOGCServiceTests {
     private static ITestContext testContext;
     private static ISuite suite;
     private static Schema cswSchema;
+    private static Client client;
 
     @BeforeClass
     public static void initFixture() throws Exception {
@@ -41,6 +43,7 @@ public class VerifyOGCServiceTests {
         dbf.setNamespaceAware(true);
         docBuilder = dbf.newDocumentBuilder();
         cswSchema = ValidationUtils.createCSWSchema();
+        client = Client.create();
     }
 
     @Test
@@ -53,8 +56,10 @@ public class VerifyOGCServiceTests {
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);
+        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
+                .thenReturn(client);
         OGCServiceTests iut = new OGCServiceTests();
         iut.initOGCServiceTests(testContext);
-        iut.getFullCapabilities();
+        iut.getFullCapabilities_v3();
     }
 }

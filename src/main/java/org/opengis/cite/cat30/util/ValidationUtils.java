@@ -45,11 +45,11 @@ public class ValidationUtils {
      * Creates a resource resolver suitable for locating schemas using an entity
      * catalog. In effect, local copies of standard schemas are returned instead
      * of retrieving them from external repositories.
-     * 
-     * @param schemaLanguage
-     *            A URI that identifies a schema language by namespace name.
+     *
+     * @param schemaLanguage A URI that identifies a schema language by
+     * namespace name.
      * @return A {@code LSResourceResolver} object that is configured to use an
-     *         OASIS entity catalog.
+     * OASIS entity catalog.
      */
     public static LSResourceResolver createSchemaResolver(URI schemaLanguage) {
         String catalogFileName;
@@ -61,7 +61,7 @@ public class ValidationUtils {
         URL catalogURL = ValidationUtils.class.getResource(ROOT_PKG
                 + catalogFileName);
         XMLCatalogResolver resolver = new XMLCatalogResolver();
-        resolver.setCatalogList(new String[] { catalogURL.toString() });
+        resolver.setCatalogList(new String[]{catalogURL.toString()});
         return resolver;
     }
 
@@ -70,23 +70,20 @@ public class ValidationUtils {
      * the rules defined in a Schematron schema. An attempt is made to resolve
      * the schema reference using an entity catalog; if this fails the reference
      * is used as given.
-     * 
-     * @param schemaRef
-     *            A reference to a Schematron schema; this is expected to be a
-     *            relative or absolute URI value, possibly matching the system
-     *            identifier for some entry in an entity catalog.
-     * @param phase
-     *            The name of the phase to invoke.
+     *
+     * @param schemaRef A reference to a Schematron schema; this is expected to
+     * be a relative or absolute URI value, possibly matching the system
+     * identifier for some entry in an entity catalog.
+     * @param phase The name of the phase to invoke.
      * @return A SchematronValidator instance, or {@code null} if the validator
-     *         cannot be constructed (e.g. invalid schema reference or phase
-     *         name).
+     * cannot be constructed (e.g. invalid schema reference or phase name).
      */
     public static SchematronValidator buildSchematronValidator(
             String schemaRef, String phase) {
         Source source = null;
         try {
             String catalogRef = SCH_RESOLVER
-                    .resolveSystem(schemaRef.toString());
+                    .resolveSystem(schemaRef);
             if (null != catalogRef) {
                 source = new StreamSource(URI.create(catalogRef).toString());
             } else {
@@ -110,19 +107,16 @@ public class ValidationUtils {
      * Extracts a set of XML Schema references from a source XML document. The
      * document element is expected to include the standard xsi:schemaLocation
      * attribute.
-     * 
-     * @param source
-     *            The source instance to read from; its base URI (systemId)
-     *            should be set.
-     * @param baseURI
-     *            An alternative base URI to use if the source does not have a
-     *            system identifier set or if its system id is a {@code file}
-     *            URI. This will usually be the URI used to retrieve the
-     *            resource; it may be null.
+     *
+     * @param source The source instance to read from; its base URI (systemId)
+     * should be set.
+     * @param baseURI An alternative base URI to use if the source does not have
+     * a system identifier set or if its system id is a {@code file} URI. This
+     * will usually be the URI used to retrieve the resource; it may be null.
      * @return A Set containing absolute URI references that specify the
-     *         locations of XML Schema resources.
-     * @throws XMLStreamException
-     *             If an error occurs while reading the source instance.
+     * locations of XML Schema resources.
+     * @throws XMLStreamException If an error occurs while reading the source
+     * instance.
      */
     public static Set<URI> extractSchemaReferences(Source source, String baseURI)
             throws XMLStreamException {
@@ -140,7 +134,7 @@ public class ValidationUtils {
         if (uriValues.length % 2 != 0) {
             throw new RuntimeException(
                     "xsi:schemaLocation attribute contains an odd number of URI values:\n"
-                            + Arrays.toString(uriValues));
+                    + Arrays.toString(uriValues));
         }
         Set<URI> schemaURIs = new HashSet<URI>();
         // one or more pairs of [namespace name] [schema location]
@@ -168,9 +162,9 @@ public class ValidationUtils {
      * Creates a Schema object representing the complete set of constraints
      * defined in the CSW 3.0 schema. It incorporates schema components from all
      * relevant namespaces.
-     * 
+     *
      * @return An immutable Schema object, or <code>null</code> if it cannot be
-     *         constructed.
+     * constructed.
      */
     public static Schema createCSWSchema() {
         URL entityCatalog = ValidationUtils.class.getResource(ROOT_PKG
@@ -182,12 +176,12 @@ public class ValidationUtils {
                     + "xsd/opengis/cat/csw/3.0/csw-3.0.xsd");
             Source xsdSource = new StreamSource(schemaRef.toString());
             appSchema = xsdCompiler
-                    .compileXmlSchema(new Source[] { xsdSource });
+                    .compileXmlSchema(new Source[]{xsdSource});
         } catch (SAXException e) {
             TestSuiteLogger.log(Level.WARNING,
                     "Failed to create CSW Schema object.", e);
         }
         return appSchema;
     }
-    
+
 }

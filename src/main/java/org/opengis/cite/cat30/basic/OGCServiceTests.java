@@ -26,9 +26,6 @@ import org.w3c.dom.Document;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -37,7 +34,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * in the common model as adapted for HTTP-based catalogue implementations. The
  * following service requests are covered:
  * </p>
- * 
+ *
  * <ul>
  * <li>GetCapabilities: KVP syntax</li>
  * <li>GetRecordById: KVP syntax</li>
@@ -47,28 +44,22 @@ public class OGCServiceTests {
 
     private Document cswCapabilities;
     private Schema cswSchema;
-    private Client httpClient;
+    private Client client;
 
     /**
      * Initializes the test fixture with the following items:
-     * 
+     *
      * <ul>
-     * <li>an HTTP client component.</li>
-     * <li>the CSW message schema (obtained from the suite attribute
+     * <li>HTTP client component.</li>
+     * <li>CSW message schema (obtained from the suite attribute
      * {@link org.opengis.cite.cat30.SuiteAttribute#CSW_SCHEMA}, which should
      * evaluate to a thread-safe Schema object).</li>
-     * <li>the service capabilities document (obtained from the suite attribute
+     * <li>service capabilities document (obtained from the suite attribute
      * {@link org.opengis.cite.cat30.SuiteAttribute#TEST_SUBJECT}, which should
      * evaluate to a DOM Document node).</li>
      * </ul>
-     * 
-     * <p>
-     * The request and response messages may be logged to a default JDK logger
-     * (in the namespace "com.sun.jersey.api.client").
-     * </p>
-     * 
-     * @param testContext
-     *            The test context containing various suite attributes.
+     *
+     * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
     public void initOGCServiceTests(ITestContext testContext) {
@@ -80,9 +71,7 @@ public class OGCServiceTests {
             throw new SkipException(
                     "Service capabilities not found in ITestContext.");
         }
-        ClientConfig config = new DefaultClientConfig();
-        this.httpClient = Client.create(config);
-        this.httpClient.addFilter(new LoggingFilter());
+        this.client = (Client) testContext.getSuite().getAttribute(SuiteAttribute.CLIENT.getName());
         this.cswSchema = (Schema) testContext.getSuite().getAttribute(
                 SuiteAttribute.CSW_SCHEMA.getName());
     }
@@ -90,30 +79,34 @@ public class OGCServiceTests {
     /**
      * Sets the service capabilities document. This method is intended to
      * facilitate unit testing.
-     * 
-     * @param serviceDescription
-     *            A Document node representing a service description
-     *            (csw:Capabilities).
+     *
+     * @param cswCapabilities A Document node representing a service description
+     * (csw:Capabilities).
      */
-    public void setServiceCapabilities(Document serviceDescription) {
-        this.cswCapabilities = serviceDescription;
+    public void setServiceCapabilities(Document cswCapabilities) {
+        this.cswCapabilities = cswCapabilities;
     }
 
     /**
      * [{@code Test}] Verifies that the complete service capabilities document
      * is schema-valid. All catalogue services must support the GET method for a
      * GetCapabilities request.
+     * <p>
+     * The <code>Accept</code> request header expresses a preference for a
+     * representation of type
+     * {@value javax.ws.rs.core.MediaType#APPLICATION_XML}.
+     * </p>
      */
     @Test(description = "Requirement-043,Requirement-045")
-    public void getFullCapabilities() {
+    public void getFullCapabilities_v3() {
         URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        WebResource resource = httpClient.resource(endpoint);
-        resource.accept(MediaType.TEXT_XML_TYPE);
+        WebResource resource = this.client.resource(endpoint);
+        resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = resource.queryParams(qryParams).get(
                 ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
@@ -128,11 +121,11 @@ public class OGCServiceTests {
      * [{@code Test}] Verifies that a request for an unsupported version of a
      * capabilities document produces an exception report containing the
      * exception code "VersionNegotiationFailed".
-     * 
+     *
      * The status code must be 400 (Bad Request) and the response entity must be
      * an XML document having {http://www.opengis.net/ows/2.0}ExceptionReport as
      * the document element.
-     * 
+     *
      * @see "OGC 06-121r9: 7.3.2, 8.6"
      */
     @Test(description = "Requirement-036,Requirement-037,Requirement-042")
@@ -143,8 +136,8 @@ public class OGCServiceTests {
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.ACCEPT_VERSIONS, "2014.06.21");
-        WebResource resource = httpClient.resource(endpoint);
-        resource.accept(MediaType.TEXT_XML_TYPE);
+        WebResource resource = this.client.resource(endpoint);
+        resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = resource.queryParams(qryParams).get(
                 ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
@@ -160,7 +153,7 @@ public class OGCServiceTests {
      * produces a response with status code 404 (Not Found) if no matching
      * resource is found. A response entity (an exception report) is optional;
      * if present, the exception code shall be "InvalidParameterValue".
-     * 
+     *
      * @see "OGC 06-121r9: 9.3.3.2"
      */
     @Test(description = "Requirement-127,Requirement-141")
@@ -172,8 +165,8 @@ public class OGCServiceTests {
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.add(CAT3.ID, "urn:example:" + System.currentTimeMillis());
-        WebResource resource = httpClient.resource(endpoint);
-        resource.accept(MediaType.TEXT_XML_TYPE);
+        WebResource resource = this.client.resource(endpoint);
+        resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = resource.queryParams(qryParams).get(
                 ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
