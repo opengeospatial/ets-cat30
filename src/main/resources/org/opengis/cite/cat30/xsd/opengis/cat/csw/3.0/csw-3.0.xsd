@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="http://www.opengis.net/cat/csw/3.0"
-  xmlns:csw30="http://www.opengis.net/cat/csw/3.0" 
+  xmlns:csw3="http://www.opengis.net/cat/csw/3.0" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:ows2="http://www.opengis.net/ows/2.0" 
   xmlns:fes="http://www.opengis.net/fes/2.0"
@@ -19,7 +19,7 @@
   <xsd:import namespace="http://purl.org/dc/terms/" />
   <xsd:import namespace="http://purl.org/dc/elements/1.1/" />
 
-  <xsd:element name="GetCapabilities" type="csw30:GetCapabilitiesType" id="GetCapabilities"/>
+  <xsd:element name="GetCapabilities" type="csw3:GetCapabilitiesType" id="GetCapabilities"/>
   <xsd:complexType name="GetCapabilitiesType" id="GetCapabilitiesType">
     <xsd:annotation>
       <xsd:documentation> Request for a description of service capabilities. See OGC 06-121r9 for
@@ -35,7 +35,7 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="Capabilities" type="csw30:CapabilitiesType" id="Capabilities"/>
+  <xsd:element name="Capabilities" type="csw3:CapabilitiesType" id="Capabilities"/>
   <xsd:complexType name="CapabilitiesType" id="CapabilitiesType">
     <xsd:annotation>
       <xsd:documentation> This type extends ows2:CapabilitiesBaseType defined in OGC 06-121r9 to
@@ -56,10 +56,10 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="GetDomain" type="csw30:GetDomainType" id="GetDomain"/>
+  <xsd:element name="GetDomain" type="csw3:GetDomainType" id="GetDomain"/>
   <xsd:complexType name="GetDomainType" id="GetDomainType">
     <xsd:complexContent>
-      <xsd:extension base="csw30:RequestBaseType">
+      <xsd:extension base="csw3:RequestBaseType">
         <xsd:sequence maxOccurs="unbounded">
           <xsd:choice>
             <xsd:sequence>
@@ -67,7 +67,7 @@
                 <xsd:complexType>
                   <xsd:simpleContent>
                     <xsd:extension base="xsd:string">
-                      <xsd:attribute name="resultType" type="csw30:ResultTypeType" use="optional"
+                      <xsd:attribute name="resultType" type="csw3:ResultTypeType" use="optional"
                         default="available"/>
                     </xsd:extension>
                   </xsd:simpleContent>
@@ -97,7 +97,7 @@
       </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
-  <xsd:element name="GetDomainResponse" type="csw30:GetDomainResponseType" id="GetDomainResponse"/>
+  <xsd:element name="GetDomainResponse" type="csw3:GetDomainResponseType" id="GetDomainResponse"/>
   <xsd:complexType name="GetDomainResponseType" id="GetDomainResponseType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> Returns the actual values for some property. In general this
@@ -105,7 +105,7 @@
         these may be the same. </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="DomainValues" type="csw30:DomainValuesType" maxOccurs="unbounded"/>
+      <xsd:element name="DomainValues" type="csw3:DomainValuesType" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="DomainValuesType" id="DomainValuesType">
@@ -115,13 +115,13 @@
         <xsd:element name="ParameterName" type="xsd:anyURI"/>
       </xsd:choice>
       <xsd:choice minOccurs="0">
-        <xsd:element name="ListOfValues" type="csw30:ListOfValuesType"/>
-        <xsd:element name="ConceptualScheme" type="csw30:ConceptualSchemeType" maxOccurs="unbounded"/>
-        <xsd:element name="RangeOfValues" type="csw30:RangeOfValuesType"/>
+        <xsd:element name="ListOfValues" type="csw3:ListOfValuesType"/>
+        <xsd:element name="ConceptualScheme" type="csw3:ConceptualSchemeType" maxOccurs="unbounded"/>
+        <xsd:element name="RangeOfValues" type="csw3:RangeOfValuesType"/>
       </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="type" type="xsd:QName" use="required"/>
-    <xsd:attribute name="resultType" type="csw30:ResultTypeType" use="required"/>
+    <xsd:attribute name="resultType" type="csw3:ResultTypeType" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="ListOfValuesType" id="ListOfValuesType">
     <xsd:sequence>
@@ -151,7 +151,7 @@
       <xsd:element name="MaxValue" type="xsd:anyType" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:element name="GetRecords" type="csw30:GetRecordsType" id="GetRecords"/>
+  <xsd:element name="GetRecords" type="csw3:GetRecordsType" id="GetRecords"/>
   <xsd:complexType name="GetRecordsType" id="GetRecordsType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> The principal means of searching the catalogue. The matching
@@ -161,12 +161,12 @@
         expressions. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:RequestBaseType">
+      <xsd:extension base="csw3:RequestBaseType">
         <xsd:sequence>
-          <xsd:element name="DistributedSearch" type="csw30:DistributedSearchType" minOccurs="0"/>
+          <xsd:element name="DistributedSearch" type="csw3:DistributedSearchType" minOccurs="0"/>
           <xsd:element name="ResponseHandler" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:choice>
-            <xsd:element ref="csw30:AbstractQuery"/>
+            <xsd:element ref="csw3:AbstractQuery"/>
             <xsd:any namespace="##other" processContents="strict"/>
           </xsd:choice>
         </xsd:sequence>
@@ -176,7 +176,7 @@
               distributed search. Must be a unique Id (i.e. a UUID). </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
-        <xsd:attributeGroup ref="csw30:BasicRetrievalOptions"/>
+        <xsd:attributeGroup ref="csw3:BasicRetrievalOptions"/>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
@@ -191,10 +191,10 @@
     <xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="application/xml"/>
     <xsd:attribute name="outputSchema" type="xsd:anyURI" use="optional"/>
     <xsd:attribute name="startPosition" type="xsd:positiveInteger" use="optional" default="1"/>
-    <xsd:attribute name="maxRecords" type="csw30:MaxRecordsType" use="optional" default="10"/>
+    <xsd:attribute name="maxRecords" type="csw3:MaxRecordsType" use="optional" default="10"/>
   </xsd:attributeGroup>
   <xsd:simpleType name="MaxRecordsType">
-    <xsd:union memberTypes="xsd:nonNegativeInteger csw30:UnlimitedStringType"/>
+    <xsd:union memberTypes="xsd:nonNegativeInteger csw3:UnlimitedStringType"/>
   </xsd:simpleType>
   <xsd:simpleType name="UnlimitedStringType">
     <xsd:restriction base="xsd:string">
@@ -209,7 +209,7 @@
         hopCount=0. </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="federatedCatalogues" type="csw30:FederatedCatalogueType" minOccurs="0"
+      <xsd:element name="federatedCatalogues" type="csw3:FederatedCatalogueType" minOccurs="0"
         maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation xml:lang="en"> To restrict the number of catalogues of a federation
@@ -248,31 +248,31 @@
       </xsd:annotation>
     </xsd:attribute>
   </xsd:complexType>
-  <xsd:element name="AbstractQuery" type="csw30:AbstractQueryType" abstract="true"
+  <xsd:element name="AbstractQuery" type="csw3:AbstractQueryType" abstract="true"
     id="AbstractQuery"/>
   <xsd:complexType name="AbstractQueryType" abstract="true" id="AbstractQueryType"/>
-  <xsd:element name="Query" type="csw30:QueryType" substitutionGroup="csw30:AbstractQuery"
+  <xsd:element name="Query" type="csw3:QueryType" substitutionGroup="csw3:AbstractQuery"
     id="Query"/>
   <xsd:complexType name="QueryType" id="QueryType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> Specifies a query to execute against instances of one or
         more object types. A set of ElementName elements may be included to specify an adhoc view of
-        the csw30:Record instances in the result set. Otherwise, use ElementSetName to specify a
+        the csw3:Record instances in the result set. Otherwise, use ElementSetName to specify a
         predefined view. The Constraint element contains a query filter expressed in a supported
         query language. A sorting criterion that specifies a property to sort by may be included.
         typeNames - a list of object types to query. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:AbstractQueryType">
+      <xsd:extension base="csw3:AbstractQueryType">
         <xsd:sequence>
           <xsd:choice>
-            <xsd:element ref="csw30:ElementSetName"/>
+            <xsd:element ref="csw3:ElementSetName"/>
             <xsd:element name="ElementName" type="xsd:string" maxOccurs="unbounded"/>
           </xsd:choice>
-          <xsd:element ref="csw30:Constraint" minOccurs="0"/>
+          <xsd:element ref="csw3:Constraint" minOccurs="0"/>
           <xsd:element ref="fes:SortBy" minOccurs="0"/>
         </xsd:sequence>
-        <xsd:attribute name="typeNames" type="csw30:TypeNameListType" use="required"/>
+        <xsd:attribute name="typeNames" type="csw3:TypeNameListType" use="required"/>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
@@ -284,7 +284,7 @@
     </xsd:annotation>
     <xsd:list itemType="xsd:QName"/>
   </xsd:simpleType>
-  <xsd:element name="Constraint" type="csw30:QueryConstraintType" id="Constraint"/>
+  <xsd:element name="Constraint" type="csw3:QueryConstraintType" id="Constraint"/>
   <xsd:complexType name="QueryConstraintType" id="QueryConstraintType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> A search constraint that adheres to one of the following
@@ -300,11 +300,11 @@
       </xsd:annotation>
     </xsd:attribute>
   </xsd:complexType>
-  <xsd:element name="ElementSetName" type="csw30:ElementSetNameType" id="ElementSetName"/>
+  <xsd:element name="ElementSetName" type="csw3:ElementSetNameType" id="ElementSetName"/>
   <xsd:complexType name="ElementSetNameType" id="ElementSetNameType">
     <xsd:simpleContent>
-      <xsd:extension base="csw30:ElementSetType">
-        <xsd:attribute name="typeNames" type="csw30:TypeNameListType" use="optional"/>
+      <xsd:extension base="csw3:ElementSetType">
+        <xsd:attribute name="typeNames" type="csw3:TypeNameListType" use="optional"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -320,9 +320,9 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:simpleType name="ElementSetType">
-    <xsd:union memberTypes="xsd:string csw30:RequiredElementSetNamesType"/>
+    <xsd:union memberTypes="xsd:string csw3:RequiredElementSetNamesType"/>
   </xsd:simpleType>
-  <xsd:element name="GetRecordsResponse" type="csw30:GetRecordsResponseType" id="GetRecordsResponse"/>
+  <xsd:element name="GetRecordsResponse" type="csw3:GetRecordsResponseType" id="GetRecordsResponse"/>
   <xsd:complexType name="GetRecordsResponseType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> The response message for a GetRecords request. Some or all
@@ -331,8 +331,8 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="RequestId" type="xsd:anyURI" minOccurs="0"/>
-      <xsd:element name="SearchStatus" type="csw30:RequestStatusType"/>
-      <xsd:element name="SearchResults" type="csw30:SearchResultsType"/>
+      <xsd:element name="SearchStatus" type="csw3:RequestStatusType"/>
+      <xsd:element name="SearchResults" type="csw3:SearchResultsType"/>
     </xsd:sequence>
     <xsd:attribute name="version" type="xsd:string" use="optional"/>
   </xsd:complexType>
@@ -362,7 +362,7 @@
   <xsd:complexType name="SearchResultsType" id="SearchResultsType">
     <xsd:annotation>
       <xsd:documentation> Includes representations of result set members if maxRecords &gt; 0.
-        The items must conform to one of the csw30:Record views or a profile-specific
+        The items must conform to one of the csw3:Record views or a profile-specific
         representation. resultSetId - id of the result set (a URI). elementSet - The element set
         that has been returned (e.g., "brief", "summary", "full") recordSchema - schema reference
         for included records(URI) numberOfRecordsMatched - number of records matched by the query
@@ -373,22 +373,22 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
-        <xsd:element ref="csw30:AbstractRecord" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="csw3:AbstractRecord" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:choice>
-      <xsd:element ref="csw30:FederatedSearchResultBase" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element ref="csw3:FederatedSearchResultBase" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="resultSetId" type="xsd:anyURI" use="optional"/>
-    <xsd:attribute name="elementSet" type="csw30:ElementSetType" use="optional"/>
+    <xsd:attribute name="elementSet" type="csw3:ElementSetType" use="optional"/>
     <xsd:attribute name="recordSchema" type="xsd:anyURI" use="optional"/>
     <xsd:attribute name="numberOfRecordsMatched" type="xsd:nonNegativeInteger" use="required"/>
     <xsd:attribute name="numberOfRecordsReturned" type="xsd:nonNegativeInteger" use="required"/>
     <xsd:attribute name="nextRecord" type="xsd:nonNegativeInteger" use="optional"/>
     <xsd:attribute name="expires" type="xsd:dateTime" use="optional"/>
     <xsd:attribute name="elapsedTime" type="xsd:unsignedLong" use="optional"/>
-    <xsd:attribute name="status" type="csw30:ResultsStatusType" use="optional" default="subset"/>
+    <xsd:attribute name="status" type="csw3:ResultsStatusType" use="optional" default="subset"/>
   </xsd:complexType>
-  <xsd:element name="FederatedSearchResultBase" type="csw30:FederatedSearchResultBaseType"
+  <xsd:element name="FederatedSearchResultBase" type="csw3:FederatedSearchResultBaseType"
     abstract="true" id="FederatedSearchResultBase"/>
   <xsd:complexType name="FederatedSearchResultBaseType" abstract="true"
     id="FederatedSearchResultBaseType">
@@ -399,29 +399,29 @@
       </xsd:annotation>
     </xsd:attribute>
   </xsd:complexType>
-  <xsd:element name="FederatedSearchResult" type="csw30:FederatedSearchResultType"
-    substitutionGroup="csw30:FederatedSearchResultBase" id="FederatedSearchResult"/>
+  <xsd:element name="FederatedSearchResult" type="csw3:FederatedSearchResultType"
+    substitutionGroup="csw3:FederatedSearchResultBase" id="FederatedSearchResult"/>
   <xsd:complexType name="FederatedSearchResultType" id="FederatedSearchResultType">
     <xsd:complexContent>
-      <xsd:extension base="csw30:FederatedSearchResultBaseType">
+      <xsd:extension base="csw3:FederatedSearchResultBaseType">
         <xsd:sequence>
-          <xsd:element name="searchResult" type="csw30:SearchResultsType"/>
+          <xsd:element name="searchResult" type="csw3:SearchResultsType"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="FederatedException" type="csw30:FederatedExceptionType"
-    substitutionGroup="csw30:FederatedSearchResultBase" id="FederatedException"/>
+  <xsd:element name="FederatedException" type="csw3:FederatedExceptionType"
+    substitutionGroup="csw3:FederatedSearchResultBase" id="FederatedException"/>
   <xsd:complexType name="FederatedExceptionType" id="FederatedExceptionType">
     <xsd:complexContent>
-      <xsd:extension base="csw30:FederatedSearchResultBaseType">
+      <xsd:extension base="csw3:FederatedSearchResultBaseType">
         <xsd:sequence>
           <xsd:element ref="ows2:ExceptionReport" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="GetRecordById" type="csw30:GetRecordByIdType" id="GetRecordById"/>
+  <xsd:element name="GetRecordById" type="csw3:GetRecordByIdType" id="GetRecordById"/>
   <xsd:complexType name="GetRecordByIdType" id="GetRecordByIdType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> Convenience operation to retrieve default record
@@ -430,10 +430,10 @@
         ElementSetName - one of "brief, "summary", or "full" </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:RequestBaseType">
+      <xsd:extension base="csw3:RequestBaseType">
         <xsd:sequence>
           <xsd:element name="Id" type="xsd:anyURI"/>
-          <xsd:element ref="csw30:ElementSetName" minOccurs="0"/>
+          <xsd:element ref="csw3:ElementSetName" minOccurs="0"/>
         </xsd:sequence>
         <xsd:attribute name="outputFormat" type="xsd:string" use="optional"
           default="application/xml"/>
@@ -441,20 +441,20 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="Transaction" type="csw30:TransactionType" id="Transaction"/>
+  <xsd:element name="Transaction" type="csw3:TransactionType" id="Transaction"/>
   <xsd:complexType name="TransactionType" id="TransactionType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> Users may insert, update, or delete catalogue entries. If
-        the verboseResponse attribute has the value "true", then one or more csw30:InsertResult
+        the verboseResponse attribute has the value "true", then one or more csw3:InsertResult
         elements must be included in the response. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:RequestBaseType">
+      <xsd:extension base="csw3:RequestBaseType">
         <xsd:sequence>
           <xsd:choice maxOccurs="unbounded">
-            <xsd:element name="Insert" type="csw30:InsertType"/>
-            <xsd:element name="Update" type="csw30:UpdateType"/>
-            <xsd:element name="Delete" type="csw30:DeleteType"/>
+            <xsd:element name="Insert" type="csw3:InsertType"/>
+            <xsd:element name="Update" type="csw3:UpdateType"/>
+            <xsd:element name="Delete" type="csw3:DeleteType"/>
           </xsd:choice>
         </xsd:sequence>
         <xsd:attribute name="verboseResponse" type="xsd:boolean" use="optional" default="false"/>
@@ -487,8 +487,8 @@
       <xsd:choice>
         <xsd:any namespace="##other" processContents="strict"/>
         <xsd:sequence>
-          <xsd:element ref="csw30:RecordProperty" maxOccurs="unbounded"/>
-          <xsd:element ref="csw30:Constraint"/>
+          <xsd:element ref="csw3:RecordProperty" maxOccurs="unbounded"/>
+          <xsd:element ref="csw3:Constraint"/>
         </xsd:sequence>
       </xsd:choice>
     </xsd:sequence>
@@ -501,12 +501,12 @@
         conditions. </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element ref="csw30:Constraint"/>
+      <xsd:element ref="csw3:Constraint"/>
     </xsd:sequence>
     <xsd:attribute name="typeName" type="xsd:QName" use="optional"/>
     <xsd:attribute name="handle" type="xsd:ID" use="optional"/>
   </xsd:complexType>
-  <xsd:element name="RecordProperty" type="csw30:RecordPropertyType">
+  <xsd:element name="RecordProperty" type="csw3:RecordPropertyType">
     <xsd:annotation>
       <xsd:documentation> The RecordProperty element is used to specify the new value of a record
         property in an update statement. </xsd:documentation>
@@ -528,7 +528,7 @@
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:element name="TransactionResponse" type="csw30:TransactionResponseType"
+  <xsd:element name="TransactionResponse" type="csw3:TransactionResponseType"
     id="TransactionResponse"/>
   <xsd:complexType name="TransactionResponseType">
     <xsd:annotation>
@@ -537,8 +537,8 @@
         TransactionFailure is returned instead. </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="TransactionSummary" type="csw30:TransactionSummaryType"/>
-      <xsd:element name="InsertResult" type="csw30:InsertResultType" minOccurs="0"
+      <xsd:element name="TransactionSummary" type="csw3:TransactionSummaryType"/>
+      <xsd:element name="InsertResult" type="csw3:InsertResultType" minOccurs="0"
         maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="version" type="xsd:string" use="optional"/>
@@ -563,11 +563,11 @@
         transaction request. </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element ref="csw30:BriefRecord" maxOccurs="unbounded"/>
+      <xsd:element ref="csw3:BriefRecord" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="handleRef" type="xsd:anyURI" use="optional"/>
   </xsd:complexType>
-  <xsd:element name="Harvest" type="csw30:HarvestType" id="Harvest"/>
+  <xsd:element name="Harvest" type="csw3:HarvestType" id="Harvest"/>
   <xsd:complexType name="HarvestType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> Requests that the catalogue attempt to harvest a resource
@@ -581,7 +581,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:RequestBaseType">
+      <xsd:extension base="csw3:RequestBaseType">
         <xsd:sequence>
           <xsd:element name="Source" type="xsd:anyURI"/>
           <xsd:element name="ResourceType" type="xsd:string"/>
@@ -594,11 +594,11 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="HarvestResponse" type="csw30:HarvestResponseType" id="HarvestResponse">
+  <xsd:element name="HarvestResponse" type="csw3:HarvestResponseType" id="HarvestResponse">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> The content of the response varies depending on the presence
         of the ResponseHandler element. If present, then the catalogue should verify the request and
-        respond immediately with an csw30:Acknowledgement element in the response. The catalogue
+        respond immediately with an csw3:Acknowledgement element in the response. The catalogue
         must then attempt to harvest the resource at some later time and send the response message
         to the location specified by the value of the ResponseHandler element using the indicated
         protocol (e.g. ftp, mailto, http). If the ResponseHandler element is absent, then the
@@ -610,11 +610,11 @@
   </xsd:element>
   <xsd:complexType name="HarvestResponseType" id="HarvestResponseType">
     <xsd:choice>
-      <xsd:element ref="csw30:Acknowledgement"/>
-      <xsd:element ref="csw30:TransactionResponse"/>
+      <xsd:element ref="csw3:Acknowledgement"/>
+      <xsd:element ref="csw3:TransactionResponse"/>
     </xsd:choice>
   </xsd:complexType>
-  <xsd:element name="Source" type="csw30:SourceType" id="SourceType"/>
+  <xsd:element name="Source" type="csw3:SourceType" id="SourceType"/>
   <xsd:complexType name="SourceType">
     <xsd:simpleContent>
       <xsd:extension base="xsd:anyURI">
@@ -622,7 +622,7 @@
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
-  <xsd:element name="UnHarvest" type="csw30:UnHarvestType" id="UnHarvest"/>
+  <xsd:element name="UnHarvest" type="csw3:UnHarvestType" id="UnHarvest"/>
   <xsd:complexType name="UnHarvestType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> Requests that the CSW unharvest a resource from the
@@ -634,9 +634,9 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:RequestBaseType">
+      <xsd:extension base="csw3:RequestBaseType">
         <xsd:sequence>
-          <xsd:element ref="csw30:Source" maxOccurs="unbounded"/>
+          <xsd:element ref="csw3:Source" maxOccurs="unbounded"/>
           <xsd:element name="ResponseHandler" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded"
           />
         </xsd:sequence>
@@ -644,24 +644,24 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="UnHarvestResponse" type="csw30:UnHarvestResponseType" id="UnHarvestResponse">
+  <xsd:element name="UnHarvestResponse" type="csw3:UnHarvestResponseType" id="UnHarvestResponse">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> The response to an UnHarvest request is simply a list of
-        csw30:Source elements echoing what has been unharvested. </xsd:documentation>
+        csw3:Source elements echoing what has been unharvested. </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
   <xsd:complexType name="UnHarvestResponseType" id="UnHarvestResponseType">
     <xsd:sequence>
-      <xsd:element ref="csw30:Source" maxOccurs="unbounded"/>
+      <xsd:element ref="csw3:Source" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:element name="AbstractRecord" type="csw30:AbstractRecordType" abstract="true"
+  <xsd:element name="AbstractRecord" type="csw3:AbstractRecordType" abstract="true"
     id="AbstractRecord"/>
   <xsd:complexType name="AbstractRecordType" abstract="true" id="AbstractRecordType">
     <xsd:attribute name="deleted" type="xsd:boolean" use="optional" default="false"/>
   </xsd:complexType>
-  <xsd:element name="DCMIRecord" type="csw30:DCMIRecordType"
-    substitutionGroup="csw30:AbstractRecord"/>
+  <xsd:element name="DCMIRecord" type="csw3:DCMIRecordType"
+    substitutionGroup="csw3:AbstractRecord"/>
   <xsd:complexType name="DCMIRecordType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> This type encapsulates all of the standard DCMI metadata
@@ -669,7 +669,7 @@
         profile-specific information model. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:AbstractRecordType">
+      <xsd:extension base="csw3:AbstractRecordType">
         <xsd:sequence>
           <xsd:group ref="dct:DCMI-terms"/>
         </xsd:sequence>
@@ -704,8 +704,8 @@
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:element name="BriefRecord" type="csw30:BriefRecordType"
-    substitutionGroup="csw30:AbstractRecord"/>
+  <xsd:element name="BriefRecord" type="csw3:BriefRecordType"
+    substitutionGroup="csw3:AbstractRecord"/>
   <xsd:complexType name="BriefRecordType" final="#all">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> This type defines a brief representation of the common
@@ -713,7 +713,7 @@
         properties. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:AbstractRecordType">
+      <xsd:extension base="csw3:AbstractRecordType">
         <xsd:sequence>
           <xsd:element ref="dc:identifier" maxOccurs="unbounded"/>
           <xsd:element ref="dc:title" maxOccurs="unbounded"/>
@@ -723,8 +723,8 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="SummaryRecord" type="csw30:SummaryRecordType"
-    substitutionGroup="csw30:AbstractRecord"/>
+  <xsd:element name="SummaryRecord" type="csw3:SummaryRecordType"
+    substitutionGroup="csw3:AbstractRecord"/>
   <xsd:complexType name="SummaryRecordType" final="#all">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> This type defines a summary representation of the common
@@ -732,7 +732,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:AbstractRecordType">
+      <xsd:extension base="csw3:AbstractRecordType">
         <xsd:sequence>
           <xsd:element ref="dc:identifier" maxOccurs="unbounded"/>
           <xsd:element ref="dc:title" maxOccurs="unbounded"/>
@@ -744,24 +744,24 @@
           <xsd:element ref="dct:abstract" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element ref="dct:spatial" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element ref="ows2:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
-          <xsd:element name="TemporalExtent" type="csw30:TemporalExtentType" minOccurs="0"
+          <xsd:element name="TemporalExtent" type="csw3:TemporalExtentType" minOccurs="0"
             maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="Record" type="csw30:RecordType" substitutionGroup="csw30:AbstractRecord"/>
+  <xsd:element name="Record" type="csw3:RecordType" substitutionGroup="csw3:AbstractRecord"/>
   <xsd:complexType name="RecordType" final="#all">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> This type extends DCMIRecordType to add ows2:BoundingBox; it
         may be used to specify a spatial envelope for the catalogued resource. </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="csw30:DCMIRecordType">
+      <xsd:extension base="csw3:DCMIRecordType">
         <xsd:sequence>
-          <xsd:element name="AnyText" type="csw30:EmptyType" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="AnyText" type="csw3:EmptyType" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element ref="ows2:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
-          <xsd:element name="TemporalExtent" type="csw30:TemporalExtentType" minOccurs="0"
+          <xsd:element name="TemporalExtent" type="csw3:TemporalExtentType" minOccurs="0"
             maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:extension>
@@ -776,7 +776,7 @@
     <xsd:attribute name="service" type="ows2:ServiceType" use="optional" default="CSW"/>
     <xsd:attribute name="version" type="ows2:VersionType" use="optional" default="3.0.0"/>
   </xsd:complexType>
-  <xsd:element name="Acknowledgement" type="csw30:AcknowledgementType" id="Acknowledgement"/>
+  <xsd:element name="Acknowledgement" type="csw3:AcknowledgementType" id="Acknowledgement"/>
   <xsd:complexType name="AcknowledgementType" id="AcknowledgementType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en"> This is a general acknowledgement response message for all
@@ -785,7 +785,7 @@
         handler is available, or the URL scheme is unsupported) </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="EchoedRequest" type="csw30:EchoedRequestType"/>
+      <xsd:element name="EchoedRequest" type="csw3:EchoedRequestType"/>
       <xsd:element name="RequestId" type="xsd:anyURI" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="timeStamp" type="xsd:dateTime" use="required"/>
