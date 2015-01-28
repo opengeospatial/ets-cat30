@@ -23,16 +23,21 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import java.net.URL;
+import java.util.logging.Level;
+import org.opengis.cite.cat30.CommonFixture;
+import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.util.TestSuiteLogger;
+import org.testng.annotations.BeforeSuite;
 
 /**
  * <p>
- * Provides tests that apply to the <code>OGC_Service</code> interface defined
- * in the common model as adapted for HTTP-based catalogue implementations. The
- * following service requests are covered:
+ * Provides tests that apply to the <code>OGCWebService</code> interface defined
+ * in the common service model (OGC 06-121r9, Figure C.2) as adapted for
+ * Catalogue 3.0 implementations. The following service requests are covered:
  * </p>
  *
  * <ul>
@@ -40,17 +45,43 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * <li>GetRecordById: KVP syntax</li>
  * </ul>
  */
-public class OGCServiceTests {
+public class OGCWebServiceTests extends CommonFixture {
 
     private Document cswCapabilities;
     private Schema cswSchema;
-    private Client client;
+    private static final String SCHEMATRON_CAPABILITIES
+            = ROOT_PKG_PATH + "sch/csw-capabilities-3.0.sch";
+
+    /**
+     * Verifies that a service capabilities document was obtained and that the
+     * implementation under test is available. If either condition is false all
+     * tests will be marked as skipped.
+     *
+     * @param testContext Information about the pending test run.
+     */
+    @BeforeSuite
+    public void verifyTestSubject(ITestContext testContext) {
+        Object sutObj = testContext.getSuite().getAttribute(
+                SuiteAttribute.TEST_SUBJECT.getName());
+        if (null != sutObj && Document.class.isInstance(sutObj)) {
+            Document capabilitiesDoc = (Document) sutObj;
+            String docElemNamespace = capabilitiesDoc.getDocumentElement().getNamespaceURI();
+            Assert.assertEquals(docElemNamespace, Namespaces.CSW,
+                    "Document element in unexpected namespace;");
+            // TODO: Check service availability
+        } else {
+            String msg = String.format(
+                    "Value of test suite attribute %s is missing or is not a DOM Document.",
+                    SuiteAttribute.TEST_SUBJECT.getName());
+            TestSuiteLogger.log(Level.SEVERE, msg);
+            throw new AssertionError(msg);
+        }
+    }
 
     /**
      * Initializes the test fixture with the following items:
      *
      * <ul>
-     * <li>HTTP client component.</li>
      * <li>CSW message schema (obtained from the suite attribute
      * {@link org.opengis.cite.cat30.SuiteAttribute#CSW_SCHEMA}, which should
      * evaluate to a thread-safe Schema object).</li>
@@ -62,18 +93,17 @@ public class OGCServiceTests {
      * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void initOGCServiceTests(ITestContext testContext) {
-        Object obj = testContext.getSuite().getAttribute(
-                SuiteAttribute.TEST_SUBJECT.getName());
-        if ((null != obj) && Document.class.isAssignableFrom(obj.getClass())) {
-            this.cswCapabilities = Document.class.cast(obj);
-        } else {
-            throw new SkipException(
-                    "Service capabilities not found in ITestContext.");
+    public void initOGCWebServiceTests(ITestContext testContext) {
+        Object obj = testContext.getSuite().getAttribute(SuiteAttribute.TEST_SUBJECT.getName());
+        if (null == obj) {
+            throw new SkipException("Capabilities document not found in ITestContext.");
         }
-        this.client = (Client) testContext.getSuite().getAttribute(SuiteAttribute.CLIENT.getName());
-        this.cswSchema = (Schema) testContext.getSuite().getAttribute(
-                SuiteAttribute.CSW_SCHEMA.getName());
+        this.cswCapabilities = Document.class.cast(obj);
+        obj = testContext.getSuite().getAttribute(SuiteAttribute.CSW_SCHEMA.getName());
+        if (null == obj) {
+            throw new SkipException("CSW schema not found in ITestContext.");
+        }
+        this.cswSchema = Schema.class.cast(obj);
     }
 
     /**
@@ -88,9 +118,9 @@ public class OGCServiceTests {
     }
 
     /**
-     * [{@code Test}] Verifies that the complete service capabilities document
-     * is schema-valid. All catalogue services must support the GET method for a
-     * GetCapabilities request.
+     * [Test] Verifies that the content of a complete service capabilities
+     * document is schema-valid. All implementations must support the GET method
+     * for a GetCapabilities request.
      * <p>
      * The <code>Accept</code> request header expresses a preference for a
      * representation of type
@@ -115,10 +145,12 @@ public class OGCServiceTests {
         Validator validator = this.cswSchema.newValidator();
         Source source = new DOMSource(rsp.getEntity(Document.class));
         ETSAssert.assertSchemaValid(validator, source);
+        URL schemaUrl = getClass().getResource(SCHEMATRON_CAPABILITIES);
+        ETSAssert.assertSchematronValid(schemaUrl, source);
     }
 
     /**
-     * [{@code Test}] Verifies that a request for an unsupported version of a
+     * [Test] Verifies that a request for an unsupported version of a
      * capabilities document produces an exception report containing the
      * exception code "VersionNegotiationFailed".
      *
@@ -135,7 +167,7 @@ public class OGCServiceTests {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.ACCEPT_VERSIONS, "2014.06.21");
+        qryParams.add(CAT3.ACCEPT_VERSIONS, "9999.12.31");
         WebResource resource = this.client.resource(endpoint);
         resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = resource.queryParams(qryParams).get(
@@ -144,15 +176,15 @@ public class OGCServiceTests {
                 ClientResponse.Status.BAD_REQUEST.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
-                CAT3.ERR_VER_NEGOTIATION_FAILED);
+                CAT3.VER_NEGOTIATION_FAILED);
         ETSAssert.assertXPath(xpath, rsp.getEntity(Document.class), null);
     }
 
     /**
-     * [{@code Test}] Verifies that a request for a record by identifier
-     * produces a response with status code 404 (Not Found) if no matching
-     * resource is found. A response entity (an exception report) is optional;
-     * if present, the exception code shall be "InvalidParameterValue".
+     * [Test] Verifies that a request for a record by identifier produces a
+     * response with status code 404 (Not Found) if no matching resource is
+     * found. A response entity (an exception report) is optional; if present,
+     * the exception code shall be "InvalidParameterValue".
      *
      * @see "OGC 06-121r9: 9.3.3.2"
      */

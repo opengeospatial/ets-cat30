@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 
-public class VerifyOGCServiceTests {
+public class VerifyOGCWebServiceTests {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -44,6 +44,8 @@ public class VerifyOGCServiceTests {
         docBuilder = dbf.newDocumentBuilder();
         cswSchema = ValidationUtils.createCSWSchema();
         client = Client.create();
+        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
+                .thenReturn(client);
     }
 
     @Test
@@ -56,10 +58,20 @@ public class VerifyOGCServiceTests {
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);
-        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
-                .thenReturn(client);
-        OGCServiceTests iut = new OGCServiceTests();
-        iut.initOGCServiceTests(testContext);
+        OGCWebServiceTests iut = new OGCWebServiceTests();
+        iut.initCommonFixture(testContext);
+        iut.initOGCWebServiceTests(testContext);
         iut.getFullCapabilities_v3();
+    }
+
+    @Test
+    public void verifyTestSubjectIsNotCapabilitiesDoc() throws SAXException, IOException {
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Document element in unexpected namespace");
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/atom-feed.xml"));
+        when(suite.getAttribute(SUBJ)).thenReturn(doc);
+        OGCWebServiceTests iut = new OGCWebServiceTests();
+        iut.verifyTestSubject(testContext);
     }
 }

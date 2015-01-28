@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.xml.validation.Schema;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.URIUtils;
+import org.opengis.cite.cat30.util.ValidationUtils;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.w3c.dom.Document;
@@ -34,6 +36,7 @@ public class SuiteFixtureListener implements ISuiteListener {
     @Override
     public void onStart(ISuite suite) {
         processSuiteParameters(suite);
+        buildSchema(suite);
         buildClientComponent(suite);
     }
 
@@ -88,7 +91,7 @@ public class SuiteFixtureListener implements ISuiteListener {
     /**
      * Builds a client component for interacting with HTTP endpoints. The client
      * will automatically redirect to the URI declared in 3xx responses. The
-     * component is added to the suite fixture as the
+     * component is added to the suite fixture as the value of the
      * {@link SuiteAttribute#CLIENT} attribute; it may be subsequently accessed
      * via the {@link org.testng.ITestContext#getSuite()} method.
      *
@@ -106,5 +109,19 @@ public class SuiteFixtureListener implements ISuiteListener {
         Client client = Client.create(config);
         client.addFilter(new LoggingFilter());
         suite.setAttribute(SuiteAttribute.CLIENT.getName(), client);
+    }
+
+    /**
+     * Builds a Schema object representing the complete set of XML Schema
+     * constraints defined for CSW 3.0. The schema is added to the suite fixture
+     * as the value of the {@link SuiteAttribute#CSW_SCHEMA} attribute.
+     *
+     * @param suite The test suite to be run.
+     */
+    void buildSchema(ISuite suite) {
+        Schema csw3Schema = ValidationUtils.createCSWSchema();
+        if (null != csw3Schema) {
+            suite.setAttribute(SuiteAttribute.CSW_SCHEMA.getName(), csw3Schema);
+        }
     }
 }
