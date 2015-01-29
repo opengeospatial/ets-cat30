@@ -1,6 +1,7 @@
 package org.opengis.cite.cat30.opensearch;
 
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -23,6 +24,7 @@ import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -55,14 +57,45 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     private URI baseUri;
 
     /**
-     * Initializes the test fixture as follows:
+     * Checks that the capabilities document indicates support for OpenSearch.
+     * If not, all relevant tests will be marked as skipped. The implementation
+     * status of the corresponding conformance class must be set to "TRUE".
+     *
+     * <pre>{@literal
+     *<OperationsMetadata xmlns="http://www.opengis.net/ows/2.0">
+     *  <!-- Operation elements omitted -->
+     *  <Constraint name="OpenSearch">
+     *    <AllowedValues>
+     *      <Value>FALSE</Value>
+     *      <Value>TRUE</Value>
+     *    </AllowedValues>
+     *    <DefaultValue>TRUE</DefaultValue>
+     *    <Meaning>Conformance class</Meaning>
+     *  </Constraint>
+     *</OperationsMetadata>
+     *}
+     * </pre>
+     *
+     * @param testContext Information about the pending test run.
+     */
+    @BeforeTest
+    public void checkOpenSearchImplementationStatus(ITestContext testContext) {
+        Document cswCapabilities = (Document) testContext.getSuite().getAttribute(
+                SuiteAttribute.TEST_SUBJECT.getName());
+        String xpath = String.format(
+                "//ows:Constraint[@name='%s']/ows:DefaultValue = 'TRUE'",
+                CAT3.OPEN_SEARCH);
+        ETSAssert.assertXPath(xpath, cswCapabilities.getDocumentElement(), null);
+    }
+
+    /**
+     * Initializes the test fixture by:
      * <ul>
-     * <li>builds a Relax NG validator for an OpenSearch description document;
+     * <li>building a Relax NG validator for an OpenSearch description document;
      * the schema resource is located on the classpath at this location:
      * <code>/org/opengis/cite/cat30/rnc/osd-1.1-draft5.rnc</code></li>
-     * <li>obtains a client component from the test context</li>
-     * <li>extracts base GetCapabilities endpoint (GET method) from the
-     * capabilities document</li>
+     * <li>extracting the base GetCapabilities URL (for the GET method binding)
+     * from the capabilities document</li>
      * </ul>
      *
      * @param testContext The test context containing various suite attributes.
@@ -75,7 +108,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
         try {
             this.osdValidator = new RelaxNGValidator(schemaUrl);
         } catch (Exception ex) {
-            TestSuiteLogger.log(Level.WARNING, "buildValidator: ", ex);
+            TestSuiteLogger.log(Level.WARNING, getClass().getName(), ex);
         }
         Document cswCapabilities = (Document) testContext.getSuite().getAttribute(
                 SuiteAttribute.TEST_SUBJECT.getName());
@@ -92,8 +125,8 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     public void preferOpenSearchDescription() {
         WebResource resource = this.client.resource(this.baseUri);
         String xmlNotPreferred = MediaType.APPLICATION_XML + "; q=0.5";
-        resource.accept(xmlNotPreferred, CAT3.APP_OPENSEARCH_XML);
-        Document entity = resource.get(Document.class);
+        Builder builder = resource.accept(xmlNotPreferred, CAT3.APP_OPENSEARCH_XML);
+        Document entity = builder.get(Document.class);
         QName osdDocElemName = new QName(Namespaces.OSD11, "OpenSearchDescription");
         ETSAssert.assertQualifiedName(entity.getDocumentElement(), osdDocElemName);
     }
@@ -115,8 +148,9 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     @Test(description = "Test-021")
     public void getOpenSearchDescription() throws SAXException, IOException {
         WebResource resource = this.client.resource(this.baseUri);
-        resource.accept(CAT3.APP_VND_OPENSEARCH_XML, CAT3.APP_OPENSEARCH_XML);
-        Document entity = resource.get(Document.class);
+        Builder builder = resource.accept(CAT3.APP_VND_OPENSEARCH_XML,
+                CAT3.APP_OPENSEARCH_XML);
+        Document entity = builder.get(Document.class);
         this.osdValidator.validate(new DOMSource(entity));
         ValidationErrorHandler err = osdValidator.getErrorHandler();
         Assert.assertFalse(err.errorsDetected(),

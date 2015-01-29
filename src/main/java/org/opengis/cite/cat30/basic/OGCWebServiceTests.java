@@ -25,6 +25,7 @@ import org.w3c.dom.Document;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.net.URL;
 import java.util.logging.Level;
@@ -135,10 +136,9 @@ public class OGCWebServiceTests extends CommonFixture {
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        WebResource resource = this.client.resource(endpoint);
-        resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = resource.queryParams(qryParams).get(
-                ClientResponse.class);
+        WebResource resource = this.client.resource(endpoint).queryParams(qryParams);
+        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = builder.get(ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
@@ -168,10 +168,9 @@ public class OGCWebServiceTests extends CommonFixture {
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.ACCEPT_VERSIONS, "9999.12.31");
-        WebResource resource = this.client.resource(endpoint);
-        resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = resource.queryParams(qryParams).get(
-                ClientResponse.class);
+        WebResource resource = this.client.resource(endpoint).queryParams(qryParams);
+        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = builder.get(ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.BAD_REQUEST.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
@@ -197,10 +196,9 @@ public class OGCWebServiceTests extends CommonFixture {
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.add(CAT3.ID, "urn:example:" + System.currentTimeMillis());
-        WebResource resource = this.client.resource(endpoint);
-        resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = resource.queryParams(qryParams).get(
-                ClientResponse.class);
+        WebResource resource = this.client.resource(endpoint).queryParams(qryParams);
+        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = builder.get(ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.NOT_FOUND.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));

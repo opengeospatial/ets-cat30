@@ -7,10 +7,11 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-MM-DD)</h2>
+    <h2>${project.version} (2015-02-02)</h2>
     <p>Initial release.</p>
     <ul>
-      <li style="list-style: square;">Covers mandatory conformance requirements.</li>
+      <li style="list-style: square;">Includes basic tests of OGC capabilities 
+      and OpenSearch description documents.</li>
     </ul>
 
   </body>

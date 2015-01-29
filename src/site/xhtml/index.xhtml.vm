@@ -72,7 +72,8 @@ dt {
 	<dl>
     <dt>Basic-Catalogue</dt>
     <dd>Basic search and retrieval functionality required of all implementations; 
-    there are several subsidiary conformance classes:
+    there are several subsidiary conformance classes that introduce additional 
+    requirements:
     <ul>
 	    <li>Filter-FES-KVP</li>
       <li>CSW-response</li>

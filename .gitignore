@@ -1,7 +1,8 @@
-# Eclipse config
+# IDE config info
 .project
 .classpath
 .settings/
+nbactions.xml
 
 # Maven output
 target/

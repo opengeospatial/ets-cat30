@@ -1,15 +1,13 @@
 package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.validation.Schema;
+import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.URIUtils;
@@ -36,8 +34,8 @@ public class SuiteFixtureListener implements ISuiteListener {
     @Override
     public void onStart(ISuite suite) {
         processSuiteParameters(suite);
-        buildSchema(suite);
-        buildClientComponent(suite);
+        registerSchema(suite);
+        registerClientComponent(suite);
     }
 
     @Override
@@ -89,26 +87,17 @@ public class SuiteFixtureListener implements ISuiteListener {
     }
 
     /**
-     * Builds a client component for interacting with HTTP endpoints. The client
-     * will automatically redirect to the URI declared in 3xx responses. The
-     * component is added to the suite fixture as the value of the
+     * A client component is added to the suite fixture as the value of the
      * {@link SuiteAttribute#CLIENT} attribute; it may be subsequently accessed
      * via the {@link org.testng.ITestContext#getSuite()} method.
      *
-     * <p>
-     * The request and response messages may be logged to a default JDK logger
-     * (in the namespace "com.sun.jersey.api.client").
-     * </p>
-     *
      * @param suite The test suite instance.
      */
-    void buildClientComponent(ISuite suite) {
-        ClientConfig config = new DefaultClientConfig();
-        config.getProperties().put(
-                ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
-        Client client = Client.create(config);
-        client.addFilter(new LoggingFilter());
-        suite.setAttribute(SuiteAttribute.CLIENT.getName(), client);
+    void registerClientComponent(ISuite suite) {
+        Client client = ClientUtils.buildClient();
+        if (null != client) {
+            suite.setAttribute(SuiteAttribute.CLIENT.getName(), client);
+        }
     }
 
     /**
@@ -118,7 +107,7 @@ public class SuiteFixtureListener implements ISuiteListener {
      *
      * @param suite The test suite to be run.
      */
-    void buildSchema(ISuite suite) {
+    void registerSchema(ISuite suite) {
         Schema csw3Schema = ValidationUtils.createCSWSchema();
         if (null != csw3Schema) {
             suite.setAttribute(SuiteAttribute.CSW_SCHEMA.getName(), csw3Schema);

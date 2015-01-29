@@ -35,4 +35,7 @@ public class CAT3 {
             = "application/opensearchdescription+xml";
     public static final String APP_VND_OPENSEARCH_XML
             = "application/vnd.a9.opensearchdescription+xml";
+
+    // conformance classes
+    public static final String OPEN_SEARCH = "OpenSearch";
 }
