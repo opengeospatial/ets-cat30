@@ -53,7 +53,7 @@ public class OGCWebServiceTests extends CommonFixture {
 
     private Document cswCapabilities;
     private Schema cswSchema;
-    private static final String SCHEMATRON_CAPABILITIES
+    private static final String SCHEMATRON_CSW_CAPABILITIES
             = ROOT_PKG_PATH + "sch/csw-capabilities-3.0.sch";
     /**
      * Service endpoint for GetCapabilities using the GET method
@@ -161,10 +161,10 @@ public class OGCWebServiceTests extends CommonFixture {
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Validator validator = this.cswSchema.newValidator();
         Source source = new DOMSource(rsp.getEntity(Document.class));
+        Validator validator = this.cswSchema.newValidator();
         ETSAssert.assertSchemaValid(validator, source);
-        URL schemaUrl = getClass().getResource(SCHEMATRON_CAPABILITIES);
+        URL schemaUrl = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
         ETSAssert.assertSchematronValid(schemaUrl, source);
     }
 

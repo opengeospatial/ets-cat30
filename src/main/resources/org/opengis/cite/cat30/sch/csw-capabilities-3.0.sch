@@ -5,7 +5,7 @@
   xml:lang="en"
   queryBinding="xslt2">
 
-  <iso:title>Constraints on CSW 3.0 service descriptions.</iso:title>
+  <iso:title>CSW 3.0 Capabilities</iso:title>
 
   <iso:ns prefix="ows" uri="http://www.opengis.net/ows/2.0" />
   <iso:ns prefix="csw" uri="http://www.opengis.net/cat/csw/3.0" />
@@ -23,17 +23,18 @@
     <iso:active pattern="BasicCataloguePattern"/>
   </iso:phase>
 
-  <iso:phase id="OpenSearchPhase">
-    <iso:active pattern="TransactionalWFSPattern"/>
-  </iso:phase>
-
   <iso:pattern id="EssentialCapabilitiesPattern">
-    <iso:rule context="/">
-      <iso:assert test="csw:Capabilities" diagnostics="dmsg.root.en">
-	  The document element must have [local name] = "Capabilities" and [namespace name] = "http://www.opengis.net/cat/csw/3.0"
+    <iso:rule context="/*[1]">
+      <iso:assert test="local-name(.) = 'Capabilities'" 
+        diagnostics="dmsg.local-name">
+        The document element must have [local name] = "Capabilities".
       </iso:assert>
-      <iso:assert test="csw:Capabilities/@version = '3.0.0'" diagnostics="dmsg.version.en">
-	  The capabilities document must have @version = "3.0.0".
+      <iso:assert test="namespace-uri(.) = 'http://www.opengis.net/cat/csw/3.0'" 
+        diagnostics="dmsg.ns-name">
+        The document element must have [namespace name] = "http://www.opengis.net/cat/csw/3.0".
+      </iso:assert>
+      <iso:assert test="@version = '3.0.0'" diagnostics="dmsg.version.en">
+        The capabilities document must have @version = "3.0.0".
       </iso:assert>
     </iso:rule>
   </iso:pattern>
@@ -96,8 +97,11 @@
   </iso:pattern>
 
   <iso:diagnostics>
-    <iso:diagnostic id="dmsg.root.en" xml:lang="en">
-    The root element has [local name] = '<iso:value-of select="local-name(/*[1])"/>' and [namespace name] = '<iso:value-of select="namespace-uri(/*[1])"/>'.
+    <iso:diagnostic id="dmsg.local-name" xml:lang="en">
+      The root element has [local name] = '<iso:value-of select="local-name(.)"/>'.
+    </iso:diagnostic>
+    <iso:diagnostic id="dmsg.ns-name" xml:lang="en">
+      The element has [namespace name] = '<iso:value-of select="namespace-uri(.)"/>'.
     </iso:diagnostic>
     <iso:diagnostic id="dmsg.version.en" xml:lang="en">
     The reported version is <iso:value-of select="/*[1]/@version"/>.

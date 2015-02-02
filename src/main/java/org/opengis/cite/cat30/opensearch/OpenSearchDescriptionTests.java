@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
@@ -63,6 +64,8 @@ public class OpenSearchDescriptionTests extends CommonFixture {
 
     private RelaxNGValidator osdValidator;
     private URI baseUri;
+    private static final String SCHEMATRON_OPENSEARCH_DESCR
+            = ROOT_PKG_PATH + "sch/opensearch-1.1.sch";
 
     /**
      * Checks that the capabilities document indicates support for OpenSearch.
@@ -118,7 +121,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
                 + "rnc/osd-1.1-draft5.rnc");
         try {
             this.osdValidator = new RelaxNGValidator(schemaUrl);
-        } catch (Exception ex) {
+        } catch (SAXException | IOException ex) {
             TestSuiteLogger.log(Level.WARNING, getClass().getName(), ex);
         }
         Document cswCapabilities = (Document) testContext.getSuite().getAttribute(
@@ -155,19 +158,22 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      * @throws SAXException If the response entity cannot be parsed.
      * @throws IOException If an I/O error occurs while trying to access the
      * service endpoint.
+     *
+     * @see "OGC 12-176r5, 6.5.6.5: Requirements for an OpenSearch enabled CSW"
      */
     @Test(description = "Test-021, Requirement-021")
     public void getOpenSearchDescription() throws SAXException, IOException {
         WebResource resource = this.client.resource(this.baseUri);
         Builder builder = resource.accept(CAT3.APP_VND_OPENSEARCH_XML,
                 CAT3.APP_OPENSEARCH_XML);
-        Document entity = builder.get(Document.class);
-        this.osdValidator.validate(new DOMSource(entity));
+        Source entity = new DOMSource(builder.get(Document.class));
+        this.osdValidator.validate(entity);
         ValidationErrorHandler err = osdValidator.getErrorHandler();
         Assert.assertFalse(err.errorsDetected(),
                 ErrorMessage.format(ErrorMessageKeys.NOT_SCHEMA_VALID,
                         err.getErrorCount(), err.toString()));
-        // TODO: Schematron schema for required templates (022, 023)
+        URL schemaUrl = getClass().getResource(SCHEMATRON_OPENSEARCH_DESCR);
+        ETSAssert.assertSchematronValid(schemaUrl, entity);
     }
 
 }
