@@ -27,8 +27,11 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
+import javax.xml.namespace.QName;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
@@ -52,6 +55,10 @@ public class OGCWebServiceTests extends CommonFixture {
     private Schema cswSchema;
     private static final String SCHEMATRON_CAPABILITIES
             = ROOT_PKG_PATH + "sch/csw-capabilities-3.0.sch";
+    /**
+     * Service endpoint for GetCapabilities using the GET method
+     */
+    private URI getCapabilitiesURI;
 
     /**
      * Verifies that a service capabilities document was obtained and that the
@@ -69,7 +76,16 @@ public class OGCWebServiceTests extends CommonFixture {
             String docElemNamespace = capabilitiesDoc.getDocumentElement().getNamespaceURI();
             Assert.assertEquals(docElemNamespace, Namespaces.CSW,
                     "Document element in unexpected namespace;");
-            // TODO: Check service availability
+            URI getCapabilitiesGET = ServiceMetadataUtils.getOperationEndpoint(
+                    capabilitiesDoc, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+            try {
+                URL url = getCapabilitiesGET.toURL();
+                URLConnection connection = url.openConnection();
+                connection.connect();
+            } catch (IOException iox) {
+                throw new AssertionError("Service not available at "
+                        + getCapabilitiesGET, iox);
+            }
         } else {
             String msg = String.format(
                     "Value of test suite attribute %s is missing or is not a DOM Document.",
@@ -100,6 +116,8 @@ public class OGCWebServiceTests extends CommonFixture {
             throw new SkipException("Capabilities document not found in ITestContext.");
         }
         this.cswCapabilities = Document.class.cast(obj);
+        this.getCapabilitiesURI = ServiceMetadataUtils.getOperationEndpoint(
+                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
         obj = testContext.getSuite().getAttribute(SuiteAttribute.CSW_SCHEMA.getName());
         if (null == obj) {
             throw new SkipException("CSW schema not found in ITestContext.");
@@ -127,16 +145,17 @@ public class OGCWebServiceTests extends CommonFixture {
      * representation of type
      * {@value javax.ws.rs.core.MediaType#APPLICATION_XML}.
      * </p>
+     *
+     * @see "OGC 06-121r9, 7.2.1: GetCapabilities request parameters"
      */
     @Test(description = "Requirement-043,Requirement-045")
     public void getFullCapabilities_v3() {
-        URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
-                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        WebResource resource = this.client.resource(endpoint).queryParams(qryParams);
+        WebResource resource = this.client.resource(
+                this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
@@ -150,6 +169,83 @@ public class OGCWebServiceTests extends CommonFixture {
     }
 
     /**
+     * [Test] Query parameter names must be handled in a case-insensitive
+     * manner. The parameter names are all presented in mixed case; a complete
+     * capabilities document is expected in response.
+     *
+     * @see "OGC 12-176r5, 6.5.4: KVP encoding rules"
+     */
+    @Test(description = "Requirement-011")
+    public void getCapabilitiesWithMixedCaseParamNames() {
+        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
+        qryParams.add("Request", CAT3.GET_CAPABILITIES);
+        qryParams.add("SERVICE", CAT3.SERVICE_TYPE_CODE);
+        qryParams.add("acceptversions", CAT3.SPEC_VERSION);
+        WebResource resource = this.client.resource(
+                this.getCapabilitiesURI).queryParams(qryParams);
+        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = builder.get(ClientResponse.class);
+        Document doc = rsp.getEntity(Document.class);
+        QName qName = new QName(Namespaces.CSW, "Capabilities");
+        ETSAssert.assertQualifiedName(doc.getDocumentElement(), qName);
+    }
+
+    /**
+     * [Test] Query parameter values must be handled in a case-sensitive manner.
+     * The request specifies <code>request=getCapabilities</code>; an exception
+     * report is expected in response with OGC exception code
+     * {@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL} and status code
+     * 400.
+     *
+     * @see "OGC 12-176r5, 6.5.4: KVP encoding rules"
+     * @see "OGC 06-121r9, Table 28: Standard exception codes and meanings"
+     */
+    @Test(description = "Requirement-012")
+    public void getCapabilitiesWithInvalidParamValue() {
+        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
+        qryParams.add(CAT3.REQUEST, "getCapabilities");
+        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        WebResource resource = this.client.resource(
+                this.getCapabilitiesURI).queryParams(qryParams);
+        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = builder.get(ClientResponse.class);
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document doc = rsp.getEntity(Document.class);
+        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
+                CAT3.INVALID_PARAM_VAL);
+        ETSAssert.assertXPath(xpath, doc, null);
+    }
+
+    /**
+     * [Test] If the required "service" parameter is missing, an exception
+     * report with status code 400 must be produced. The expected OGC exception
+     * code is {@value org.opengis.cite.cat30.CAT3#MISSING_PARAM_VAL}.
+     *
+     * @see "OGC 12-176r5, Table 5: KVP encoding of common operation request
+     * parameters"
+     */
+    @Test(description = "Requirement-010")
+    public void getCapabilitiesIsMissingServiceParam() {
+        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
+        qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        WebResource resource = this.client.resource(
+                this.getCapabilitiesURI).queryParams(qryParams);
+        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = builder.get(ClientResponse.class);
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document doc = rsp.getEntity(Document.class);
+        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
+                CAT3.MISSING_PARAM_VAL);
+        ETSAssert.assertXPath(xpath, doc, null);
+    }
+
+    /**
      * [Test] Verifies that a request for an unsupported version of a
      * capabilities document produces an exception report containing the
      * exception code "VersionNegotiationFailed".
@@ -158,17 +254,16 @@ public class OGCWebServiceTests extends CommonFixture {
      * an XML document having {http://www.opengis.net/ows/2.0}ExceptionReport as
      * the document element.
      *
-     * @see "OGC 06-121r9: 7.3.2, 8.6"
+     * @see "OGC 06-121r9, 7.3.2: Version negotiation"
      */
     @Test(description = "Requirement-036,Requirement-037,Requirement-042")
-    public void getCapabilitiesForUnsupportedVersion() {
-        URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
-                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+    public void getCapabilitiesWithUnsupportedVersion() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.ACCEPT_VERSIONS, "9999.12.31");
-        WebResource resource = this.client.resource(endpoint).queryParams(qryParams);
+        WebResource resource = this.client.resource(
+                this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
@@ -185,12 +280,12 @@ public class OGCWebServiceTests extends CommonFixture {
      * found. A response entity (an exception report) is optional; if present,
      * the exception code shall be "InvalidParameterValue".
      *
-     * @see "OGC 06-121r9: 9.3.3.2"
+     * @see "OGC 06-121r9, 9.3.3.2"
      */
     @Test(description = "Requirement-127,Requirement-141")
     public void getRecordById_noMatchingRecord() {
         URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
-                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+                this.cswCapabilities, CAT3.GET_RECORD_BY_ID, HttpMethod.GET);
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);

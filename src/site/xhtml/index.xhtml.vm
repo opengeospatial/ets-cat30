@@ -89,7 +89,7 @@ dt {
 
   <p>The test suite definition file (testng.xml) is located in the root package, 
   <code>org.opengis.cite.cat30</code>. A conformance class corresponds to a &lt;test&gt;
-  element; each test element includes a set of test classes that contain the actual 
+  element; each test element includes a set of test classes that define the actual 
   test methods. The general structure of the test suite is shown in Table 1.</p>
 
   <table border="1" style="border-collapse: collapse;">

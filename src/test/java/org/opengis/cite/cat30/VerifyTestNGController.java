@@ -13,14 +13,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
-
-import net.sf.saxon.s9api.XdmValue;
+import javax.xml.transform.dom.DOMSource;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.cite.cat30.util.XMLUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Verifies the results of executing a test run using the main controller
@@ -52,7 +51,7 @@ public class VerifyTestNGController {
     }
 
     @Test
-    public void doTestRun() throws Exception {
+    public void doTestRun_sutIsUnavailable() throws Exception {
         URL testSubject = getClass().getResource("/capabilities-basic.xml");
         this.testRunProps.setProperty(TestRunArg.IUT.toString(), testSubject
                 .toURI().toString());
@@ -61,11 +60,12 @@ public class VerifyTestNGController {
         Document testRunArgs = docBuilder.parse(new ByteArrayInputStream(
                 outStream.toByteArray()));
         TestNGController controller = new TestNGController();
-        Source results = controller.doTestRun(testRunArgs);
-        String xpath = "/testng-results/@failed";
-        XdmValue failed = XMLUtils.evaluateXPath2(results, xpath, null);
-        int numFailed = Integer.parseInt(failed.getUnderlyingValue()
-                .getStringValue());
-        assertTrue("Expected one or more fail verdicts.", numFailed > 0);
+        Source source = controller.doTestRun(testRunArgs);
+        Document resultsDoc = (Document) DOMSource.class.cast(source).getNode();
+        Element docElem = resultsDoc.getDocumentElement();
+        int nFailed = Integer.parseInt(docElem.getAttribute("failed"));
+        assertTrue("Expected no failed verdicts.", nFailed == 0);
+        int nSkipped = Integer.parseInt(docElem.getAttribute("skipped"));
+        assertTrue("Expected one or more skip verdicts.", nSkipped > 0);
     }
 }

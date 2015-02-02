@@ -44,12 +44,20 @@ import org.xml.sax.SAXException;
  * <strong>Note:</strong> None of the media types listed above appear in the
  * IANA <a href="http://www.iana.org/assignments/media-types/media-types.xhtml"
  * target="_blank">media type registry</a>. Registrations in the standards tree
- * must be approved by the IESG or originate from a recognized standards body.
+ * must be approved by the IESG or originate from a recognized standards-related
+ * organization (see <a href="http://tools.ietf.org/html/rfc6838#section-3.1"
+ * target="_blank">RFC 6838</a>); third-party registrations are allowed in the
+ * vendor tree.
  * </p>
  *
- * @see
- * <a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_description_elements"
- * target="_blank">OpenSearch description elements</a>
+ * <h5 style="margin-bottom: 0.5em">Sources</h5>
+ * <ul>
+ * <li>OGC 12-176r5, 6.4: Obtaining service metadata</li>
+ * <li>OGC 12-176r5, 6.5.6: Enabling OpenSearch</li>
+ * <li><a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_description_elements"
+ * target="_blank">OpenSearch description elements</a></li>
+ * </ul>
+ *
  */
 public class OpenSearchDescriptionTests extends CommonFixture {
 
@@ -77,6 +85,8 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      * </pre>
      *
      * @param testContext Information about the pending test run.
+     *
+     * @see "OGC 12-176r5, Table 17: Service constraints"
      */
     @BeforeTest
     public void checkOpenSearchImplementationStatus(ITestContext testContext) {
@@ -91,8 +101,9 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     /**
      * Initializes the test fixture by:
      * <ul>
-     * <li>building a Relax NG validator for an OpenSearch description document;
-     * the schema resource is located on the classpath at this location:
+     * <li>building a Relax NG schema validator for an OpenSearch description
+     * document; the schema resource is located on the classpath at this
+     * location:
      * <code>/org/opengis/cite/cat30/rnc/osd-1.1-draft5.rnc</code></li>
      * <li>extracting the base GetCapabilities URL (for the GET method binding)
      * from the capabilities document</li>
@@ -121,7 +132,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      * media type. The generic XML media type is included in the Accept header
      * with a q parameter value &lt; 1 ("application/xml; q=0.5").
      */
-    @Test(description = "Test-008")
+    @Test(description = "Test-008, Requirement-008")
     public void preferOpenSearchDescription() {
         WebResource resource = this.client.resource(this.baseUri);
         String xmlNotPreferred = MediaType.APPLICATION_XML + "; q=0.5";
@@ -145,7 +156,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      * @throws IOException If an I/O error occurs while trying to access the
      * service endpoint.
      */
-    @Test(description = "Test-021")
+    @Test(description = "Test-021, Requirement-021")
     public void getOpenSearchDescription() throws SAXException, IOException {
         WebResource resource = this.client.resource(this.baseUri);
         Builder builder = resource.accept(CAT3.APP_VND_OPENSEARCH_XML,
@@ -156,6 +167,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
         Assert.assertFalse(err.errorsDetected(),
                 ErrorMessage.format(ErrorMessageKeys.NOT_SCHEMA_VALID,
                         err.getErrorCount(), err.toString()));
+        // TODO: Schematron schema for required templates (022, 023)
     }
 
 }
