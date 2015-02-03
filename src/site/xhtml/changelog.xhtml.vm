@@ -7,11 +7,12 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-02-02)</h2>
+    <h2>${project.version} (2015-02-03)</h2>
     <p>Initial release.</p>
     <ul>
-      <li style="list-style: square;">Includes basic tests to verify the content 
-      of OGC capabilities and OpenSearch description documents.</li>
+      <li style="list-style: square;">Includes basic tests to obtain and validate 
+      service metadata resources (service capabilities and OpenSearch description 
+      documents).</li>
     </ul>
 
   </body>

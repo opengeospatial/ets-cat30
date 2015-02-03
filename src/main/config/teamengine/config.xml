@@ -4,7 +4,7 @@
 <organization>
   <name>OGC</name>
   <standard>
-    <name>OGC Catalogue 3.0 Conformance Test Suite</name>
+    <name>Catalogue Service - Web (CSW)</name>
     <version>
       <name>${spec-version}</name>
       <suite>

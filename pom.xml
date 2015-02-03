@@ -41,15 +41,15 @@
   </issueManagement>
   <developers>
     <developer>
-      <name>Alpha Beta</name>
-      <url>https://github.com/</url>
-      <timezone>UTC</timezone>
+      <name>R. Martell</name>
+      <url>https://github.com/rjmartell</url>
+      <timezone>Canada/Pacific</timezone>
     </developer>
   </developers>
 
   <properties>
     <ets-code>cat30</ets-code>
-    <spec-version>1.0</spec-version>
+    <spec-version>3.0.0</spec-version>
   </properties>
 
   <dependencies>
