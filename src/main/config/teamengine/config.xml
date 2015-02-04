@@ -12,10 +12,11 @@
         <prefix>tns</prefix>
         <local-name>ets-cat30-${version}</local-name>
         <title>Test suite ets-cat30</title>
-        <description>Describe scope of testing.</description>
+        <description>Assesses conformance of the IUT with respect to OGC 12-176r5 
+        (OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding).</description>
       </suite>
       <revision>
-        <name>${version}</name>
+        <name>r${version}</name>
         <status>Beta</status>
         <sources>
           <source>cat30/${spec-version}/ctl</source>
