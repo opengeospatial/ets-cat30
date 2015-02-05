@@ -52,27 +52,34 @@ public class GetRecordByIdTests extends CommonFixture {
     /**
      * Service endpoint for GetRecordById using the GET method.
      */
-    private URI endpoint;
+    private URI getURI;
+    /**
+     * Service endpoint for GetRecordById using the POST method.
+     */
+    private URI postURI;
 
     /**
-     * Finds the GET method endpoint for the GetCapabilities request in the
-     * capabilities document.
+     * Finds the GET and POST method endpoints for the GetCapabilities request
+     * in the capabilities document.
      *
      * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void findServiceEndpoint(ITestContext testContext) {
-        this.endpoint = ServiceMetadataUtils.getOperationEndpoint(
+    public void findRequestEndpoints(ITestContext testContext) {
+        this.getURI = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_RECORD_BY_ID, HttpMethod.GET);
+        this.postURI = ServiceMetadataUtils.getOperationEndpoint(
+                this.cswCapabilities, CAT3.GET_RECORD_BY_ID, HttpMethod.POST);
     }
 
     /**
      * [Test] Verifies that a request for a record by identifier produces a
-     * response with status code 404 (Not Found) if no matching resource is
-     * found. A response entity (an exception report) is optional; if present,
-     * the exception code shall be "InvalidParameterValue".
+     * response with status code 404 (Not Found) if no matching resource
+     * representation is found. A response entity (an exception report) is
+     * optional; if present, the exception code shall be
+     * "InvalidParameterValue".
      *
-     * @see "OGC 06-121r9, 9.3.3.2"
+     * @see "OGC 12-176r6, 7.4.4.2: 7.4.4.2	Id parameter"
      */
     @Test(description = "Requirement-127,Requirement-141")
     public void getRecordById_noMatchingRecord() {
@@ -81,7 +88,7 @@ public class GetRecordByIdTests extends CommonFixture {
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.add(CAT3.ID, "urn:example:" + System.currentTimeMillis());
-        WebResource resource = this.client.resource(this.endpoint).queryParams(qryParams);
+        WebResource resource = this.client.resource(this.getURI).queryParams(qryParams);
         WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),

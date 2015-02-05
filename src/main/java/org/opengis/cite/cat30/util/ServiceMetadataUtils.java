@@ -24,6 +24,7 @@ public class ServiceMetadataUtils {
      * @param opName The operation (request) name.
      * @param httpMethod The HTTP method to use (if {@code null} or empty the
      * first method listed will be used).
+     *
      * @return A URI denoting a service endpoint; the URI is empty if no
      * matching endpoint was found.
      */

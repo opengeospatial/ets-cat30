@@ -26,6 +26,10 @@ public class CAT3 {
     public static final String VERSION = "version";
     public static final String ACCEPT_VERSIONS = "acceptVersions";
     public static final String ID = "id";
+    public static final String MAX_RECORDS = "maxRecords";
+    public static final String ELEMENT_SET = "elementSetName";
+    public static final String TYPE_NAMES = "typeNames";
+    public static final String NAMESPACE = "namespace";
 
     // exception codes: see OGC 06-121r9, Table 27;
     public static final String VER_NEGOTIATION_FAILED = "VersionNegotiationFailed";
