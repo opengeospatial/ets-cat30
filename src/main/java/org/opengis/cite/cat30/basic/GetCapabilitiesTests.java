@@ -7,7 +7,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 
 import org.opengis.cite.cat30.CAT3;
@@ -18,7 +17,6 @@ import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.testng.Assert;
 import org.testng.ITestContext;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
@@ -38,25 +36,25 @@ import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.testng.annotations.BeforeSuite;
 
 /**
+ * Provides tests pertaining to the <code>GetCapabilities</code> request. This
+ * request implements the abstract <em>getCapabilities</em> operation defined in
+ * the OGCWebService interface (OGC 06-121r9, Figure C.2).
+ *
  * <p>
- * Provides tests that apply to the <code>OGCWebService</code> interface defined
- * in the common service model (OGC 06-121r9, Figure C.2) as adapted for
- * Catalogue 3.0 implementations. The following service requests are covered:
+ * The KVP syntax must be supported; this encoding is generally used with the
+ * GET method but may also be used with the POST method. The media type of a KVP
+ * request entity is "application/x-www-form-urlencoded".
  * </p>
  *
- * <ul>
- * <li>GetCapabilities: KVP syntax</li>
- * <li>GetRecordById: KVP syntax</li>
- * </ul>
+ * @see "OGC 06-121r9, 7: GetCapabilities operation"
+ * @see "OGC 12-176r6, 7.1: GetCapabilities operation"
  */
-public class OGCWebServiceTests extends CommonFixture {
+public class GetCapabilitiesTests extends CommonFixture {
 
-    private Document cswCapabilities;
-    private Schema cswSchema;
     private static final String SCHEMATRON_CSW_CAPABILITIES
             = ROOT_PKG_PATH + "sch/csw-capabilities-3.0.sch";
     /**
-     * Service endpoint for GetCapabilities using the GET method
+     * Service endpoint for GetCapabilities using the GET method.
      */
     private URI getCapabilitiesURI;
 
@@ -96,33 +94,15 @@ public class OGCWebServiceTests extends CommonFixture {
     }
 
     /**
-     * Initializes the test fixture with the following items:
-     *
-     * <ul>
-     * <li>CSW message schema (obtained from the suite attribute
-     * {@link org.opengis.cite.cat30.SuiteAttribute#CSW_SCHEMA}, which should
-     * evaluate to a thread-safe Schema object).</li>
-     * <li>service capabilities document (obtained from the suite attribute
-     * {@link org.opengis.cite.cat30.SuiteAttribute#TEST_SUBJECT}, which should
-     * evaluate to a DOM Document node).</li>
-     * </ul>
+     * Finds the GET method endpoint for the GetCapabilities request in the
+     * capabilities document.
      *
      * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void initOGCWebServiceTests(ITestContext testContext) {
-        Object obj = testContext.getSuite().getAttribute(SuiteAttribute.TEST_SUBJECT.getName());
-        if (null == obj) {
-            throw new SkipException("Capabilities document not found in ITestContext.");
-        }
-        this.cswCapabilities = Document.class.cast(obj);
+    public void findServiceEndpoint(ITestContext testContext) {
         this.getCapabilitiesURI = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
-        obj = testContext.getSuite().getAttribute(SuiteAttribute.CSW_SCHEMA.getName());
-        if (null == obj) {
-            throw new SkipException("CSW schema not found in ITestContext.");
-        }
-        this.cswSchema = Schema.class.cast(obj);
     }
 
     /**
@@ -274,28 +254,4 @@ public class OGCWebServiceTests extends CommonFixture {
         ETSAssert.assertXPath(xpath, rsp.getEntity(Document.class), null);
     }
 
-    /**
-     * [Test] Verifies that a request for a record by identifier produces a
-     * response with status code 404 (Not Found) if no matching resource is
-     * found. A response entity (an exception report) is optional; if present,
-     * the exception code shall be "InvalidParameterValue".
-     *
-     * @see "OGC 06-121r9, 9.3.3.2"
-     */
-    @Test(description = "Requirement-127,Requirement-141")
-    public void getRecordById_noMatchingRecord() {
-        URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
-                this.cswCapabilities, CAT3.GET_RECORD_BY_ID, HttpMethod.GET);
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
-        qryParams.add(CAT3.ID, "urn:example:" + System.currentTimeMillis());
-        WebResource resource = this.client.resource(endpoint).queryParams(qryParams);
-        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
-                ClientResponse.Status.NOT_FOUND.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-    }
 }

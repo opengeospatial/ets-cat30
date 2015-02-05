@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 
-public class VerifyOGCWebServiceTests {
+public class VerifyGetCapabilitiesTests {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -58,9 +58,9 @@ public class VerifyOGCWebServiceTests {
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);
-        OGCWebServiceTests iut = new OGCWebServiceTests();
+        GetCapabilitiesTests iut = new GetCapabilitiesTests();
         iut.initCommonFixture(testContext);
-        iut.initOGCWebServiceTests(testContext);
+        iut.findServiceEndpoint(testContext);
         iut.getFullCapabilities_v3();
     }
 
@@ -71,7 +71,7 @@ public class VerifyOGCWebServiceTests {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/atom-feed.xml"));
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
-        OGCWebServiceTests iut = new OGCWebServiceTests();
+        GetCapabilitiesTests iut = new GetCapabilitiesTests();
         iut.verifyTestSubject(testContext);
     }
 }
