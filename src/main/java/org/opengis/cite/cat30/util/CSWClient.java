@@ -67,10 +67,10 @@ public class CSWClient {
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.add(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
-        qryParams.add(CAT3.ELEMENT_SET, "full");
+        qryParams.add(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         if (mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
-            qryParams.add(CAT3.TYPE_NAMES, "ns1:Record");
-            qryParams.add(CAT3.NAMESPACE, "xmlns(ns1=http://www.opengis.net/cat/csw/3.0)");
+            qryParams.add(CAT3.TYPE_NAMES, "csw:Record");
+            qryParams.add(CAT3.NAMESPACE, "xmlns(csw=http://www.opengis.net/cat/csw/3.0)");
         }
         WebResource resource = this.client.resource(getRecordsURI).queryParams(qryParams);
         WebResource.Builder builder = resource.accept(mediaType);
@@ -87,7 +87,7 @@ public class CSWClient {
             fos.close();
         } catch (IOException ex) {
             LOGR.log(Level.WARNING,
-                    "Failed to save GetRecords response to file.", ex);
+                    "Failed to save GetRecords response entity to file.", ex);
         }
         return outputFile;
     }

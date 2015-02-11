@@ -86,6 +86,7 @@ public class NamespaceBindings implements NamespaceContext {
      * <li>xlink: {@value org.opengis.cite.cat30.Namespaces#XLINK}</li>
      * <li>gml: {@value org.opengis.cite.cat30.Namespaces#GML}</li>
      * <li>csw: {@value org.opengis.cite.cat30.Namespaces#CSW}</li>
+     * <li>dc: {@value org.opengis.cite.cat30.Namespaces#DCMES}</li>
      * </ul>
      *
      * @return A NamespaceBindings object.
@@ -97,6 +98,7 @@ public class NamespaceBindings implements NamespaceContext {
         nsBindings.addNamespaceBinding(Namespaces.XLINK, "xlink");
         nsBindings.addNamespaceBinding(Namespaces.GML, "gml");
         nsBindings.addNamespaceBinding(Namespaces.CSW, "csw");
+        nsBindings.addNamespaceBinding(Namespaces.DCMES, "dc");
         return nsBindings;
     }
 

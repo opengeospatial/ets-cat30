@@ -46,8 +46,11 @@ import org.testng.annotations.BeforeSuite;
  * request entity is "application/x-www-form-urlencoded".
  * </p>
  *
- * @see "OGC 06-121r9, 7: GetCapabilities operation"
- * @see "OGC 12-176r6, 7.1: GetCapabilities operation"
+ * <h6 style="margin-bottom: 0.5em">Sources</h6>
+ * <ul>
+ * <li>OGC 06-121r9, 7: GetCapabilities operation</li>
+ * <li>OGC 12-176r6, 7.1: GetCapabilities operation</li>
+ * </ul>
  */
 public class GetCapabilitiesTests extends CommonFixture {
 

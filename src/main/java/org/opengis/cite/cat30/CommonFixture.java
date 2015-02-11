@@ -8,8 +8,8 @@ import org.testng.annotations.BeforeClass;
 import org.w3c.dom.Document;
 
 /**
- * A supporting base class that sets up a common test fixture. The configuration
- * methods are invoked before those defined in a subclass.
+ * A supporting base class that sets up a common test fixture. These
+ * configuration methods are invoked before those defined in a subclass.
  */
 public class CommonFixture {
 

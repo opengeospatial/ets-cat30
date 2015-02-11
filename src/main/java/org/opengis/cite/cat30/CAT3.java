@@ -31,6 +31,11 @@ public class CAT3 {
     public static final String TYPE_NAMES = "typeNames";
     public static final String NAMESPACE = "namespace";
 
+    // query parameter (code list) values
+    public static final String ELEMENT_SET_FULL = "full";
+    public static final String ELEMENT_SET_SUMMARY = "summary";
+    public static final String ELEMENT_SET_BRIEF = "brief";
+
     // exception codes: see OGC 06-121r9, Table 27;
     public static final String VER_NEGOTIATION_FAILED = "VersionNegotiationFailed";
     public static final String MISSING_PARAM_VAL = "MissingParameterValue";

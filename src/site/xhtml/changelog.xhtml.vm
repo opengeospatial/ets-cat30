@@ -7,7 +7,13 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-02-03)</h2>
+    <h2>${project.version} (2015-MM-DD)</h2>
+    <p>This release add tests for the following requests:</p>
+    <ul>
+      <li style="list-style: square;">GetRecordById</li>
+    </ul>
+
+    <h2>1 (2015-02-03)</h2>
     <p>Initial release.</p>
     <ul>
       <li style="list-style: square;">Includes basic tests to obtain and validate 
