@@ -131,7 +131,7 @@ public class GetCapabilitiesTests extends CommonFixture {
      *
      * @see "OGC 06-121r9, 7.2.1: GetCapabilities request parameters"
      */
-    @Test(description = "Requirement-043,Requirement-045")
+    @Test(description = "Requirements: 043,045")
     public void getFullCapabilities_v3() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
@@ -158,7 +158,7 @@ public class GetCapabilitiesTests extends CommonFixture {
      *
      * @see "OGC 12-176r5, 6.5.4: KVP encoding rules"
      */
-    @Test(description = "Requirement-011")
+    @Test(description = "Requirements: 011")
     public void getCapabilitiesWithMixedCaseParamNames() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add("Request", CAT3.GET_CAPABILITIES);
@@ -183,7 +183,7 @@ public class GetCapabilitiesTests extends CommonFixture {
      * @see "OGC 12-176r5, 6.5.4: KVP encoding rules"
      * @see "OGC 06-121r9, Table 28: Standard exception codes and meanings"
      */
-    @Test(description = "Requirement-012")
+    @Test(description = "Requirements: 012")
     public void getCapabilitiesWithInvalidParamValue() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, "getCapabilities");
@@ -210,7 +210,7 @@ public class GetCapabilitiesTests extends CommonFixture {
      * @see "OGC 12-176r5, Table 5: KVP encoding of common operation request
      * parameters"
      */
-    @Test(description = "Requirement-010")
+    @Test(description = "Requirements: 010")
     public void getCapabilitiesIsMissingServiceParam() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
@@ -239,7 +239,7 @@ public class GetCapabilitiesTests extends CommonFixture {
      *
      * @see "OGC 06-121r9, 7.3.2: Version negotiation"
      */
-    @Test(description = "Requirement-036,Requirement-037,Requirement-042")
+    @Test(description = "Requirements: 036,037,042")
     public void getCapabilitiesWithUnsupportedVersion() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);

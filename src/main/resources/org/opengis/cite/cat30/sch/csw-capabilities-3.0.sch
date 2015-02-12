@@ -15,12 +15,16 @@
   <iso:p>This Schematron (ISO 19757-3) schema specifies constraints regarding 
   the content of CSW 3.0 service capabilities descriptions.</iso:p>
 
+  <iso:let name="CSW_NS" value="'http://www.opengis.net/cat/csw/3.0'" />
+  <iso:let name="ATOM_NS" value="'http://www.w3.org/2005/Atom'" />
+
   <iso:phase id="BasicCataloguePhase">
     <iso:active pattern="EssentialCapabilitiesPattern"/>
     <iso:active pattern="TopLevelElementsPattern"/>
     <iso:active pattern="ServiceConstraintsPattern"/>
     <iso:active pattern="ServiceIdentificationPattern"/>
     <iso:active pattern="BasicCataloguePattern"/>
+    <iso:active pattern="OperationPattern"/>
   </iso:phase>
 
   <iso:pattern id="EssentialCapabilitiesPattern">
@@ -51,20 +55,26 @@
   </iso:pattern>
 
   <iso:pattern id="ServiceConstraintsPattern">
-    <iso:p>Implementation conformance statement. See OGC 12-176r5: cl. 7.1.5.3.</iso:p>
-    <iso:rule context="ows:OperationsMetadata">
-      <iso:assert test="ows:Constraint[@name='OpenSearch']/ows:DefaultValue">
-      No ows:DefaultValue found for conformance class 'OpenSearch'.
+    <iso:p>Implementation conformance statement. See OGC 12-176r6: Table 17.</iso:p>
+    <iso:rule id="R48" context="ows:OperationsMetadata">
+      <iso:assert test="ows:Constraint[ends-with(@name,'OpenSearch')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'OpenSearch')]//ows:Value">
+      No ows:Constraint value found for conformance class 'OpenSearch'.
       </iso:assert>
-      <iso:assert test="ows:Constraint[@name='GetCapabilities-XML']/ows:DefaultValue">
-      No ows:DefaultValue found for conformance class 'GetCapabilities-XML'.
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetCapabilities-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetCapabilities-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'GetCapabilities-XML'.
       </iso:assert>
-      <!-- TODO: Add the rest -->
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetRecordById-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetRecordById-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'GetRecordById-XML'.
+      </iso:assert>
+      <!-- TODO: Add assertions for the remaining conformance classes -->
     </iso:rule>
   </iso:pattern>
 
   <iso:pattern id="BasicCataloguePattern">
-    <iso:p>Basic-Catalogue conformance class. See OGC 12-176r5: Table 1.</iso:p>
+    <iso:p>Basic-Catalogue conformance class. See OGC 12-176r6: Table 1.</iso:p>
     <iso:rule context="ows:OperationsMetadata">
       <iso:assert test="ows:Operation[@name='GetCapabilities']//ows:Get/@xlink:href">
       The GET method endpoint for GetCapabilities is missing.
@@ -79,6 +89,18 @@
     <iso:rule context="fes:Filter_Capabilities/fes:Conformance">
       <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinSpatialFilter']/ows:DefaultValue) = 'TRUE'">
       The filter constraint 'ImplementsMinSpatialFilter' must be 'TRUE' for all conforming implementations.
+      </iso:assert>
+    </iso:rule>
+  </iso:pattern>
+
+  <iso:pattern id="OperationPattern">
+    <iso:p>Constraints that apply to Operation elements.</iso:p>
+    <iso:rule id="R137-R138" context="ows:Operation[@name='GetRecordById']">
+      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value[1] eq $CSW_NS">
+      GetRecordById: the first allowed value of the outputSchema parameter must be '<iso:value-of select="$CSW_NS"/>'.
+      </iso:assert>
+      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value eq $ATOM_NS">
+      GetRecordById: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>'.
       </iso:assert>
     </iso:rule>
   </iso:pattern>

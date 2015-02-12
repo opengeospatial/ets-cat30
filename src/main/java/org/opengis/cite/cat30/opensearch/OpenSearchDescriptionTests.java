@@ -97,7 +97,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
                 SuiteAttribute.TEST_SUBJECT.getName());
         String xpath = String.format(
                 "//ows:Constraint[@name='%s']/ows:DefaultValue = 'TRUE'",
-                CAT3.OPEN_SEARCH);
+                CAT3.CC_OPEN_SEARCH);
         ETSAssert.assertXPath(xpath, cswCapabilities.getDocumentElement(), null);
     }
 
@@ -135,7 +135,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      * media type. The generic XML media type is included in the Accept header
      * with a q parameter value &lt; 1 ("application/xml; q=0.5").
      */
-    @Test(description = "Test-008, Requirement-008")
+    @Test(description = "Requirements: 008; Tests: 008")
     public void preferOpenSearchDescription() {
         WebResource resource = this.client.resource(this.baseUri);
         String xmlNotPreferred = MediaType.APPLICATION_XML + "; q=0.5";
@@ -161,7 +161,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      *
      * @see "OGC 12-176r5, 6.5.6.5: Requirements for an OpenSearch enabled CSW"
      */
-    @Test(description = "Test-021, Requirement-021")
+    @Test(description = "Requirements: 021; Tests: 021")
     public void getOpenSearchDescription() throws SAXException, IOException {
         WebResource resource = this.client.resource(this.baseUri);
         Builder builder = resource.accept(CAT3.APP_VND_OPENSEARCH_XML,
