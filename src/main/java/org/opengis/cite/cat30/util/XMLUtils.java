@@ -1,5 +1,7 @@
 package org.opengis.cite.cat30.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -24,6 +26,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -71,9 +74,8 @@ public class XMLUtils {
     /**
      * Writes the content of a DOM Node to a String. The XML declaration is
      * always omitted.
-     * 
-     * @param node
-     *            The DOM Node to be serialized.
+     *
+     * @param node The DOM Node to be serialized.
      * @return A String representing the content of the given node.
      */
     public static String writeNodeToString(Node node) {
@@ -99,11 +101,9 @@ public class XMLUtils {
     /**
      * Writes the content of a DOM Node to a byte stream. An XML declaration is
      * always omitted.
-     * 
-     * @param node
-     *            The DOM Node to be serialized.
-     * @param outputStream
-     *            The destination OutputStream reference.
+     *
+     * @param node The DOM Node to be serialized.
+     * @param outputStream The destination OutputStream reference.
      */
     public static void writeNode(Node node, OutputStream outputStream) {
         try {
@@ -129,20 +129,17 @@ public class XMLUtils {
     /**
      * Evaluates an XPath 1.0 expression using the given context and returns the
      * result as a node set.
-     * 
-     * @param context
-     *            The context node.
-     * @param expr
-     *            An XPath expression.
-     * @param namespaceBindings
-     *            A collection of namespace bindings for the XPath expression,
-     *            where each entry maps a namespace URI (key) to a prefix
-     *            (value). Standard bindings do not need to be declared (see
-     *            {@link NamespaceBindings#withStandardBindings()}.
+     *
+     * @param context The context node.
+     * @param expr An XPath expression.
+     * @param namespaceBindings A collection of namespace bindings for the XPath
+     * expression, where each entry maps a namespace URI (key) to a prefix
+     * (value). Standard bindings do not need to be declared (see
+     * {@link NamespaceBindings#withStandardBindings()}.
      * @return A NodeList containing nodes that satisfy the expression (it may
-     *         be empty).
-     * @throws XPathExpressionException
-     *             If the expression cannot be evaluated for any reason.
+     * be empty).
+     * @throws XPathExpressionException If the expression cannot be evaluated
+     * for any reason.
      */
     public static NodeList evaluateXPath(Node context, String expr,
             Map<String, String> namespaceBindings)
@@ -159,28 +156,24 @@ public class XMLUtils {
     /**
      * Evaluates an XPath expression using the given context and returns the
      * result as the specified type.
-     * 
+     *
      * <p>
      * <strong>Note:</strong> The Saxon implementation supports XPath 2.0
      * expressions when using the JAXP XPath APIs (the default implementation
      * will throw an exception).
      * </p>
-     * 
-     * @param context
-     *            The context node.
-     * @param expr
-     *            An XPath expression.
-     * @param namespaceBindings
-     *            A collection of namespace bindings for the XPath expression,
-     *            where each entry maps a namespace URI (key) to a prefix
-     *            (value). Standard bindings do not need to be declared (see
-     *            {@link NamespaceBindings#withStandardBindings()}.
-     * @param returnType
-     *            The desired return type (as declared in {@link XPathConstants}
-     *            ).
+     *
+     * @param context The context node.
+     * @param expr An XPath expression.
+     * @param namespaceBindings A collection of namespace bindings for the XPath
+     * expression, where each entry maps a namespace URI (key) to a prefix
+     * (value). Standard bindings do not need to be declared (see
+     * {@link NamespaceBindings#withStandardBindings()}.
+     * @param returnType The desired return type (as declared in
+     * {@link XPathConstants} ).
      * @return The result converted to the desired returnType.
-     * @throws XPathExpressionException
-     *             If the expression cannot be evaluated for any reason.
+     * @throws XPathExpressionException If the expression cannot be evaluated
+     * for any reason.
      */
     public static Object evaluateXPath(Node context, String expr,
             Map<String, String> namespaceBindings, QName returnType)
@@ -198,27 +191,23 @@ public class XMLUtils {
 
     /**
      * Evaluates an XPath 2.0 expression using the Saxon s9api interfaces.
-     * 
-     * @param xmlSource
-     *            The XML Source.
-     * @param expr
-     *            The XPath expression to be evaluated.
-     * @param nsBindings
-     *            A collection of namespace bindings required to evaluate the
-     *            XPath expression, where each entry maps a namespace URI (key)
-     *            to a prefix (value); this may be {@code null} if not needed.
+     *
+     * @param xmlSource The XML Source.
+     * @param expr The XPath expression to be evaluated.
+     * @param nsBindings A collection of namespace bindings required to evaluate
+     * the XPath expression, where each entry maps a namespace URI (key) to a
+     * prefix (value); this may be {@code null} if not needed.
      * @return An XdmValue object representing a value in the XDM data model;
-     *         this is a sequence of zero or more items, where each item is
-     *         either an atomic value or a node.
-     * @throws SaxonApiException
-     *             If an error occurs while evaluating the expression; this
-     *             always wraps some other underlying exception.
+     * this is a sequence of zero or more items, where each item is either an
+     * atomic value or a node.
+     * @throws SaxonApiException If an error occurs while evaluating the
+     * expression; this always wraps some other underlying exception.
      */
     public static XdmValue evaluateXPath2(Source xmlSource, String expr,
             Map<String, String> nsBindings) throws SaxonApiException {
         Processor proc = new Processor(false);
         XPathCompiler compiler = proc.newXPathCompiler();
-       if (null != nsBindings) {
+        if (null != nsBindings) {
             for (String nsURI : nsBindings.keySet()) {
                 compiler.declareNamespace(nsBindings.get(nsURI), nsURI);
             }
@@ -240,9 +229,8 @@ public class XMLUtils {
      * Creates a new Element having the specified qualified name. The element
      * must be {@link Document#adoptNode(Node) adopted} when inserted into
      * another Document.
-     * 
-     * @param qName
-     *            A QName object.
+     *
+     * @param qName A QName object.
      * @return An Element node (with a Document owner but no parent).
      */
     public static Element createElement(QName qName) {
@@ -261,13 +249,11 @@ public class XMLUtils {
     /**
      * Returns a List of all descendant Element nodes having the specified
      * [namespace name] property. The elements are listed in document order.
-     * 
-     * @param node
-     *            The node to search from.
-     * @param namespaceURI
-     *            An absolute URI denoting a namespace name.
+     *
+     * @param node The node to search from.
+     * @param namespaceURI An absolute URI denoting a namespace name.
      * @return A List containing elements in the specified namespace; the list
-     *         is empty if there are no elements in the namespace.
+     * is empty if there are no elements in the namespace.
      */
     public static List<Element> getElementsByNamespaceURI(Node node,
             String namespaceURI) {
@@ -275,22 +261,22 @@ public class XMLUtils {
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            if (child.getNodeType() != Node.ELEMENT_NODE)
+            if (child.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
-            if (child.getNamespaceURI().equals(namespaceURI))
+            }
+            if (child.getNamespaceURI().equals(namespaceURI)) {
                 list.add((Element) child);
+            }
         }
         return list;
     }
 
     /**
      * Transforms the content of a DOM Node using a specified XSLT stylesheet.
-     * 
-     * @param xslt
-     *            A Source object representing a stylesheet (XSLT 1.0 or 2.0).
-     * @param source
-     *            A Node representing the XML source. If it is an Element node
-     *            it will be imported into a new DOM Document.
+     *
+     * @param xslt A Source object representing a stylesheet (XSLT 1.0 or 2.0).
+     * @param source A Node representing the XML source. If it is an Element
+     * node it will be imported into a new DOM Document.
      * @return A DOM Document containing the result of the transformation.
      */
     public static Document transform(Source xslt, Node source) {
@@ -327,9 +313,8 @@ public class XMLUtils {
      * Expands character entity (&name;) and numeric references (&#xhhhh; or
      * &dddd;) that occur within a given string value. It may be necessary to do
      * this before processing an XPath expression.
-     * 
-     * @param value
-     *            A string representing text content.
+     *
+     * @param value A string representing text content.
      * @return A string with all included references expanded.
      */
     public static String expandReferencesInText(String value) {
@@ -345,5 +330,31 @@ public class XMLUtils {
             LOGR.log(Level.WARNING, xse.getMessage(), xse);
         }
         return str;
+    }
+
+    /**
+     * Converts a DOMSource object to a StreamSource representing an XML data
+     * source. The system ID is preserved, allowing relative URIs to be
+     * processed.
+     *
+     * @param domSource A DOMSource instance.
+     *
+     * @return A StreamSource object for reading the content represented by the
+     * original DOM tree.
+     */
+    public static StreamSource toStreamSource(DOMSource domSource) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        StreamResult result = new StreamResult(baos);
+        try {
+            // use identity transformer
+            Transformer idt = TransformerFactory.newInstance().newTransformer();
+            idt.transform(domSource, result);
+        } catch (TransformerException tex) {
+            LOGR.log(Level.WARNING, "Error serializing DOMSource "
+                    + domSource.getSystemId(), tex);
+        }
+        StreamSource streamSrc = new StreamSource(new ByteArrayInputStream(
+                baos.toByteArray()), domSource.getSystemId());
+        return streamSrc;
     }
 }

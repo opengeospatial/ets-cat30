@@ -6,7 +6,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
-import org.opengis.cite.validation.RelaxNGValidator;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
 import org.testng.ITestContext;
@@ -91,6 +89,10 @@ public class GetRecordByIdTests extends CommonFixture {
      */
     private List<String> idList;
 
+    void setIdList(List<String> idList) {
+        this.idList = idList;
+    }
+
     /**
      * Finds the GET and POST method endpoints for the GetCapabilities request
      * in the capabilities document.
@@ -123,13 +125,14 @@ public class GetRecordByIdTests extends CommonFixture {
             throw new SkipException(
                     "Failed to save GetRecords response to temp file.");
         }
-        this.idList = new ArrayList<>();
+        List<String> identifiers = new ArrayList<>();
         Source src = new StreamSource(results);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.DCMES, "dc");
         XdmValue value = XMLUtils.evaluateXPath2(src, "//dc:identifier", nsBindings);
         for (XdmItem item : value) {
-            this.idList.add(item.getStringValue());
+            identifiers.add(item.getStringValue());
         }
+        setIdList(identifiers);
     }
 
     /**
@@ -256,19 +259,17 @@ public class GetRecordByIdTests extends CommonFixture {
      * applies). The content of the entry must conform to RFC 4287.
      *
      * <p>
-     * The atom:entry element is expected to include an atom:content element
-     * that contains the usual collection of Dublin Core elements in accord with
-     * the requested element set.
+     * The atom:entry element is expected to include a dc:identifier element in
+     * accord with the mappings given in OGC 10-032r8, Table 7.
      * </p>
      *
      * <pre>{@literal
-     *<entry xmlns="http://www.w3.org/2005/Atom">
-     *  <!-- required entry elements -->
-     *  <content type="application/xml" xml:lang="en"
-     *   xmlns:dc="http://purl.org/dc/elements/1.1/">
-     *    <dc:title>Title</dc:title>
-     *    <dc:identifier>d4027a80-b308-11e4-ab27-0800200c9a66</dc:identifier>
-     *  </content>
+     *<entry xmlns="http://www.w3.org/2005/Atom"
+     *  xmlns:dc="http://purl.org/dc/elements/1.1/">
+     *  <id>http://csw.example.org/record/ff711198-b30f-11e4-a71e-12e3f512a338</id>
+     *  <title>Title</title>
+     *  <updated>2015-02-12T23:46:57Z</updated>
+     *  <dc:identifier>ff711198-b30f-11e4-a71e-12e3f512a338</dc:identifier>
      *</entry>
      *}
      * </pre>
@@ -276,6 +277,7 @@ public class GetRecordByIdTests extends CommonFixture {
      * <h6 style="margin-bottom: 0.5em">Sources</h6>
      * <ul>
      * <li>OGC 12-176r6, 7.4.4.4: outputSchema parameter</li>
+     * <li>OGC 10-032r8, 9.3.2: Normal response XML encoding</li>
      * <li><a href="https://tools.ietf.org/html/rfc4287" target="_blank">RFC
      * 4287</a>: The Atom Syndication Format</li>
      * </ul>
@@ -297,20 +299,20 @@ public class GetRecordByIdTests extends CommonFixture {
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = rsp.getEntity(Document.class);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
-        String expr = String.format("/atom:entry//dc:identifier = '%s'",
+        String expr = String.format("/atom:entry/dc:identifier = '%s'",
                 id);
         ETSAssert.assertXPath(expr, entity, nsBindings);
-        URL atomSchema = getClass().getResource(
-                "/org/opengis/cite/cat30/rnc/atom.rnc");
-        RelaxNGValidator rngValidator = null;
+        Validator atomValidator = this.atomSchema.newValidator();
+        ValidationErrorHandler err = new ValidationErrorHandler();
+        atomValidator.setErrorHandler(err);
         try {
-            rngValidator = new RelaxNGValidator(atomSchema);
-            rngValidator.validate(new DOMSource(entity));
+            // Jing Validator implementation rejects DOMSource as input
+            Source src = XMLUtils.toStreamSource(new DOMSource(entity));
+            atomValidator.validate(src);
         } catch (SAXException | IOException ex) {
             Logger.getLogger(GetRecordByIdTests.class.getName()).log(
                     Level.WARNING, "Error attempting to validate Atom entry.", ex);
         }
-        ValidationErrorHandler err = rngValidator.getErrorHandler();
         Assert.assertFalse(err.errorsDetected(),
                 ErrorMessage.format(ErrorMessageKeys.NOT_SCHEMA_VALID,
                         err.getErrorCount(), err.toString()));

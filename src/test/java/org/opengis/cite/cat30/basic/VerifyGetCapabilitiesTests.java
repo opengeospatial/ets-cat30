@@ -32,10 +32,11 @@ public class VerifyGetCapabilitiesTests {
     private static ITestContext testContext;
     private static ISuite suite;
     private static Schema cswSchema;
+    private static Schema atomSchema;
     private static Client client;
 
     @BeforeClass
-    public static void initFixture() throws Exception {
+    public static void initCommonFixture() throws Exception {
         testContext = mock(ITestContext.class);
         suite = mock(ISuite.class);
         when(testContext.getSuite()).thenReturn(suite);
@@ -43,6 +44,7 @@ public class VerifyGetCapabilitiesTests {
         dbf.setNamespaceAware(true);
         docBuilder = dbf.newDocumentBuilder();
         cswSchema = ValidationUtils.createCSWSchema();
+        atomSchema = ValidationUtils.createAtomSchema();
         client = Client.create();
         when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
                 .thenReturn(client);
@@ -58,6 +60,8 @@ public class VerifyGetCapabilitiesTests {
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);
+        when(suite.getAttribute(SuiteAttribute.ATOM_SCHEMA.getName()))
+                .thenReturn(atomSchema);
         GetCapabilitiesTests iut = new GetCapabilitiesTests();
         iut.initCommonFixture(testContext);
         iut.findServiceEndpoint(testContext);
@@ -69,7 +73,7 @@ public class VerifyGetCapabilitiesTests {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Document element in unexpected namespace");
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/atom-feed.xml"));
+                "/atom/feed.xml"));
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         GetCapabilitiesTests iut = new GetCapabilitiesTests();
         iut.verifyTestSubject(testContext);

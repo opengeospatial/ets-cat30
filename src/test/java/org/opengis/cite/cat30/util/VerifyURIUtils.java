@@ -50,7 +50,7 @@ public class VerifyURIUtils {
     @Test
     public void resolveClasspathResource() throws SAXException, IOException,
             URISyntaxException {
-        URL url = this.getClass().getResource("/atom-feed.xml");
+        URL url = this.getClass().getResource("/atom/feed.xml");
         Document doc = URIUtils.parseURI(url.toURI());
         Assert.assertNotNull(doc);
         Assert.assertEquals("Document element has unexpected [local name].",

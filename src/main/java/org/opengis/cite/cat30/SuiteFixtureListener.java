@@ -15,6 +15,7 @@ import org.opengis.cite.cat30.util.ValidationUtils;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * A listener that performs various tasks before and after a test suite is run,
@@ -34,7 +35,7 @@ public class SuiteFixtureListener implements ISuiteListener {
     @Override
     public void onStart(ISuite suite) {
         processSuiteParameters(suite);
-        registerSchema(suite);
+        registerSchemas(suite);
         registerClientComponent(suite);
     }
 
@@ -72,7 +73,7 @@ public class SuiteFixtureListener implements ISuiteListener {
         Document iutDoc = null;
         try {
             iutDoc = URIUtils.parseURI(entityFile.toURI());
-        } catch (Exception x) {
+        } catch (SAXException | IOException x) {
             throw new RuntimeException("Failed to parse resource retrieved from "
                     + iutRef, x);
         }
@@ -101,16 +102,43 @@ public class SuiteFixtureListener implements ISuiteListener {
     }
 
     /**
-     * Builds a Schema object representing the complete set of XML Schema
-     * constraints defined for CSW 3.0. The schema is added to the suite fixture
-     * as the value of the {@link SuiteAttribute#CSW_SCHEMA} attribute.
+     * Builds immutable {@link Schema Schema} objects suitable for validating
+     * the content of CSW 3.0 response entities. The schemas are added to the
+     * suite fixture as the value of the attributes identified in the following
+     * table.
+     *
+     * <p>
+     * <table border="1" style="border-collapse: collapse;">
+     * <thead>
+     * <tr>
+     * <th>SuiteAttribute</th>
+     * <th>Schema</th>
+     * </tr>
+     * </thead>
+     * <tbody>
+     * <tr>
+     * <td><code>SuiteAttribute.CSW_SCHEMA</code></td>
+     * <td>OGC 12-176r6, 7.9(a): cswAll.xsd</td>
+     * </tr>
+     * <tr>
+     * <td><code>SuiteAttribute.ATOM_SCHEMA</code></td>
+     * <td>RFC 4287, Appendix B: RELAX NG Compact Schema</td>
+     * </tr>
+     * </tbody>
+     * </table>
+     * </p>
      *
      * @param suite The test suite to be run.
      */
-    void registerSchema(ISuite suite) {
+    void registerSchemas(ISuite suite) {
         Schema csw3Schema = ValidationUtils.createCSWSchema();
         if (null != csw3Schema) {
             suite.setAttribute(SuiteAttribute.CSW_SCHEMA.getName(), csw3Schema);
         }
+        Schema atomSchema = ValidationUtils.createAtomSchema();
+        if (null != atomSchema) {
+            suite.setAttribute(SuiteAttribute.ATOM_SCHEMA.getName(), atomSchema);
+        }
     }
+
 }

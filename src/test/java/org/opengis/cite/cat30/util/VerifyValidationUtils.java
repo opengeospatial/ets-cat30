@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
 
 import org.junit.Test;
 import org.opengis.cite.validation.SchematronValidator;
@@ -39,5 +40,11 @@ public class VerifyValidationUtils {
         URI schemaURI = xsdSet.iterator().next();
         assertTrue("Expected schema reference */xsd/alpha.xsd", schemaURI
                 .toString().endsWith("/xsd/alpha.xsd"));
+    }
+
+    @Test
+    public void buildAtomSchema() {
+        Schema schema = ValidationUtils.createAtomSchema();
+        assertNotNull("Failed to construct Atom Schema", schema);
     }
 }

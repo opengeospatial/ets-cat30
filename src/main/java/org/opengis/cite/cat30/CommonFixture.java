@@ -21,14 +21,21 @@ public class CommonFixture {
      * HTTP client component (JAX-RS Client API).
      */
     protected Client client;
+
     /**
-     * Service capabilities document (csw:Capabilities)
+     * Service capabilities document (csw:Capabilities).
      */
     protected Document cswCapabilities;
     /**
-     * Complete CSW 3.0 application schema (cswAll.xsd)
+     * An immutable Schema object for validating all CSW 3.0 messages
+     * (cswAll.xsd).
      */
     protected Schema cswSchema;
+    /**
+     * An immutable Schema object for validating Atom feeds/entries (RFC 4287,
+     * Appendix B).
+     */
+    protected Schema atomSchema;
 
     /**
      * Initializes the common test fixture with the following objects:
@@ -36,8 +43,11 @@ public class CommonFixture {
      * <ul>
      * <li>a client component for interacting with HTTP endpoints</li>
      * <li>the CSW message schema (obtained from the suite attribute
-     * {@link org.opengis.cite.cat30.SuiteAttribute#CSW_SCHEMA}, which should
-     * evaluate to a thread-safe Schema object).</li>
+     * {@link org.opengis.cite.cat30.SuiteAttribute#CSW_SCHEMA}, a thread-safe
+     * Schema object).</li>
+     * <li>the Atom schema (obtained from the suite attribute
+     * {@link org.opengis.cite.cat30.SuiteAttribute#ATOM_SCHEMA}, a thread-safe
+     * Schema object).</li>
      * <li>the service capabilities document (obtained from the suite attribute
      * {@link org.opengis.cite.cat30.SuiteAttribute#TEST_SUBJECT}, which should
      * evaluate to a DOM Document node).</li>
@@ -62,5 +72,10 @@ public class CommonFixture {
             throw new SkipException("CSW schema not found in ITestContext.");
         }
         this.cswSchema = Schema.class.cast(obj);
+        obj = testContext.getSuite().getAttribute(SuiteAttribute.ATOM_SCHEMA.getName());
+        if (null == obj) {
+            throw new SkipException("Atom schema not found in ITestContext.");
+        }
+        this.atomSchema = Schema.class.cast(obj);
     }
 }

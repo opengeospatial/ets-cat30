@@ -21,6 +21,10 @@ public enum SuiteAttribute {
      */
     CSW_SCHEMA("cswSchema", Schema.class),
     /**
+     * An immutable Schema object for Atom (RFC 4287).
+     */
+    ATOM_SCHEMA("atomSchema", Schema.class),
+    /**
      * A DOM Document representation of the test subject or metadata about it.
      */
     TEST_SUBJECT("testSubject", Document.class);

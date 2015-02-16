@@ -1,5 +1,6 @@
 package org.opengis.cite.cat30.util;
 
+import com.thaiopensource.validation.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -19,6 +20,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.xerces.util.XMLCatalogResolver;
 import org.opengis.cite.cat30.Namespaces;
@@ -35,6 +37,8 @@ import org.xml.sax.SAXException;
 public class ValidationUtils {
 
     static final String ROOT_PKG = "/org/opengis/cite/cat30/";
+    static final String FACTORY_RELAXNG_COMPACT
+            = "com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory";
     private static final XMLCatalogResolver SCH_RESOLVER = initCatalogResolver();
 
     private static XMLCatalogResolver initCatalogResolver() {
@@ -182,6 +186,34 @@ public class ValidationUtils {
                     "Failed to create CSW Schema object.", e);
         }
         return appSchema;
+    }
+
+    /**
+     * Creates a Schema object representing the constraints defined in RFC 4287
+     * ("The Atom Syndication Format"). Appendix B provides an informative RELAX
+     * NG grammar (compact syntax); it can be used to validate either a feed or
+     * a stand-alone entry element.
+     *
+     * @return An immutable Schema object, or <code>null</code> if it cannot be
+     * constructed.
+     *
+     * @see
+     * <a target="_blank" href="https://tools.ietf.org/html/rfc4287#appendix-B">RFC
+     * 4287, Appendix B</a>: RELAX NG Compact Schema
+     */
+    public static Schema createAtomSchema() {
+        SchemaFactory factory = SchemaFactory.newInstance(
+                Constants.RELAXNG_COMPACT_URI, FACTORY_RELAXNG_COMPACT, null);
+        URL schemaRef = ValidationUtils.class.getResource(ROOT_PKG
+                + "rnc/atom.rnc");
+        Schema schema = null;
+        try {
+            schema = factory.newSchema(schemaRef);
+        } catch (SAXException e) {
+            TestSuiteLogger.log(Level.WARNING,
+                    "Failed to create Atom Schema object from RELAX NG (compact) grammar", e);
+        }
+        return schema;
     }
 
 }
