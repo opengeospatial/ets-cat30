@@ -147,14 +147,31 @@ dt {
     <li style="list-style: square;"><a target="_blank" 
     href="http://tools.ietf.org/html/rfc4287">RFC 4287</a> The Atom Syndication Format</li>
 	</ul>
+  
+  <p>If any of the following preconditions are not satisfied then all tests in 
+  the suite will be marked as skipped.</p>
+  <ol>
+    <li>the 'iut' test run argument refers to a CSW 3.0 capabilities document;</li>
+    <li>the service it describes is available.</li>
+  </ol>
 
 	<h2>How to run the tests</h2>
 	<p>The test suite may be run in any of the following environments:</p>
 	<ul>
-	  <li style="list-style: square;">Integrated development environment (IDE): The main Java class is <code>
-	  TestNGController</code>.</li>
-	  <li style="list-style: square;">RESTful API: Submit a request that includes the necessary arguments 
-    to the test run controller (/rest/suites/cat30/${project.version}/run).</li>
+	  <li style="list-style: square;">Integrated development environment (IDE): 
+    The main Java class is <code>org.opengis.cite.cat30.TestNGController</code>.
+    The first argument must refer to an XML properties file containing the 
+    required test run argument (a reference to a CSW 3.0 capabilities document). 
+    If not specified, the default location at ${user.home}/test-run-props.xml 
+    will be used. You can modify the sample file in src/main/config/test-run-props.xml.
+    The TestNG results file (testng-results.xml) will be written to a 
+    subdirectory in ${user.home}/testng/ having a UUID value as its name.
+    </li>
+	  <li style="list-style: square;">RESTful API: Submit a request that includes 
+    the required arguments to the test run controller (/rest/suites/cat30/${project.version}/run).</li>
+    <li style="list-style: square;">Command shell (console): Execute the "all-in-one" 
+    JAR file:
+    <pre>java -jar ets-cat30-${project.version}-aio.jar [test-run-props.xml]</pre>.</li>
     <li style="list-style: square;">TEAM-Engine: Run the CTL script located in the <code>/src/main/ctl/</code> 
 	  directory.</li>
 	</ul>
@@ -177,8 +194,9 @@ dt {
         <td>iut</td>
         <td>URI</td>
 		<td>M</td>
-		<td>A URI that refers to the implementation under test or metadata about it.
-    Ampersand ('&amp;') characters must be percent-encoded as '%26'.</td>
+		<td>A URI that refers to a service capabilities document (csw:Capabilities) 
+    that describes the implementation under test. Ampersand ('&amp;') characters 
+    must be percent-encoded as '%26'.</td>
       </tr>
 	  </tbody>
     </table>

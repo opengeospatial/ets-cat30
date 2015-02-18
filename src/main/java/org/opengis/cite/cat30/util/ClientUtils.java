@@ -1,18 +1,22 @@
 package org.opengis.cite.cat30.util;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
-import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
-
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URL;
+import java.util.EnumMap;
+import java.util.logging.Level;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.LoggingFilter;
+import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
+import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 /**
  * Provides various utility methods for creating and configuring HTTP client
@@ -64,5 +68,34 @@ public class ClientUtils {
                 }), config);
         client.addFilter(new LoggingFilter());
         return client;
+    }
+
+    /**
+     * Extracts details about a response message into the given EnumMap object.
+     * The map keys (of type {@link HttpMessagePart}) correspond to various
+     * parts of the message.
+     *
+     * @param rsp An object representing an HTTP response message.
+     * @param infoMap The collection into which message elements are put; if
+     * null, a new one is created. Existing values may be replaced.
+     */
+    public static void extractResponseInfo(ClientResponse rsp,
+            EnumMap<HttpMessagePart, Object> infoMap) {
+        if (null == infoMap) {
+            infoMap = new EnumMap(HttpMessagePart.class);
+        }
+        infoMap.put(HttpMessagePart.STATUS, rsp.getStatus());
+        infoMap.put(HttpMessagePart.HEADERS, rsp.getHeaders());
+        if (rsp.hasEntity()) {
+            byte[] body = new byte[rsp.getLength()];
+            DataInputStream dis = new DataInputStream(rsp.getEntityInputStream());
+            try {
+                dis.readFully(body);
+            } catch (IOException ex) {
+                TestSuiteLogger.log(Level.WARNING,
+                        "extractResponseInfo: Failed to read entity.", ex);
+            }
+            infoMap.put(HttpMessagePart.BODY, body);
+        }
     }
 }

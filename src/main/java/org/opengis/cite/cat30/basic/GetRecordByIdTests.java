@@ -317,4 +317,7 @@ public class GetRecordByIdTests extends CommonFixture {
                 ErrorMessage.format(ErrorMessageKeys.NOT_SCHEMA_VALID,
                         err.getErrorCount(), err.toString()));
     }
+
+    //TODO: Set outputFormat = "application/atom+xml"
+    //TODO: Try POST endpoint
 }

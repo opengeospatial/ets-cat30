@@ -64,6 +64,7 @@ public class VerifyGetCapabilitiesTests {
                 .thenReturn(atomSchema);
         GetCapabilitiesTests iut = new GetCapabilitiesTests();
         iut.initCommonFixture(testContext);
+        iut.clearMessageSummaries();
         iut.findServiceEndpoint(testContext);
         iut.getFullCapabilities_v3();
     }

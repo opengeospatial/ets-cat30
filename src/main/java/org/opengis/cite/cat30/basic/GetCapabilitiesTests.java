@@ -6,7 +6,6 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Validator;
 
 import org.opengis.cite.cat30.CAT3;
@@ -25,13 +24,17 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.util.ClientUtils;
+import org.opengis.cite.cat30.util.HttpMessagePart;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.testng.annotations.BeforeSuite;
 
@@ -139,12 +142,16 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
         WebResource resource = this.client.resource(
                 this.getCapabilitiesURI).queryParams(qryParams);
+        this.requestInfo.put(HttpMessagePart.TARGET, resource.getURI());
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Source source = new DOMSource(rsp.getEntity(Document.class));
+        ClientUtils.extractResponseInfo(rsp, this.responseInfo);
+        ByteArrayInputStream bais = new ByteArrayInputStream(
+                (byte[]) responseInfo.get(HttpMessagePart.BODY));
+        Source source = new StreamSource(bais);
         Validator validator = this.cswSchema.newValidator();
         ETSAssert.assertSchemaValid(validator, source);
         URL schemaUrl = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);

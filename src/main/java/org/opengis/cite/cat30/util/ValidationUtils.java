@@ -198,8 +198,8 @@ public class ValidationUtils {
      * constructed.
      *
      * @see
-     * <a target="_blank" href="https://tools.ietf.org/html/rfc4287#appendix-B">RFC
-     * 4287, Appendix B</a>: RELAX NG Compact Schema
+     * <a target="_blank" href="https://tools.ietf.org/html/rfc4287#appendix-B">
+     * RFC 4287, Appendix B</a>
      */
     public static Schema createAtomSchema() {
         SchemaFactory factory = SchemaFactory.newInstance(
