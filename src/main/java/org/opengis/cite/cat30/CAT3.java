@@ -30,6 +30,7 @@ public class CAT3 {
     public static final String ELEMENT_SET = "elementSetName";
     public static final String TYPE_NAMES = "typeNames";
     public static final String NAMESPACE = "namespace";
+    public static final String OUTPUT_FORMAT = "outputFormat";
 
     // query parameter (code list) values
     public static final String ELEMENT_SET_FULL = "full";

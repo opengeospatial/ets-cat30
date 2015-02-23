@@ -1,5 +1,6 @@
 package org.opengis.cite.cat30.basic;
 
+import com.sun.jersey.api.client.ClientRequest;
 import java.net.URI;
 
 import javax.ws.rs.HttpMethod;
@@ -28,6 +29,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
@@ -135,16 +138,15 @@ public class GetCapabilitiesTests extends CommonFixture {
      * @see "OGC 06-121r9, 7.2.1: GetCapabilities request parameters"
      */
     @Test(description = "Requirements: 043,045")
-    public void getFullCapabilities_v3() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        WebResource resource = this.client.resource(
-                this.getCapabilitiesURI).queryParams(qryParams);
-        this.requestInfo.put(HttpMessagePart.TARGET, resource.getURI());
-        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
+    public void getFullCapabilitiesAcceptVersion3() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        ClientRequest req = ClientUtils.buildRequest(this.getCapabilitiesURI,
+                HttpMethod.GET, qryParams, MediaType.APPLICATION_XML_TYPE);
+        ClientUtils.extractRequestInfo(req, this.requestInfo);
+        ClientResponse rsp = this.client.handle(req);
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));

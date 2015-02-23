@@ -7,9 +7,9 @@ package org.opengis.cite.cat30.util;
 public enum HttpMessagePart {
 
     /**
-     * Target resource (from request line).
+     * Effective request URI.
      */
-    TARGET,
+    URI,
     /**
      * Status code (from status line).
      */

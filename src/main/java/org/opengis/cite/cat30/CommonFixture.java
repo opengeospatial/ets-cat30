@@ -110,7 +110,7 @@ public class CommonFixture {
      * @param result A test result.
      */
     @AfterMethod
-    public void addAttributeOnTestFailure(ITestResult result) {
+    public void setAttributesOnTestFailure(ITestResult result) {
         if (result.getStatus() != ITestResult.FAILURE) {
             return;
         }

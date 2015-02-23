@@ -1,5 +1,6 @@
 package org.opengis.cite.cat30.basic;
 
+import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -30,6 +32,7 @@ import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.CSWClient;
+import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.validation.ValidationErrorHandler;
@@ -145,7 +148,7 @@ public class GetRecordByIdTests extends CommonFixture {
      * @see "OGC 12-176r6, 7.4.4.2: 7.4.4.2	Id parameter"
      */
     @Test(description = "Requirements: 127,141")
-    public void getRecordById_noMatchingRecord() {
+    public void getRecordById_noMatch() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
@@ -282,8 +285,8 @@ public class GetRecordByIdTests extends CommonFixture {
      * 4287</a>: The Atom Syndication Format</li>
      * </ul>
      */
-    @Test(description = "Requirements: 003,135,140")
-    public void getRecordByIdAsAtomEntry() {
+    @Test(description = "Requirements: 003,139,140")
+    public void getRecordByIdAsAtomEntryUsingAcceptHeader() {
         MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
         qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
@@ -318,6 +321,32 @@ public class GetRecordByIdTests extends CommonFixture {
                         err.getErrorCount(), err.toString()));
     }
 
-    //TODO: Set outputFormat = "application/atom+xml"
-    //TODO: Try POST endpoint
+    /**
+     * [Test] Verifies that a request for an Atom representation of a record
+     * produces a matching atom:entry in the response entity. The outputFormat
+     * query parameter value ("application/atom+xml") overrides the Accept
+     * request header ("application/xml").
+     */
+    @Test(description = "Requirements: 002,135,140")
+    public void getRecordByIdAsAtomEntryUsingOutputFormat() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
+        int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
+        String id = this.idList.get(randomIndex);
+        qryParams.put(CAT3.ID, id);
+        ClientRequest req = ClientUtils.buildRequest(this.getURI, HttpMethod.GET,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = this.client.handle(req);
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = rsp.getEntity(Document.class);
+        Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
+        String expr = String.format("/atom:entry/dc:identifier = '%s'",
+                id);
+        ETSAssert.assertXPath(expr, entity, nsBindings);
+    }
 }

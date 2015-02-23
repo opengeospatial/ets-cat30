@@ -11,12 +11,18 @@ import java.util.EnumMap;
 import java.util.logging.Level;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
+import java.net.URI;
+import java.util.Map;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
+import org.w3c.dom.Document;
 
 /**
  * Provides various utility methods for creating and configuring HTTP client
@@ -71,6 +77,36 @@ public class ClientUtils {
     }
 
     /**
+     * Builds an HTTP request message.
+     *
+     * @param endpoint A URI indicating the target resource.
+     * @param httpMethod The name of the HTTP method to invoke.
+     * @param qryParams A Map containing query parameters (may be null);
+     * @param mediaTypes A list of acceptable media types (generic XML if not
+     * specified).
+     *
+     * @return A ClientRequest object.
+     */
+    public static ClientRequest buildRequest(URI endpoint, String httpMethod,
+            Map<String, String> qryParams, MediaType... mediaTypes) {
+        UriBuilder uriBuilder = UriBuilder.fromUri(endpoint);
+        if (null != qryParams) {
+            for (Map.Entry<String, String> param : qryParams.entrySet()) {
+                uriBuilder.queryParam(param.getKey(), param.getValue());
+            }
+        }
+        URI uri = uriBuilder.build();
+        ClientRequest.Builder reqBuilder = ClientRequest.create();
+        if (null == mediaTypes || mediaTypes.length == 0) {
+            reqBuilder = reqBuilder.accept(MediaType.APPLICATION_XML_TYPE);
+        } else {
+            reqBuilder = reqBuilder.accept(mediaTypes);
+        }
+        ClientRequest req = reqBuilder.build(uri, httpMethod);
+        return req;
+    }
+
+    /**
      * Extracts details about a response message into the given EnumMap object.
      * The map keys (of type {@link HttpMessagePart}) correspond to various
      * parts of the message.
@@ -94,6 +130,37 @@ public class ClientUtils {
             } catch (IOException ex) {
                 TestSuiteLogger.log(Level.WARNING,
                         "extractResponseInfo: Failed to read entity.", ex);
+            }
+            infoMap.put(HttpMessagePart.BODY, body);
+        }
+    }
+
+    /**
+     * Extracts details about a request message into the given EnumMap object.
+     * The map keys (of type {@link HttpMessagePart}) correspond to various
+     * parts of the message. If the request contains a message body, it should
+     * be represented as a DOM Document node or as an object having a meaningful
+     * toString() implementation.
+     *
+     * @param req An object representing an HTTP request message.
+     * @param infoMap The collection into which message elements are put; if
+     * null, a new one is created. Existing values may be replaced.
+     */
+    public static void extractRequestInfo(ClientRequest req,
+            EnumMap<HttpMessagePart, Object> infoMap) {
+        if (null == infoMap) {
+            infoMap = new EnumMap(HttpMessagePart.class);
+        }
+        infoMap.put(HttpMessagePart.URI, req.getURI());
+        infoMap.put(HttpMessagePart.HEADERS, req.getHeaders());
+        Object entity = req.getEntity();
+        if (null != entity) {
+            String body;
+            if (Document.class.isInstance(entity)) {
+                Document doc = Document.class.cast(entity);
+                body = XMLUtils.writeNodeToString(doc);
+            } else {
+                body = entity.toString();
             }
             infoMap.put(HttpMessagePart.BODY, body);
         }

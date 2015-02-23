@@ -84,7 +84,7 @@ public class VerifyGetRecordByIdTests {
         List<String> idList = new ArrayList<>();
         idList.add("id-01");
         iut.setIdList(idList);
-        iut.getRecordByIdAsAtomEntry();
+        iut.getRecordByIdAsAtomEntryUsingAcceptHeader();
     }
 
 }
