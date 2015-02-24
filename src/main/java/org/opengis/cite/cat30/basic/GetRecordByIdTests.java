@@ -337,8 +337,8 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        ClientRequest req = ClientUtils.buildRequest(this.getURI, HttpMethod.GET,
-                qryParams, MediaType.APPLICATION_XML_TYPE);
+        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = this.client.handle(req);
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),

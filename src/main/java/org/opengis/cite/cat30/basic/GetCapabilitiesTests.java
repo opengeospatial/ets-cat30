@@ -143,8 +143,8 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        ClientRequest req = ClientUtils.buildRequest(this.getCapabilitiesURI,
-                HttpMethod.GET, qryParams, MediaType.APPLICATION_XML_TYPE);
+        ClientRequest req = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
         ClientUtils.extractRequestInfo(req, this.requestInfo);
         ClientResponse rsp = this.client.handle(req);
         Assert.assertEquals(rsp.getStatus(),

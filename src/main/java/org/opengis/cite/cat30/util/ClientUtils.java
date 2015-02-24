@@ -20,6 +20,7 @@ import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.net.URI;
 import java.util.Map;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import org.w3c.dom.Document;
@@ -77,17 +78,16 @@ public class ClientUtils {
     }
 
     /**
-     * Builds an HTTP request message.
+     * Builds an HTTP request message that uses the GET method.
      *
      * @param endpoint A URI indicating the target resource.
-     * @param httpMethod The name of the HTTP method to invoke.
      * @param qryParams A Map containing query parameters (may be null);
-     * @param mediaTypes A list of acceptable media types (generic XML if not
-     * specified).
+     * @param mediaTypes A list of acceptable media types; if not specified,
+     * generic XML ("application/xml") is preferred.
      *
      * @return A ClientRequest object.
      */
-    public static ClientRequest buildRequest(URI endpoint, String httpMethod,
+    public static ClientRequest buildGetRequest(URI endpoint,
             Map<String, String> qryParams, MediaType... mediaTypes) {
         UriBuilder uriBuilder = UriBuilder.fromUri(endpoint);
         if (null != qryParams) {
@@ -102,7 +102,7 @@ public class ClientUtils {
         } else {
             reqBuilder = reqBuilder.accept(mediaTypes);
         }
-        ClientRequest req = reqBuilder.build(uri, httpMethod);
+        ClientRequest req = reqBuilder.build(uri, HttpMethod.GET);
         return req;
     }
 
@@ -164,5 +164,16 @@ public class ClientUtils {
             }
             infoMap.put(HttpMessagePart.BODY, body);
         }
+    }
+
+    /**
+     * Creates a copy of the given MediaType object but without any parameters.
+     *
+     * @param mediaType A MediaType descriptor.
+     * @return A new (immutable) MediaType object having the same type and
+     * subtype.
+     */
+    public static MediaType removeParameters(MediaType mediaType) {
+        return new MediaType(mediaType.getType(), mediaType.getSubtype());
     }
 }

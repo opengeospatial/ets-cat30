@@ -19,6 +19,7 @@ import org.opengis.cite.validation.SchematronValidator;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -59,7 +60,7 @@ public class ETSAssert {
      * </ul>
      *
      * @param expr A valid XPath 1.0 expression.
-     * @param context The context node.
+     * @param context The context node (Document or Element).
      * @param namespaceBindings A collection of namespace bindings for the XPath
      * expression, where each entry maps a namespace URI (key) to a prefix
      * (value). It may be {@code null}.
@@ -83,10 +84,16 @@ public class ETSAssert {
             TestSuiteLogger.log(Level.WARNING, msg, xpe);
             throw new AssertionError(msg);
         }
+        Element elemNode;
+        if (Document.class.isInstance(context)) {
+            elemNode = Document.class.cast(context).getDocumentElement();
+        } else {
+            elemNode = (Element) context;
+        }
         Assert.assertTrue(
                 result,
                 ErrorMessage.format(ErrorMessageKeys.XPATH_RESULT,
-                        context.getNodeName(), expr));
+                        elemNode.getNodeName(), expr));
     }
 
     /**
