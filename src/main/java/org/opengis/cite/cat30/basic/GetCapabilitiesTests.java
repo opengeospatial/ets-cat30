@@ -202,13 +202,7 @@ public class GetCapabilitiesTests extends CommonFixture {
                 this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
-                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document doc = rsp.getEntity(Document.class);
-        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
-                CAT3.INVALID_PARAM_VAL);
-        ETSAssert.assertXPath(xpath, doc, null);
+        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL);
     }
 
     /**
@@ -228,13 +222,7 @@ public class GetCapabilitiesTests extends CommonFixture {
                 this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
-                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document doc = rsp.getEntity(Document.class);
-        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
-                CAT3.MISSING_PARAM_VAL);
-        ETSAssert.assertXPath(xpath, doc, null);
+        ETSAssert.assertExceptionReport(rsp, CAT3.MISSING_PARAM_VAL);
     }
 
     /**
@@ -258,12 +246,7 @@ public class GetCapabilitiesTests extends CommonFixture {
                 this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
-                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
-                CAT3.VER_NEGOTIATION_FAILED);
-        ETSAssert.assertXPath(xpath, rsp.getEntity(Document.class), null);
+        ETSAssert.assertExceptionReport(rsp, CAT3.VER_NEGOTIATION_FAILED);
     }
 
 }

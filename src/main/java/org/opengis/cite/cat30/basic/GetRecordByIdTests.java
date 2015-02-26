@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -34,6 +35,7 @@ import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
+import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
@@ -128,6 +130,13 @@ public class GetRecordByIdTests extends CommonFixture {
             throw new SkipException(
                     "Failed to save GetRecords response to temp file.");
         }
+        QName docElemName = XMLUtils.nameOfDocumentElement(new StreamSource(results));
+        if (!docElemName.getLocalPart().equals("GetRecordsResponse")) {
+            throw new SkipException(
+                    "Did not receive GetRecords response: " + docElemName);
+        }
+        TestSuiteLogger.log(Level.INFO, "Saved GetRecords response to file: "
+                + results.getAbsolutePath());
         List<String> identifiers = new ArrayList<>();
         Source src = new StreamSource(results);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.DCMES, "dc");

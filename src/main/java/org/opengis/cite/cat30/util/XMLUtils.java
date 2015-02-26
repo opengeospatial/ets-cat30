@@ -16,9 +16,11 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.StartElement;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -356,5 +358,27 @@ public class XMLUtils {
         StreamSource streamSrc = new StreamSource(new ByteArrayInputStream(
                 baos.toByteArray()), domSource.getSystemId());
         return streamSrc;
+    }
+
+    /**
+     * Returns the name of the document element in the given XML resource.
+     *
+     * @param source The Source to read the document from.
+     * @return The qualified name of the document element, or <code>null</code>
+     * if the source is not an XML document or it cannot be read for some
+     * reason.
+     */
+    public static QName nameOfDocumentElement(Source source) {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        QName qName = null;
+        try {
+            XMLEventReader reader = factory.createXMLEventReader(source);
+            // advance to document element
+            StartElement docElem = reader.nextTag().asStartElement();
+            qName = docElem.getName();
+        } catch (XMLStreamException xse) {
+            LOGR.log(Level.WARNING, "Failed to read Source.", xse);
+        }
+        return qName;
     }
 }

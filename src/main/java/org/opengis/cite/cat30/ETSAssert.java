@@ -1,5 +1,6 @@
 package org.opengis.cite.cat30;
 
+import com.sun.jersey.api.client.ClientResponse;
 import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
@@ -157,5 +158,29 @@ public class ETSAssert {
                 elementName.getNamespaceURI(), elementName.getLocalPart());
         Assert.assertEquals(features.getLength(), expectedCount, String.format(
                 "Unexpected number of %s descendant elements.", elementName));
+    }
+
+    /**
+     * Asserts that the given response message contains an OGC exception report.
+     * The message body must contain an XML document that has a document element
+     * with the following properties:
+     *
+     * <ul>
+     * <li>[local name] = "ExceptionReport"</li>
+     * <li>[namespace name] = "http://www.opengis.net/ows/2.0"</li>
+     * </ul>
+     *
+     * @param rsp A ClientResponse object representing an HTTP response message.
+     * @param exceptionCode The expected OGC exception code.
+     */
+    public static void assertExceptionReport(ClientResponse rsp,
+            String exceptionCode) {
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document doc = rsp.getEntity(Document.class);
+        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
+                exceptionCode);
+        assertXPath(xpath, doc, null);
     }
 }
