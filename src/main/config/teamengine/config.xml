@@ -16,7 +16,7 @@
         (OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding).</description>
       </suite>
       <revision>
-        <name>r${version}</name>
+        <name>${version}</name>
         <status>Beta</status>
         <sources>
           <source>cat30/${spec-version}/ctl</source>
