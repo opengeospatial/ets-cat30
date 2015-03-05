@@ -69,14 +69,4 @@ public class VerifyGetCapabilitiesTests {
         iut.getFullCapabilitiesAcceptVersion3();
     }
 
-    @Test
-    public void verifyTestSubjectIsNotCapabilitiesDoc() throws SAXException, IOException {
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Document element in unexpected namespace");
-        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/atom/feed.xml"));
-        when(suite.getAttribute(SUBJ)).thenReturn(doc);
-        GetCapabilitiesTests iut = new GetCapabilitiesTests();
-        iut.verifyTestSubject(testContext);
-    }
 }
