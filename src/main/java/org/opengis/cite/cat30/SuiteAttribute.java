@@ -1,6 +1,7 @@
 package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.Client;
+import java.io.File;
 import javax.xml.validation.Schema;
 
 import org.w3c.dom.Document;
@@ -24,6 +25,11 @@ public enum SuiteAttribute {
      * An immutable Schema object for Atom (RFC 4287).
      */
     ATOM_SCHEMA("atomSchema", Schema.class),
+    /**
+     * A file containing records retrieved from the IUT
+     * (csw:GetRecordsResponse).
+     */
+    DATA_FILE("dataFile", File.class),
     /**
      * A DOM Document representation of the test subject or metadata about it.
      */

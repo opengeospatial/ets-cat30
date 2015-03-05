@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -32,10 +31,9 @@ import org.opengis.cite.cat30.ETSAssert;
 import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
-import org.opengis.cite.cat30.util.CSWClient;
+import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
-import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
@@ -113,36 +111,32 @@ public class GetRecordByIdTests extends CommonFixture {
     }
 
     /**
-     * Submits a simple GetRecords request (with no filter criteria) and
-     * extracts the record identifiers from the result set. Each csw:Record
-     * element appearing in the response entity must contain at least one
+     * Extracts the record identifiers that occur in the sample data obtained
+     * from the SUT. Each csw:Record element must contain at least one
      * dc:identifier element.
      *
+     * @param testContext The test context containing various suite attributes.
+     *
      * @throws SaxonApiException In the unlikely event that the attempt to find
-     * identifiers in the response entity fails.
+     * record identifiers in the response entity fails.
      */
     @BeforeClass
-    public void retrieveRecordIdentifiers() throws SaxonApiException {
-        CSWClient cswClient = new CSWClient();
-        cswClient.setServiceCapabilities(this.cswCapabilities);
-        File results = cswClient.saveFullRecords(20, MediaType.APPLICATION_XML_TYPE);
-        if (!results.isFile()) {
-            throw new SkipException(
-                    "Failed to save GetRecords response to temp file.");
+    public void findRecordIdentifiers(ITestContext testContext)
+            throws SaxonApiException {
+        File dataFile = (File) testContext.getSuite().getAttribute(
+                SuiteAttribute.DATA_FILE.getName());
+        if (null == dataFile || !dataFile.exists()) {
+            throw new SkipException("Data file does not exist.");
         }
-        QName docElemName = XMLUtils.nameOfDocumentElement(new StreamSource(results));
-        if (!docElemName.getLocalPart().equals("GetRecordsResponse")) {
-            throw new SkipException(
-                    "Did not receive GetRecords response: " + docElemName);
-        }
-        TestSuiteLogger.log(Level.INFO, "Saved GetRecords response to file: "
-                + results.getAbsolutePath());
         List<String> identifiers = new ArrayList<>();
-        Source src = new StreamSource(results);
+        Source src = new StreamSource(dataFile);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.DCMES, "dc");
         XdmValue value = XMLUtils.evaluateXPath2(src, "//dc:identifier", nsBindings);
         for (XdmItem item : value) {
             identifiers.add(item.getStringValue());
+        }
+        if (identifiers.isEmpty()) {
+            throw new SkipException("No dc:identifier elements found in sample data.");
         }
         setIdList(identifiers);
     }

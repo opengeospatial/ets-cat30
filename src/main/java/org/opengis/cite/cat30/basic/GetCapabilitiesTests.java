@@ -26,6 +26,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -36,9 +37,12 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.HttpMessagePart;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
+import org.opengis.cite.cat30.util.XMLUtils;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeSuite;
 
 /**
@@ -100,6 +104,44 @@ public class GetCapabilitiesTests extends CommonFixture {
             TestSuiteLogger.log(Level.SEVERE, msg);
             throw new AssertionError(msg);
         }
+    }
+
+    /**
+     * Fetches records from the IUT using a simple GetRecords request (no filter
+     * criteria) and saves the response entity to a temporary file. The
+     * resulting File object is stored as the value of the suite attribute
+     * {@link SuiteAttribute#DATA_FILE dataFile}.
+     * <p>
+     * The resulting (full) records are inspected in order to construct service
+     * requests (e.g. a GetRecordById request that produces a matching record).
+     * </p>
+     *
+     * @param testContext Information about the pending test run.
+     */
+    @BeforeSuite
+    public void fetchSampleRecords(ITestContext testContext) {
+        Document capabilitiesDoc = (Document) testContext.getSuite().getAttribute(
+                SuiteAttribute.TEST_SUBJECT.getName());
+        CSWClient cswClient = new CSWClient();
+        cswClient.setServiceCapabilities(capabilitiesDoc);
+        File dataFile = cswClient.saveFullRecords(20,
+                MediaType.APPLICATION_XML_TYPE);
+        if (!dataFile.isFile()) {
+            throw new SkipException(
+                    "Failed to save GetRecords response to temp file.");
+        }
+        /* TODO: uncomment when have actual implementation
+         QName docElemName = XMLUtils.nameOfDocumentElement(new StreamSource(dataFile));
+         if (!docElemName.getLocalPart().equals("GetRecordsResponse")) {
+         throw new SkipException(
+         "Did not receive GetRecords response: " + docElemName);
+         }
+         */
+        TestSuiteLogger.log(Level.INFO,
+                "fetchSampleRecords: Saved GetRecords response to file: "
+                + dataFile.getAbsolutePath());
+        testContext.getSuite().setAttribute(
+                SuiteAttribute.DATA_FILE.getName(), dataFile);
     }
 
     /**
