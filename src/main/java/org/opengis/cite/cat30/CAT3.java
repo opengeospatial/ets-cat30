@@ -32,6 +32,7 @@ public class CAT3 {
     public static final String NAMESPACE = "namespace";
     public static final String OUTPUT_FORMAT = "outputFormat";
     public static final String OUTPUT_SCHEMA = "outputSchema";
+    public static final String BBOX = "bbox";
 
     // query parameter (code list) values
     public static final String ELEMENT_SET_FULL = "full";

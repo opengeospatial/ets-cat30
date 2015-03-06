@@ -172,15 +172,32 @@ public class ETSAssert {
      *
      * @param rsp A ClientResponse object representing an HTTP response message.
      * @param exceptionCode The expected OGC exception code.
+     * @param locator A case-insensitive string value expected to occur in the
+     * locator attribute (e.g. a parameter name); the attribute value will be
+     * ignored if the argument is null or empty.
      */
     public static void assertExceptionReport(ClientResponse rsp,
-            String exceptionCode) {
+            String exceptionCode, String locator) {
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.BAD_REQUEST.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document doc = rsp.getEntity(Document.class);
-        String xpath = String.format("//ows:Exception[@exceptionCode = '%s']",
+        String expr = String.format("//ows:Exception[@exceptionCode = '%s']",
                 exceptionCode);
-        assertXPath(xpath, doc, null);
+        NodeList nodeList = null;
+        try {
+            nodeList = XMLUtils.evaluateXPath(doc, expr, null);
+        } catch (XPathExpressionException xpe) {
+            // won't happen
+        }
+        Assert.assertTrue(nodeList.getLength() > 0,
+                "Exception not found in response: " + expr);
+        if (null != locator && !locator.isEmpty()) {
+            Element exception = (Element) nodeList.item(0);
+            String locatorValue = exception.getAttribute("locator").toLowerCase();
+            Assert.assertTrue(locatorValue.contains(locator.toLowerCase()),
+                    String.format("Expected locator attribute to contain '%s']",
+                            locator));
+        }
     }
 }

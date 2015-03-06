@@ -161,7 +161,7 @@ public class GetCapabilitiesTests extends CommonFixture {
                 this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
-        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL);
+        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL, CAT3.REQUEST);
     }
 
     /**
@@ -181,7 +181,7 @@ public class GetCapabilitiesTests extends CommonFixture {
                 this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
-        ETSAssert.assertExceptionReport(rsp, CAT3.MISSING_PARAM_VAL);
+        ETSAssert.assertExceptionReport(rsp, CAT3.MISSING_PARAM_VAL, CAT3.SERVICE);
     }
 
     /**
@@ -205,7 +205,8 @@ public class GetCapabilitiesTests extends CommonFixture {
                 this.getCapabilitiesURI).queryParams(qryParams);
         Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = builder.get(ClientResponse.class);
-        ETSAssert.assertExceptionReport(rsp, CAT3.VER_NEGOTIATION_FAILED);
+        ETSAssert.assertExceptionReport(rsp, CAT3.VER_NEGOTIATION_FAILED,
+                CAT3.ACCEPT_VERSIONS);
     }
 
 }

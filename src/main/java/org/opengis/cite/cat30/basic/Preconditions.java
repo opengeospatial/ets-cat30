@@ -70,7 +70,7 @@ public class Preconditions {
      * {@link SuiteAttribute#DATA_FILE dataFile}.
      *
      * <p>
-     * The resulting (full) record representations are inspected in order to
+     * The resulting csw:Record (full) representations are inspected in order to
      * construct successful service requests (e.g. a GetRecordById request that
      * produces a matching record, GetRecords request with a spatial filter).
      * </p>

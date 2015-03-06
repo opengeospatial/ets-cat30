@@ -88,7 +88,7 @@ public class GetRecordsKVPTests extends CommonFixture {
      * </ul>
      */
     @Test(description = "Requirements: 063")
-    public void getBriefRecordsInDefaultRepresentation() {
+    public void getBriefRecordsWithNamespaceBinding() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
@@ -199,7 +199,8 @@ public class GetRecordsKVPTests extends CommonFixture {
         ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.WILDCARD_TYPE);
         ClientResponse rsp = this.client.handle(req);
-        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL);
+        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL,
+                CAT3.OUTPUT_FORMAT);
     }
 
     /**
@@ -219,6 +220,37 @@ public class GetRecordsKVPTests extends CommonFixture {
         ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
         ClientResponse rsp = this.client.handle(req);
-        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL);
+        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL,
+                CAT3.OUTPUT_SCHEMA);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request with a BBOX parameter that includes
+     * an invalid CRS reference ("urn:ogc:def:crs:EPSG::0000"). An exception
+     * report is expected in response with HTTP status code 400 and exception
+     * code "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
+     *
+     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <ul>
+     * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
+     * <li>OGC 06-121r9, 10.2.3: Bounding box KVP encoding</li>
+     * </ul>
+     */
+    @Test(description = "Requirements: 017")
+    public void getRecordsByBBOXWithUnsupportedCRS() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
+        qryParams.put(CAT3.BBOX,
+                "472944,5363287,492722,5455253,urn:ogc:def:crs:EPSG::0000");
+        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        ClientUtils.extractRequestInfo(req, this.requestInfo);
+        ClientResponse rsp = this.client.handle(req);
+        ClientUtils.extractResponseInfo(rsp, this.responseInfo);
+        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL, CAT3.BBOX);
     }
 }
