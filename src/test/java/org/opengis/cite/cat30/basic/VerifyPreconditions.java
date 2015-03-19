@@ -43,7 +43,7 @@ public class VerifyPreconditions {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/atom/feed.xml"));
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
-        Preconditions iut = new Preconditions();
+        SuitePreconditions iut = new SuitePreconditions();
         iut.verifyTestSubject(testContext);
     }
 

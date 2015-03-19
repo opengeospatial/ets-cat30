@@ -1,5 +1,7 @@
 package org.opengis.cite.cat30.util;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +10,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.xpath.XPathExpressionException;
-import junit.framework.Assert;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
@@ -45,7 +46,7 @@ public class VerifyXMLUtils {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/atom/feed.xml"));
         String content = XMLUtils.writeNodeToString(doc);
-        Assert.assertTrue("String should start with '<feed'",
+        assertTrue("String should start with '<feed'",
                 content.startsWith("<feed"));
     }
 
@@ -59,9 +60,9 @@ public class VerifyXMLUtils {
         nsBindings.put(ATOM_NS, "tns");
         nsBindings.put(EX_NS, "ns1");
         NodeList results = XMLUtils.evaluateXPath(doc, expr, nsBindings);
-        Assert.assertTrue("Expected 1 node in results.",
+        assertTrue("Expected 1 node in results.",
                 results.getLength() == 1);
-        Assert.assertEquals("author", results.item(0).getLocalName());
+        assertEquals("author", results.item(0).getLocalName());
     }
 
     @Test
@@ -74,7 +75,7 @@ public class VerifyXMLUtils {
         nsBindings.put(ATOM_NS, "tns");
         nsBindings.put(EX_NS, "ns1");
         NodeList results = XMLUtils.evaluateXPath(doc, expr, nsBindings);
-        Assert.assertTrue("Expected empty results.", results.getLength() == 0);
+        assertTrue("Expected empty results.", results.getLength() == 0);
     }
 
     @Test(expected = XPathExpressionException.class)
@@ -86,16 +87,16 @@ public class VerifyXMLUtils {
         Map<String, String> nsBindings = new HashMap<String, String>();
         nsBindings.put(ATOM_NS, "tns");
         NodeList results = XMLUtils.evaluateXPath(doc, expr, nsBindings);
-        Assert.assertNull(results);
+        assertNull(results);
     }
 
     @Test
     public void createElement_Alpha() {
         QName qName = new QName("http://example.org", "Alpha");
         Element elem = XMLUtils.createElement(qName);
-        Assert.assertEquals("Alpha", elem.getLocalName());
-        Assert.assertNull(elem.getParentNode());
-        Assert.assertNotNull(elem.getOwnerDocument());
+        assertEquals("Alpha", elem.getLocalName());
+        assertNull(elem.getParentNode());
+        assertNotNull(elem.getOwnerDocument());
     }
 
     @Test
@@ -108,8 +109,8 @@ public class VerifyXMLUtils {
         nsBindings.put(ATOM_NS, "tns");
         XdmValue result = XMLUtils.evaluateXPath2(new DOMSource(doc), expr,
                 nsBindings);
-        Assert.assertTrue("Expected non-empty result.", result.size() > 0);
-        Assert.assertEquals("Result has unexpected string value.", "true",
+        assertTrue("Expected non-empty result.", result.size() > 0);
+        assertEquals("Result has unexpected string value.", "true",
                 result.getUnderlyingValue().getStringValue());
     }
 
@@ -124,8 +125,8 @@ public class VerifyXMLUtils {
         nsBindings.put(ATOM_NS, "tns");
         XdmValue result = XMLUtils.evaluateXPath2(new DOMSource(entry), expr,
                 nsBindings);
-        Assert.assertTrue("Expected non-empty result.", result.size() > 0);
-        Assert.assertEquals("Result has unexpected string value.", "true",
+        assertTrue("Expected non-empty result.", result.size() > 0);
+        assertEquals("Result has unexpected string value.", "true",
                 result.getUnderlyingValue().getStringValue());
     }
 
@@ -133,7 +134,7 @@ public class VerifyXMLUtils {
     public void expandCharacterEntity() {
         String text = "Ce n&apos;est pas";
         String result = XMLUtils.expandReferencesInText(text);
-        Assert.assertTrue("Expected result to contain an apostrophe (')",
+        assertTrue("Expected result to contain an apostrophe (')",
                 result.contains("'"));
     }
 
@@ -141,7 +142,7 @@ public class VerifyXMLUtils {
     public void expandNumericCharacterReference() {
         String text = "Montr&#xe9;al";
         String result = XMLUtils.expandReferencesInText(text);
-        Assert.assertEquals("Expected result to contain character é (U+00E9)",
+        assertEquals("Expected result to contain character é (U+00E9)",
                 "Montréal", result);
     }
 }

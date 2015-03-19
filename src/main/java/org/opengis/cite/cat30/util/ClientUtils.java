@@ -109,7 +109,7 @@ public class ClientUtils {
     /**
      * Extracts details about a response message into the given EnumMap object.
      * The map keys (of type {@link HttpMessagePart}) correspond to various
-     * parts of the message.
+     * parts of the message. The message body is stored as a byte[] array.
      *
      * @param rsp An object representing an HTTP response message.
      * @param infoMap The collection into which message elements are put; if

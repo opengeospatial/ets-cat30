@@ -2,10 +2,12 @@ package org.opengis.cite.cat30.basic;
 
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,23 +15,37 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import org.geotoolkit.geometry.Envelopes;
+import org.geotoolkit.geometry.GeneralEnvelope;
+import org.geotoolkit.referencing.crs.DefaultGeographicCRS;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
 import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
+import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
+import org.opengis.cite.geomatics.Extents;
 import org.opengis.cite.validation.ValidationErrorHandler;
+import org.opengis.geometry.Envelope;
+import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.FactoryException;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -56,6 +72,19 @@ public class GetRecordsKVPTests extends CommonFixture {
      * Service endpoint for GetRecords using the POST method.
      */
     private URI postURI;
+    /**
+     * A list of (Element) nodes representing bounding boxes found in the sample
+     * data.
+     */
+    private List<Node> bboxNodes;
+
+    void setBoundingBoxes(List<Node> envelopes) {
+        this.bboxNodes = envelopes;
+    }
+
+    void setGetEndpoint(URI uri) {
+        this.getURI = uri;
+    }
 
     /**
      * Finds the GET and POST method endpoints for the GetRecords request in the
@@ -72,6 +101,34 @@ public class GetRecordsKVPTests extends CommonFixture {
         }
         this.postURI = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_RECORDS, HttpMethod.POST);
+    }
+
+    /**
+     * Extracts the bounding boxes that occur in the sample data obtained from
+     * the SUT. Each csw:Record element may contain at least one ows:BoundingBox
+     * (or ows:WGS84BoundingBox) element that describes the spatial coverage of
+     * a catalogued resource.
+     *
+     * @param testContext The test context containing various suite attributes.
+     */
+    @BeforeClass
+    public void extractBoundingBoxes(ITestContext testContext) {
+        File dataFile = (File) testContext.getSuite().getAttribute(
+                SuiteAttribute.DATA_FILE.getName());
+        if (null == dataFile || !dataFile.exists()) {
+            throw new SkipException("Data file does not exist.");
+        }
+        Source src = new StreamSource(dataFile);
+        NodeList nodeList = null;
+        try {
+            nodeList = (NodeList) XMLUtils.evaluateXPath(src,
+                    "//csw:Record/ows:BoundingBox[1] | //csw:Record/ows:WGS84BoundingBox[1]",
+                    null, XPathConstants.NODESET);
+        } catch (XPathExpressionException xpe) {
+            TestSuiteLogger.log(Level.WARNING, "getBoundingBoxes: ", xpe);
+        }
+        List<Node> bboxList = XMLUtils.getNodeListAsList(nodeList);
+        setBoundingBoxes(bboxList);
     }
 
     /**
@@ -252,5 +309,98 @@ public class GetRecordsKVPTests extends CommonFixture {
         ClientResponse rsp = this.client.handle(req);
         ClientUtils.extractResponseInfo(rsp, this.responseInfo);
         ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL, CAT3.BBOX);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request with a BBOX parameter that includes a
+     * supported CRS reference. The brief records in the response must all
+     * contain an ows:BoundingBox (or ows:WGS84BoundingBox) element that
+     * intersects the specified bounding box.
+     *
+     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <ul>
+     * <li>OGC 12-176r6, Table 1: Conformance classes [Filter-FES-KVP]</li>
+     * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
+     * <li>OGC 06-121r9, 10.2.3: Bounding box KVP encoding</li>
+     * <li>OGC 09-026r2 (ISO 19143), A.7: Test cases for minimum spatial
+     * filter</li>
+     * </ul>
+     */
+    @Test(description = "Requirements: 017; Tests: 017")
+    public void getBriefRecordsByBBOX() {
+        if (this.bboxNodes.isEmpty()) {
+            throw new SkipException("No bounding boxes found in sample data.");
+        }
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
+        Envelope bbox;
+        try {
+            bbox = Extents.coalesceBoundingBoxes(this.bboxNodes);
+        } catch (FactoryException | TransformException ex) {
+            throw new RuntimeException("Failed to coalesce bounding boxes.", ex);
+        }
+        qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
+        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = this.client.handle(req);
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = rsp.getEntity(Document.class);
+        Source results = new DOMSource(entity);
+        ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, results);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request with a BBOX parameter that uses the
+     * default CRS ("urn:ogc:def:crs:OGC:1.3:CRS84"). The summary records in the
+     * response must all contain an ows:BoundingBox (or ows:WGS84BoundingBox)
+     * element that intersects the specified bounding box.
+     *
+     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <ul>
+     * <li>OGC 12-176r6, Table 1: Conformance classes [Filter-FES-KVP]</li>
+     * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
+     * <li>OGC 06-121r9, 10.2.3: Bounding box KVP encoding</li>
+     * <li>OGC 09-026r2 (ISO 19143), A.7: Test cases for minimum spatial
+     * filter</li>
+     * </ul>
+     */
+    @Test(description = "Requirements: 017; Tests: 017")
+    public void getSummaryRecordsByWGS84BBOX() {
+        if (this.bboxNodes.isEmpty()) {
+            throw new SkipException("No bounding boxes found in sample data.");
+        }
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
+        Envelope bbox;
+        try {
+            bbox = Extents.coalesceBoundingBoxes(this.bboxNodes);
+            if (!bbox.getCoordinateReferenceSystem().equals(
+                    DefaultGeographicCRS.WGS84)) {
+                bbox = new GeneralEnvelope(Envelopes.transform(bbox,
+                        DefaultGeographicCRS.WGS84));
+            }
+        } catch (FactoryException | TransformException ex) {
+            throw new RuntimeException("Failed to create WGS84 envelope.", ex);
+        }
+        qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
+        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = this.client.handle(req);
+        Assert.assertEquals(rsp.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = rsp.getEntity(Document.class);
+        Source results = new DOMSource(entity);
+        ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, results);
     }
 }

@@ -16,8 +16,12 @@ import javax.xml.xpath.XPathFactory;
 import org.opengis.cite.cat30.util.NamespaceBindings;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
+import org.opengis.cite.geomatics.Extents;
+import org.opengis.cite.geomatics.SpatialAssert;
 import org.opengis.cite.validation.SchematronValidator;
 import org.opengis.cite.validation.ValidationErrorHandler;
+import org.opengis.geometry.Envelope;
+import org.opengis.util.FactoryException;
 import org.testng.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -198,6 +202,38 @@ public class ETSAssert {
             Assert.assertTrue(locatorValue.contains(locator.toLowerCase()),
                     String.format("Expected locator attribute to contain '%s']",
                             locator));
+        }
+    }
+
+    /**
+     * Asserts that all bounding boxes (ows:BoundingBox or ows:WGS84BoundingBox
+     * elements) appearing in the query results intersect the given envelope.
+     *
+     * @param bbox An envelope specifying a spatial extent in some CRS.
+     * @param results A Source object for reading the query results, where the
+     * document element is typically csw:GetRecordsResponse (although this is
+     * not strictly required).
+     */
+    public static void assertEnvelopeIntersectsBoundingBoxes(final Envelope bbox,
+            final Source results) {
+        NodeList bboxNodeList = null;
+        try {
+            bboxNodeList = (NodeList) XMLUtils.evaluateXPath(results,
+                    "//ows:BoundingBox | //ows:WGS84BoundingBox", null,
+                    XPathConstants.NODESET);
+        } catch (XPathExpressionException xpe) { // ignore--expression is ok
+        }
+        for (int i = 0; i < bboxNodeList.getLength(); i++) {
+            Node bboxNode = bboxNodeList.item(i);
+            try {
+                Envelope envelope = Extents.createEnvelope(bboxNode);
+                SpatialAssert.assertIntersects(bbox, envelope);
+            } catch (FactoryException fex) {
+                StringBuilder msg = new StringBuilder(
+                        "Failed to create envelope from bounding box in result set:\n");
+                msg.append(XMLUtils.writeNodeToString(bboxNode));
+                throw new AssertionError(msg.toString(), fex);
+            }
         }
     }
 }

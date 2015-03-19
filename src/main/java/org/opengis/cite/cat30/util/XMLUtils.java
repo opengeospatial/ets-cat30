@@ -26,6 +26,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -146,8 +147,8 @@ public class XMLUtils {
     public static NodeList evaluateXPath(Node context, String expr,
             Map<String, String> namespaceBindings)
             throws XPathExpressionException {
-        Object result = evaluateXPath(context, expr, namespaceBindings,
-                XPathConstants.NODESET);
+        Object result = evaluateXPath(new DOMSource(context), expr,
+                namespaceBindings, XPathConstants.NODESET);
         if (!NodeList.class.isInstance(result)) {
             throw new XPathExpressionException(
                     "Expression does not evaluate to a NodeList: " + expr);
@@ -156,8 +157,8 @@ public class XMLUtils {
     }
 
     /**
-     * Evaluates an XPath expression using the given context and returns the
-     * result as the specified type.
+     * Evaluates an XPath expression using the given context item and returns
+     * the result as the specified type.
      *
      * <p>
      * <strong>Note:</strong> The Saxon implementation supports XPath 2.0
@@ -165,7 +166,7 @@ public class XMLUtils {
      * will throw an exception).
      * </p>
      *
-     * @param context The context node.
+     * @param context The context item.
      * @param expr An XPath expression.
      * @param namespaceBindings A collection of namespace bindings for the XPath
      * expression, where each entry maps a namespace URI (key) to a prefix
@@ -173,13 +174,26 @@ public class XMLUtils {
      * {@link NamespaceBindings#withStandardBindings()}.
      * @param returnType The desired return type (as declared in
      * {@link XPathConstants} ).
+     *
      * @return The result converted to the desired returnType.
+     *
      * @throws XPathExpressionException If the expression cannot be evaluated
      * for any reason.
      */
-    public static Object evaluateXPath(Node context, String expr,
+    public static Object evaluateXPath(Source context, String expr,
             Map<String, String> namespaceBindings, QName returnType)
             throws XPathExpressionException {
+        Node contextNode = null;
+        if (DOMSource.class.isInstance(context)) {
+            contextNode = DOMSource.class.cast(context).getNode();
+        } else {
+            try {
+                contextNode = parse(context);
+            } catch (TransformerException ex) {
+                TestSuiteLogger.log(Level.WARNING,
+                        "Failed to read context item. ", ex);
+            }
+        }
         NamespaceBindings bindings = NamespaceBindings.withStandardBindings();
         bindings.addAllBindings(namespaceBindings);
         XPathFactory factory = XPATH_FACTORY;
@@ -187,7 +201,7 @@ public class XMLUtils {
         // use the same Configuration object to avoid IllegalArgumentException
         XPath xpath = factory.newXPath();
         xpath.setNamespaceContext(bindings);
-        Object result = xpath.evaluate(expr, context, returnType);
+        Object result = xpath.evaluate(expr, contextNode, returnType);
         return result;
     }
 
@@ -380,5 +394,39 @@ public class XMLUtils {
             LOGR.log(Level.WARNING, "Failed to read Source.", xse);
         }
         return qName;
+    }
+
+    /**
+     * Parses the content of the given Source and returns a DOM Document node.
+     *
+     * @param source The Source to read the XML content from.
+     * @return A Document node representing the XML content.
+     *
+     * @throws javax.xml.transform.TransformerException If the source cannot be
+     * parsed for any reason.
+     */
+    public static Document parse(Source source) throws TransformerException {
+        Transformer idt = TransformerFactory.newInstance().newTransformer();
+        DOMResult result = new DOMResult();
+        idt.transform(source, result);
+        Document doc = (Document) result.getNode();
+        if (null != doc) {
+            doc.setDocumentURI(source.getSystemId());
+        }
+        return doc;
+    }
+
+    /**
+     * Returns a List view of the specified NodeList collection.
+     *
+     * @param nodeList An ordered collection of DOM nodes.
+     * @return A List containing the original sequence of Node objects.
+     */
+    public static List<Node> getNodeListAsList(NodeList nodeList) {
+        List<Node> nodes = new ArrayList<>();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            nodes.add(nodeList.item(i));
+        }
+        return nodes;
     }
 }

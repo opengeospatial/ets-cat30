@@ -36,7 +36,7 @@ public class VerifyCSWClient {
         CSWClient iut = new CSWClient();
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/capabilities-pycsw-cite.xml"));
-        iut.setServiceCapabilities(doc);
+        iut.setServiceDescription(doc);
         File file = iut.saveFullRecords(10, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Response file does not exist: " + file.getAbsolutePath(),
                 file.exists());

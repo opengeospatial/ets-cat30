@@ -1,18 +1,18 @@
 package org.opengis.cite.cat30.util;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.Namespaces;
 import org.w3c.dom.Document;
@@ -36,11 +36,11 @@ public class CSWClient {
         this.client = ClientUtils.buildClient();
     }
 
-    public Document getServiceCapabilities() {
+    public Document getServiceDescription() {
         return cswCapabilities;
     }
 
-    public void setServiceCapabilities(Document capabilities) {
+    public void setServiceDescription(Document capabilities) {
         if (!capabilities.getDocumentElement().getNamespaceURI().equals(Namespaces.CSW)) {
             throw new IllegalArgumentException("Expected a CSW v3 capabilities document.");
         }
@@ -62,19 +62,19 @@ public class CSWClient {
     public File saveFullRecords(final int maxRecords, final MediaType mediaType) {
         URI getRecordsURI = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_RECORDS, HttpMethod.GET);
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
-        qryParams.add(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
-        qryParams.add(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         if (mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
-            qryParams.add(CAT3.TYPE_NAMES, "csw:Record");
-            qryParams.add(CAT3.NAMESPACE, "xmlns(csw=http://www.opengis.net/cat/csw/3.0)");
+            qryParams.put(CAT3.TYPE_NAMES, "csw:Record");
+            qryParams.put(CAT3.NAMESPACE, "xmlns(csw=http://www.opengis.net/cat/csw/3.0)");
         }
-        WebResource resource = this.client.resource(getRecordsURI).queryParams(qryParams);
-        WebResource.Builder builder = resource.accept(mediaType);
-        ClientResponse rsp = builder.get(ClientResponse.class);
+        ClientRequest req = ClientUtils.buildGetRequest(getRecordsURI, qryParams,
+                mediaType);
+        ClientResponse rsp = this.client.handle(req);
         if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
             return null;
         }
@@ -90,5 +90,39 @@ public class CSWClient {
                     "Failed to save GetRecords response entity to file.", ex);
         }
         return outputFile;
+    }
+
+    /**
+     * Retrieves an OpenSearch description document from the IUT. The relevant
+     * endpoint is the one corresponding to the (mandatory) GET method binding
+     * for the GetCapabilities request. The <code>Accept</code> header indicates
+     * a preference for the following media types:
+     * <ul>
+     * <li>{@value org.opengis.cite.cat30.CAT3#APP_VND_OPENSEARCH_XML}</li>
+     * <li>{@value org.opengis.cite.cat30.CAT3#APP_OPENSEARCH_XML}</li>
+     * </ul>
+     *
+     * @return A Document representing an OpenSearch description document, or
+     * null if one is not available.
+     *
+     * @see
+     * <a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_description_document"
+     * target="_blank">OpenSearch description document</a>
+     */
+    public Document getOpenSearchDescription() {
+        URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
+                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+        ClientRequest req = ClientUtils.buildGetRequest(endpoint, null,
+                MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
+                MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
+        ClientResponse rsp = this.client.handle(req);
+        if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
+            return null; // probably 404 or 406 if not supported
+        }
+        Document entityDoc = rsp.getEntity(Document.class);
+        if (!entityDoc.getDocumentElement().getNamespaceURI().equals(Namespaces.OSD11)) {
+            throw null;
+        }
+        return entityDoc;
     }
 }

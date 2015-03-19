@@ -25,9 +25,9 @@ import org.testng.annotations.BeforeSuite;
 
 /**
  * Checks that various preconditions are satisfied before the test suite is run.
- * If any of these (BeforeSuite) checks fail, all tests are skipped.
+ * If any of these (BeforeSuite) methods fail, all tests are skipped.
  */
-public class Preconditions {
+public class SuitePreconditions {
 
     /**
      * Verifies that a service capabilities document was supplied as a test run
@@ -82,7 +82,7 @@ public class Preconditions {
         Document capabilitiesDoc = (Document) testContext.getSuite().getAttribute(
                 SuiteAttribute.TEST_SUBJECT.getName());
         CSWClient cswClient = new CSWClient();
-        cswClient.setServiceCapabilities(capabilitiesDoc);
+        cswClient.setServiceDescription(capabilitiesDoc);
         File dataFile = cswClient.saveFullRecords(20,
                 MediaType.APPLICATION_XML_TYPE);
         if (!dataFile.isFile()) {

@@ -1,7 +1,14 @@
 package org.opengis.cite.cat30.util;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.xml.namespace.QName;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -9,11 +16,23 @@ import javax.xml.xpath.XPathFactory;
 
 import org.opengis.cite.cat30.Namespaces;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
- * Provides various utility methods for accessing service-related metadata.
+ * Provides various utility methods for accessing service-related metadata
+ * resources such as an OGC service description or an OpenSearch description
+ * document.
  */
 public class ServiceMetadataUtils {
+
+    /**
+     * Key value that associates an Element node (osd:Url in an OpenSearch
+     * description document) with the collection of URL template parameters it
+     * declares.
+     */
+    public static final String URL_TEMPLATE_PARAMS = "url.template.params";
 
     /**
      * Extracts a request endpoint from a service capabilities document. If the
@@ -64,6 +83,51 @@ public class ServiceMetadataUtils {
             endpoint = URI.create(uriRef.substring(0, uriRef.indexOf('?')));
         }
         return endpoint;
+    }
+
+    /**
+     * Returns a list of nodes representing the query templates defined in an
+     * OpenSearch description document. Each node in the list will be associated
+     * with a {@code Map<QName,Boolean>} containing the declared template
+     * parameters; it can be accessed via
+     * {@link Node#getUserData(java.lang.String) getUserData} using the key
+     * value {@link #URL_TEMPLATE_PARAMS}.
+     * <p>
+     * For each map entry the key is a QName specifying the parameter name; a
+     * Boolean value indicates whether or not the query parameter is required.
+     * </p>
+     *
+     * @param osDescr An OpenSearchDescription document
+     * (osd:OpenSearchDescription).
+     * @return A sequence of Element nodes (osd:Url) containing URL templates.
+     */
+    public static List<Node> getOpenSearchQueryTemplates(final Document osDescr) {
+        List<Node> urlList = new ArrayList<>();
+        NodeList nodes = osDescr.getElementsByTagNameNS(Namespaces.OSD11, "Url");
+        Pattern queryParam = Pattern.compile("\\{([^}]+)\\}");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element url = (Element) nodes.item(i);
+            String template = url.getAttribute("template");
+            Matcher matcher = queryParam.matcher(template);
+            Map<QName, Boolean> templateParams = new HashMap<>();
+            while (matcher.find()) {
+                String param = matcher.group(1); // first capturing group
+                Boolean isRequired = !param.endsWith("?");
+                String[] qName = param.split(":");
+                if (qName.length > 1) {
+                    String nsPrefix = qName[0];
+                    String nsURI = url.lookupNamespaceURI(nsPrefix);
+                    templateParams.put(new QName(nsURI,
+                            qName[1].replace("?", ""), nsPrefix), isRequired);
+                } else {
+                    templateParams.put(new QName(qName[0].replace("?", "")),
+                            isRequired);
+                }
+            }
+            url.setUserData(URL_TEMPLATE_PARAMS, templateParams, null);
+            urlList.add(url);
+        }
+        return urlList;
     }
 
 }

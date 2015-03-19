@@ -58,6 +58,10 @@ public class Namespaces {
      */
     public static final String OSD11 = "http://a9.com/-/spec/opensearch/1.1/";
     /**
+     * OpenSearch Geo extension namespace (see OGC 10-032r8).
+     */
+    public static final String OS_GEO = "http://a9.com/-/opensearch/extensions/geo/1.0/";
+    /**
      * W3C XML Schema namespace
      */
     public static final URI XSD = URI

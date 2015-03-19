@@ -1,26 +1,32 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-  <head>
-    <title>Release Notes</title>
-  </head>
-  <body>
-    <h1>Release Notes</h1>
+    <head>
+        <title>Release Notes</title>
+    </head>
+    <body>
+        <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-02-27)</h2>
-    <p>This update adds positive and negative tests for the following requests:</p>
-    <ul>
-      <li style="list-style: square;">GetRecordById</li>
-      <li style="list-style: square;">GetRecords (without search criteria)</li>
-    </ul>
+        <h2>${project.version} (2015-03-DD)</h2>
+        <p>This release includes the following enhancements:</p>
+        <ul>
+            <li style="list-style: square;">Add tests for GetRecords with BBOX parameter</li>
+        </ul>
 
-    <h2>0.1 (2015-02-03)</h2>
-    <p>Initial release.</p>
-    <ul>
-      <li style="list-style: square;">Includes basic tests to obtain and validate 
-      service metadata resources (service capabilities and OpenSearch description 
-      documents).</li>
-    </ul>
+        <h2>0.2 (2015-02-27)</h2>
+        <p>This update adds positive and negative tests for the following requests:</p>
+        <ul>
+            <li style="list-style: square;">GetRecordById</li>
+            <li style="list-style: square;">GetRecords (without search criteria)</li>
+        </ul>
 
-  </body>
+        <h2>0.1 (2015-02-03)</h2>
+        <p>Initial release.</p>
+        <ul>
+            <li style="list-style: square;">Includes basic tests to obtain and validate 
+                service metadata resources (service capabilities and OpenSearch description 
+                documents).</li>
+        </ul>
+
+    </body>
 </html>
