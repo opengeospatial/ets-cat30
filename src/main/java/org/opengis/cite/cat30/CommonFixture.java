@@ -22,7 +22,7 @@ public class CommonFixture {
     /**
      * Root test suite package (absolute path).
      */
-    protected static final String ROOT_PKG_PATH = "/org/opengis/cite/cat30/";
+    public static final String ROOT_PKG_PATH = "/org/opengis/cite/cat30/";
     /**
      * HTTP client component (JAX-RS Client API).
      */

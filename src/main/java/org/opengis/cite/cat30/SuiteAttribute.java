@@ -31,9 +31,13 @@ public enum SuiteAttribute {
      */
     DATA_FILE("dataFile", File.class),
     /**
-     * A DOM Document representation of the test subject or metadata about it.
+     * A DOM Document representing the test subject or a description of it.
      */
-    TEST_SUBJECT("testSubject", Document.class);
+    TEST_SUBJECT("testSubject", Document.class),
+    /**
+     * A DOM Document representing an OpenSearch 1.1 description.
+     */
+    OPENSEARCH_DESCR("openSearchDescr", Document.class);
 
     private final Class attrType;
     private final String attrName;

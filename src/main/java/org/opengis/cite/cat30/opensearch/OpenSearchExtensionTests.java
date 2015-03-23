@@ -1,9 +1,7 @@
 package org.opengis.cite.cat30.opensearch;
 
 import org.opengis.cite.cat30.SuiteAttribute;
-import org.opengis.cite.cat30.util.CSWClient;
 import org.testng.ITestContext;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.w3c.dom.Document;
 
@@ -34,30 +32,18 @@ import org.w3c.dom.Document;
  */
 public class OpenSearchExtensionTests {
 
-    /**
-     * OpenSearch description document.
-     */
-    protected Document openSearchDescr;
+    private Document openSearchDescr;
 
     /**
-     * Retrieves an OpenSearch description document from the IUT.
+     * Initializes the test fixture. A Document representing an OpenSearch
+     * description document is obtained from the test context.
      *
      * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void getOpenSearchDescription(ITestContext testContext) {
-        Object cswDescr = testContext.getSuite().getAttribute(
-                SuiteAttribute.TEST_SUBJECT.getName());
-        if (null == cswDescr) {
-            throw new SkipException("Capabilities document not found in ITestContext.");
-        }
-        CSWClient cswClient = new CSWClient();
-        cswClient.setServiceDescription(Document.class.cast(cswDescr));
-        this.openSearchDescr = cswClient.getOpenSearchDescription();
-        if (null == this.openSearchDescr) {
-            throw new SkipException(
-                    "OpenSearch description not available from IUT at GetCapabilities (GET) endpoint.");
-        }
+    public void initFixture(ITestContext testContext) {
+        this.openSearchDescr = (Document) testContext.getSuite().getAttribute(
+                SuiteAttribute.OPENSEARCH_DESCR.getName());
     }
 
 }

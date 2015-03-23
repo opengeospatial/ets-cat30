@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.logging.Level;
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -18,14 +17,13 @@ import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.SuiteAttribute;
-import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.validation.RelaxNGValidator;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
 import org.testng.ITestContext;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -65,41 +63,8 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     private RelaxNGValidator osdValidator;
     private URI baseUri;
     private static final String SCHEMATRON_OPENSEARCH_DESCR
-            = ROOT_PKG_PATH + "sch/opensearch-1.1.sch";
-
-    /**
-     * Checks that the capabilities document indicates support for OpenSearch.
-     * If not, all relevant tests will be marked as skipped. The implementation
-     * status of the corresponding conformance class must be set to "TRUE".
-     *
-     * <pre>{@literal
-     *<OperationsMetadata xmlns="http://www.opengis.net/ows/2.0">
-     *  <!-- Operation elements omitted -->
-     *  <Constraint name="OpenSearch">
-     *    <AllowedValues>
-     *      <Value>FALSE</Value>
-     *      <Value>TRUE</Value>
-     *    </AllowedValues>
-     *    <DefaultValue>TRUE</DefaultValue>
-     *    <Meaning>Conformance class</Meaning>
-     *  </Constraint>
-     *</OperationsMetadata>
-     *}
-     * </pre>
-     *
-     * @param testContext Information about the pending test run.
-     *
-     * @see "OGC 12-176r5, Table 17: Service constraints"
-     */
-    @BeforeTest
-    public void checkOpenSearchImplementationStatus(ITestContext testContext) {
-        Document cswCapabilities = (Document) testContext.getSuite().getAttribute(
-                SuiteAttribute.TEST_SUBJECT.getName());
-        String xpath = String.format(
-                "//ows:Constraint[@name='%s']/ows:DefaultValue = 'TRUE'",
-                CAT3.CC_OPEN_SEARCH);
-        ETSAssert.assertXPath(xpath, cswCapabilities.getDocumentElement(), null);
-    }
+            = CommonFixture.ROOT_PKG_PATH + "sch/opensearch-1.1.sch";
+    private Document openSearchDescr;
 
     /**
      * Initializes the test fixture by:
@@ -117,17 +82,18 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      */
     @BeforeClass
     public void initFixture(ITestContext testContext) {
-        URL schemaUrl = getClass().getResource(ROOT_PKG_PATH
+        URL schemaUrl = getClass().getResource(CommonFixture.ROOT_PKG_PATH
                 + "rnc/osd-1.1-draft5.rnc");
         try {
             this.osdValidator = new RelaxNGValidator(schemaUrl);
         } catch (SAXException | IOException ex) {
             TestSuiteLogger.log(Level.WARNING, getClass().getName(), ex);
         }
-        Document cswCapabilities = (Document) testContext.getSuite().getAttribute(
-                SuiteAttribute.TEST_SUBJECT.getName());
-        this.baseUri = ServiceMetadataUtils.getOperationEndpoint(
-                cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+        this.openSearchDescr = (Document) testContext.getSuite().getAttribute(
+                SuiteAttribute.OPENSEARCH_DESCR.getName());
+        if (null == this.openSearchDescr) {
+            throw new SkipException("OpenSearch description not found in test context.");
+        }
     }
 
     /**
@@ -146,27 +112,19 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     }
 
     /**
-     * [Test] Retrieves an OpenSearch description document and validates it. A
-     * GET request is submitted to the base URL for the GetCapabilities
-     * endpoint. The <code>Accept</code> header indicates a preference for
-     * either of the following media types:
-     * <ul>
-     * <li>{@value org.opengis.cite.cat30.CAT3#APP_VND_OPENSEARCH_XML}</li>
-     * <li>{@value org.opengis.cite.cat30.CAT3#APP_OPENSEARCH_XML}</li>
-     * </ul>
+     * [Test] Validates the OpenSearch description document obtained from the
+     * IUT. The document is checked against the constraints in the OpenSearch
+     * 1.1 draft 5 specification.
      *
-     * @throws SAXException If the response entity cannot be parsed.
+     * @throws SAXException If the document cannot be read.
      * @throws IOException If an I/O error occurs while trying to access the
-     * service endpoint.
+     * document.
      *
      * @see "OGC 12-176r5, 6.5.6.5: Requirements for an OpenSearch enabled CSW"
      */
     @Test(description = "Requirements: 021; Tests: 021")
-    public void getOpenSearchDescription() throws SAXException, IOException {
-        WebResource resource = this.client.resource(this.baseUri);
-        Builder builder = resource.accept(CAT3.APP_VND_OPENSEARCH_XML,
-                CAT3.APP_OPENSEARCH_XML);
-        Source entity = new DOMSource(builder.get(Document.class));
+    public void validOpenSearchDescription() throws SAXException, IOException {
+        Source entity = new DOMSource(this.openSearchDescr);
         this.osdValidator.validate(entity);
         ValidationErrorHandler err = osdValidator.getErrorHandler();
         Assert.assertFalse(err.errorsDetected(),

@@ -117,11 +117,14 @@ public class CSWClient {
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
         ClientResponse rsp = this.client.handle(req);
         if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
-            return null; // probably 404 or 406 if not supported
+            // probably 404 or 406
+            LOGR.config(rsp.toString());
+            return null;
         }
         Document entityDoc = rsp.getEntity(Document.class);
         if (!entityDoc.getDocumentElement().getNamespaceURI().equals(Namespaces.OSD11)) {
-            throw null;
+            LOGR.config(entityDoc.getDocumentElement().getNodeName());
+            return null;
         }
         return entityDoc;
     }
