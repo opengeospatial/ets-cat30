@@ -19,6 +19,7 @@ public class CAT3 {
     public static final String GET_CAPABILITIES = "GetCapabilities";
     public static final String GET_RECORD_BY_ID = "GetRecordById";
     public static final String GET_RECORDS = "GetRecords";
+    public static final String GET_RECORDS_RSP = "GetRecordsResponse";
 
     // query parameters
     public static final String REQUEST = "request";

@@ -210,9 +210,8 @@ public class ETSAssert {
      * elements) appearing in the query results intersect the given envelope.
      *
      * @param bbox An envelope specifying a spatial extent in some CRS.
-     * @param results A Source object for reading the query results, where the
-     * document element is typically csw:GetRecordsResponse (although this is
-     * not strictly required).
+     * @param results A Source object for reading the query results; the
+     * document element is typically csw:GetRecordsResponse or atom:feed.
      */
     public static void assertEnvelopeIntersectsBoundingBoxes(final Envelope bbox,
             final Source results) {

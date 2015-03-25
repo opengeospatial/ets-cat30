@@ -10,7 +10,10 @@
         <h2>${project.version} (2015-03-DD)</h2>
         <p>This release includes the following enhancements:</p>
         <ul>
-            <li style="list-style: square;">Add tests for GetRecords with BBOX parameter</li>
+            <li style="list-style: square;">Add tests for GetRecords with BBOX 
+            parameter</li>
+            <li style="list-style: square;">Add tests for OpenSearch requests 
+            containing the geo:box template parameter</li>
         </ul>
 
         <h2>0.2 (2015-02-27)</h2>

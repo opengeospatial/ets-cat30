@@ -2,9 +2,8 @@ package org.opengis.cite.cat30.util;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +14,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.opensearch.TemplateParamInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -86,46 +86,40 @@ public class ServiceMetadataUtils {
     }
 
     /**
-     * Returns a list of nodes representing the query templates defined in an
+     * Returns a list of nodes representing the URL templates defined in an
      * OpenSearch description document. Each node in the list will be associated
-     * with a {@code Map<QName,Boolean>} containing the declared template
-     * parameters; it can be accessed via
-     * {@link Node#getUserData(java.lang.String) getUserData} using the key
+     * with an unmodifiable {@code List<TemplateParamInfo>} containing
+     * information about the declared template parameters; it can be accessed
+     * via {@link Node#getUserData(java.lang.String) getUserData} using the key
      * value {@link #URL_TEMPLATE_PARAMS}.
-     * <p>
-     * For each map entry the key is a QName specifying the parameter name; a
-     * Boolean value indicates whether or not the query parameter is required.
-     * </p>
      *
      * @param osDescr An OpenSearchDescription document
      * (osd:OpenSearchDescription).
      * @return A sequence of Element nodes (osd:Url) containing URL templates.
      */
-    public static List<Node> getOpenSearchQueryTemplates(final Document osDescr) {
+    public static List<Node> getOpenSearchURLTemplates(final Document osDescr) {
         List<Node> urlList = new ArrayList<>();
         NodeList nodes = osDescr.getElementsByTagNameNS(Namespaces.OSD11, "Url");
         Pattern queryParam = Pattern.compile("\\{([^}]+)\\}");
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element url = (Element) nodes.item(i);
-            String template = url.getAttribute("template");
+            Element urlElem = (Element) nodes.item(i);
+            String template = urlElem.getAttribute("template");
             Matcher matcher = queryParam.matcher(template);
-            Map<QName, Boolean> templateParams = new HashMap<>();
+            List<TemplateParamInfo> templateParamList = new ArrayList<>();
             while (matcher.find()) {
+                TemplateParamInfo paramInfo = new TemplateParamInfo();
                 String param = matcher.group(1); // first capturing group
-                Boolean isRequired = !param.endsWith("?");
-                String[] qName = param.split(":");
-                if (qName.length > 1) {
-                    String nsPrefix = qName[0];
-                    String nsURI = url.lookupNamespaceURI(nsPrefix);
-                    templateParams.put(new QName(nsURI,
-                            qName[1].replace("?", ""), nsPrefix), isRequired);
-                } else {
-                    templateParams.put(new QName(qName[0].replace("?", "")),
-                            isRequired);
+                paramInfo.setIsRequired(!param.endsWith("?"));
+                QName paramQName = OpenSearchTemplateUtils.getTemplateParameterName(param, urlElem);
+                paramInfo.setName(paramQName);
+                templateParamList.add(paramInfo);
+                if (paramQName.getNamespaceURI().equals(Namespaces.OSD11)) {
+                    OpenSearchTemplateUtils.updateOpenSearchParameter(paramInfo, urlElem);
                 }
             }
-            url.setUserData(URL_TEMPLATE_PARAMS, templateParams, null);
-            urlList.add(url);
+            urlElem.setUserData(URL_TEMPLATE_PARAMS,
+                    Collections.unmodifiableList(templateParamList), null);
+            urlList.add(urlElem);
         }
         return urlList;
     }
