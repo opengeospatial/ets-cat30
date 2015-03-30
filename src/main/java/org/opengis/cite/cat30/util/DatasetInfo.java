@@ -33,6 +33,10 @@ public class DatasetInfo {
     private List<String> recordIdentifiers;
 
     public DatasetInfo(File dataFile) {
+        if (!dataFile.isFile()) {
+            throw new IllegalArgumentException("Data file does not exist at "
+                    + dataFile.getAbsolutePath());
+        }
         QName docElemName = XMLUtils.nameOfDocumentElement(new StreamSource(dataFile));
         if (!docElemName.getLocalPart().equals("GetRecordsResponse")) {
             Logger.getLogger(DatasetInfo.class.getName()).log(Level.WARNING,
@@ -41,10 +45,22 @@ public class DatasetInfo {
         this.dataFile = dataFile;
     }
 
+    /**
+     * Returns the file containing the sample data.
+     *
+     * @return A File object representing a normal file.
+     */
     public File getDataFile() {
         return dataFile;
     }
 
+    /**
+     * Returns an Envelope representing the total geographic extent of the
+     * sample data. The bounding boxes (ows:BoundingBox or ows:WGS84BoundingBox)
+     * for each record are coalesced to determine the overall extent.
+     *
+     * @return An Envelope in some supported CRS.
+     */
     public Envelope getGeographicExtent() {
         if (null == this.geographicExtent) {
             this.geographicExtent = calculateTotalExtent(dataFile);
@@ -52,6 +68,12 @@ public class DatasetInfo {
         return geographicExtent;
     }
 
+    /**
+     * Returns a sequence of record identifiers found in the sample data.
+     *
+     * @return A List containing the values of all dc:identifier elements
+     * appearing in the data.
+     */
     public List<String> getRecordIdentifiers() {
         if (null == this.recordIdentifiers) {
             this.recordIdentifiers = findRecordIdentifiers(dataFile);

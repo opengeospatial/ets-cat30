@@ -69,7 +69,8 @@ import org.w3c.dom.Node;
  * must also implement the <strong>Get record by id</strong> conformance class
  * that allows a client to retrieve a record by identifier
  * (<code>geo:uid</code>). This requirement is a consequence of applying the
- * Filter-FES-KVP conformance class to OpenSearch queries (see Table 1).</p>
+ * <code>Filter-FES-KVP</code> conformance class to OpenSearch queries (see
+ * Table 1).</p>
  *
  * <h6 style="margin-bottom: 0.5em">Sources</h6>
  * <ul>
