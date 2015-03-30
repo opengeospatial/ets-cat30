@@ -2,12 +2,10 @@ package org.opengis.cite.cat30.basic;
 
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,10 +13,7 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 import org.geotoolkit.geometry.Envelopes;
 import org.geotoolkit.geometry.GeneralEnvelope;
 import org.geotoolkit.referencing.crs.DefaultGeographicCRS;
@@ -30,22 +25,19 @@ import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ClientUtils;
+import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
-import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
-import org.opengis.util.FactoryException;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -73,13 +65,17 @@ public class GetRecordsKVPTests extends CommonFixture {
      */
     private URI postURI;
     /**
+     * An Envelope defining the total geographic extent of the sample data.
+     */
+    private Envelope geoExtent;
+
+    /**
      * A list of (Element) nodes representing bounding boxes found in the sample
      * data.
      */
-    private List<Node> bboxNodes;
-
-    void setBoundingBoxes(List<Node> envelopes) {
-        this.bboxNodes = envelopes;
+    //private List<Node> bboxNodes;
+    void setExtent(Envelope extent) {
+        this.geoExtent = extent;
     }
 
     void setGetEndpoint(URI uri) {
@@ -104,31 +100,22 @@ public class GetRecordsKVPTests extends CommonFixture {
     }
 
     /**
-     * Extracts the bounding boxes that occur in the sample data obtained from
-     * the SUT. Each csw:Record element may contain at least one ows:BoundingBox
-     * (or ows:WGS84BoundingBox) element that describes the spatial coverage of
-     * a catalogued resource.
+     * Gets the total geographic extent of the sample data obtained from the
+     * SUT. Each csw:Record element may contain at least one ows:BoundingBox (or
+     * ows:WGS84BoundingBox) element that describes the spatial coverage of a
+     * catalogued resource.
      *
      * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void extractBoundingBoxes(ITestContext testContext) {
-        File dataFile = (File) testContext.getSuite().getAttribute(
-                SuiteAttribute.DATA_FILE.getName());
-        if (null == dataFile || !dataFile.exists()) {
-            throw new SkipException("Data file does not exist.");
+    public void getGeographicExtent(ITestContext testContext) {
+        DatasetInfo dataset = (DatasetInfo) testContext.getSuite().getAttribute(
+                SuiteAttribute.DATASET.getName());
+        if (null == dataset) {
+            throw new SkipException("Dataset info not found in test context.");
         }
-        Source src = new StreamSource(dataFile);
-        NodeList nodeList = null;
-        try {
-            nodeList = (NodeList) XMLUtils.evaluateXPath(src,
-                    "//csw:Record/ows:BoundingBox[1] | //csw:Record/ows:WGS84BoundingBox[1]",
-                    null, XPathConstants.NODESET);
-        } catch (XPathExpressionException xpe) {
-            TestSuiteLogger.log(Level.WARNING, "getBoundingBoxes: ", xpe);
-        }
-        List<Node> bboxList = XMLUtils.getNodeListAsList(nodeList);
-        setBoundingBoxes(bboxList);
+        Envelope env = dataset.getGeographicExtent();
+        setExtent(env);
     }
 
     /**
@@ -328,8 +315,8 @@ public class GetRecordsKVPTests extends CommonFixture {
      */
     @Test(description = "Requirements: 017; Tests: 017")
     public void getBriefRecordsByBBOX() {
-        if (this.bboxNodes.isEmpty()) {
-            throw new SkipException("No bounding boxes found in sample data.");
+        if (null == this.geoExtent) {
+            throw new SkipException("Could not determine extent of sample data.");
         }
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
@@ -337,12 +324,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
-        Envelope bbox;
-        try {
-            bbox = Extents.coalesceBoundingBoxes(this.bboxNodes);
-        } catch (FactoryException | TransformException ex) {
-            throw new RuntimeException("Failed to coalesce bounding boxes.", ex);
-        }
+        Envelope bbox = this.geoExtent;
         qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
         ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
@@ -372,8 +354,8 @@ public class GetRecordsKVPTests extends CommonFixture {
      */
     @Test(description = "Requirements: 017; Tests: 017")
     public void getSummaryRecordsByWGS84BBOX() {
-        if (this.bboxNodes.isEmpty()) {
-            throw new SkipException("No bounding boxes found in sample data.");
+        if (null == this.geoExtent) {
+            throw new SkipException("Could not determine extent of sample data.");
         }
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
@@ -381,15 +363,14 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
-        Envelope bbox;
+        Envelope bbox = this.geoExtent;
         try {
-            bbox = Extents.coalesceBoundingBoxes(this.bboxNodes);
             if (!bbox.getCoordinateReferenceSystem().equals(
                     DefaultGeographicCRS.WGS84)) {
                 bbox = new GeneralEnvelope(Envelopes.transform(bbox,
                         DefaultGeographicCRS.WGS84));
             }
-        } catch (FactoryException | TransformException ex) {
+        } catch (TransformException ex) {
             throw new RuntimeException("Failed to create WGS84 envelope.", ex);
         }
         qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));

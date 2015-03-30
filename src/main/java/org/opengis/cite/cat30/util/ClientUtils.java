@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.util;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -8,7 +7,6 @@ import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URL;
 import java.util.EnumMap;
-import java.util.logging.Level;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientRequest;
@@ -123,14 +121,8 @@ public class ClientUtils {
         infoMap.put(HttpMessagePart.STATUS, rsp.getStatus());
         infoMap.put(HttpMessagePart.HEADERS, rsp.getHeaders());
         if (rsp.hasEntity()) {
-            byte[] body = new byte[rsp.getLength()];
-            DataInputStream dis = new DataInputStream(rsp.getEntityInputStream());
-            try {
-                dis.readFully(body);
-            } catch (IOException ex) {
-                TestSuiteLogger.log(Level.WARNING,
-                        "extractResponseInfo: Failed to read entity.", ex);
-            }
+            // response entities are rarely very large
+            byte[] body = rsp.getEntity(byte[].class);
             infoMap.put(HttpMessagePart.BODY, body);
         }
     }

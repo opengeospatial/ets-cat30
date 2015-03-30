@@ -1,12 +1,13 @@
 package org.opengis.cite.cat30.util;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,8 +33,8 @@ public class VerifyURIUtils {
     public void resolveHttpUriAsDocument() throws SAXException, IOException {
         URI uriRef = URI.create("http://www.w3schools.com/xml/note.xml");
         Document doc = URIUtils.parseURI(uriRef);
-        Assert.assertNotNull(doc);
-        Assert.assertEquals("Document element has unexpected [local name].",
+        assertNotNull(doc);
+        assertEquals("Document element has unexpected [local name].",
                 "note", doc.getDocumentElement().getLocalName());
     }
 
@@ -43,8 +44,8 @@ public class VerifyURIUtils {
     public void resolveHttpUriAsFile() throws SAXException, IOException {
         URI uriRef = URI.create("http://www.w3schools.com/xml/note.xml");
         File file = URIUtils.dereferenceURI(uriRef);
-        Assert.assertNotNull(file);
-        Assert.assertTrue("File should not be empty", file.length() > 0);
+        assertNotNull(file);
+        assertTrue("File should not be empty", file.length() > 0);
     }
 
     @Test
@@ -52,8 +53,8 @@ public class VerifyURIUtils {
             URISyntaxException {
         URL url = this.getClass().getResource("/atom/feed.xml");
         Document doc = URIUtils.parseURI(url.toURI());
-        Assert.assertNotNull(doc);
-        Assert.assertEquals("Document element has unexpected [local name].",
+        assertNotNull(doc);
+        assertEquals("Document element has unexpected [local name].",
                 "feed", doc.getDocumentElement().getLocalName());
     }
 
@@ -62,12 +63,12 @@ public class VerifyURIUtils {
             URISyntaxException {
         File file = new File("src/test/resources/Alpha-xinclude.xml");
         Document doc = URIUtils.parseURI(file.toURI());
-        Assert.assertNotNull(doc);
-        Assert.assertEquals("Document element has unexpected [local name].",
+        assertNotNull(doc);
+        assertEquals("Document element has unexpected [local name].",
                 "Alpha", doc.getDocumentElement().getLocalName());
         NodeList nodes = doc.getDocumentElement().getElementsByTagNameNS(
                 "http://www.example.net/gamma", "Gamma");
-        Assert.assertEquals(
+        assertEquals(
                 "Expected element {http://www.example.net/gamma}Gamma", 1,
                 nodes.getLength());
     }
@@ -78,6 +79,6 @@ public class VerifyURIUtils {
         URL url = this.getClass().getResource("/alpha.xml");
         URI uri = (null != url) ? url.toURI() : null;
         Document doc = URIUtils.parseURI(uri);
-        Assert.assertNull(doc);
+        assertNull(doc);
     }
 }

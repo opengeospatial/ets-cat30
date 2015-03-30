@@ -19,6 +19,7 @@ import java.net.URLConnection;
 import java.util.logging.Level;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.CSWClient;
+import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeSuite;
@@ -66,8 +67,8 @@ public class SuitePreconditions {
     /**
      * Fetches records from the IUT using a simple GetRecords request (with no
      * filter criteria) and saves the response entity to a temporary file. The
-     * resulting File object is stored as the value of the suite attribute
-     * {@link SuiteAttribute#DATA_FILE dataFile}.
+     * resulting {@link DatasetInfo DatasetInfo} object is stored as the value
+     * of the suite attribute {@link SuiteAttribute#DATASET dataset}.
      *
      * <p>
      * The resulting csw:Record (full) representations are inspected in order to
@@ -78,7 +79,7 @@ public class SuitePreconditions {
      * @param testContext Information about the (pending) test run.
      */
     @BeforeSuite
-    public void fetchSampleRecords(ITestContext testContext) {
+    public void fetchSampleData(ITestContext testContext) {
         Document capabilitiesDoc = (Document) testContext.getSuite().getAttribute(
                 SuiteAttribute.TEST_SUBJECT.getName());
         CSWClient cswClient = new CSWClient();
@@ -97,9 +98,10 @@ public class SuitePreconditions {
          }
          */
         TestSuiteLogger.log(Level.INFO,
-                "fetchSampleRecords: Saved GetRecords response to file: "
+                "fetchSampleData: Saved GetRecords response to file: "
                 + dataFile.getAbsolutePath());
+        DatasetInfo dataset = new DatasetInfo(dataFile);
         testContext.getSuite().setAttribute(
-                SuiteAttribute.DATA_FILE.getName(), dataFile);
+                SuiteAttribute.DATASET.getName(), dataset);
     }
 }

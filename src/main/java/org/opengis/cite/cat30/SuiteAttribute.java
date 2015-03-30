@@ -1,8 +1,8 @@
 package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.Client;
-import java.io.File;
 import javax.xml.validation.Schema;
+import org.opengis.cite.cat30.util.DatasetInfo;
 
 import org.w3c.dom.Document;
 
@@ -26,10 +26,9 @@ public enum SuiteAttribute {
      */
     ATOM_SCHEMA("atomSchema", Schema.class),
     /**
-     * A file containing records retrieved from the IUT
-     * (csw:GetRecordsResponse).
+     * Sample data obtained from the IUT.
      */
-    DATA_FILE("dataFile", File.class),
+    DATASET("dataset", DatasetInfo.class),
     /**
      * A DOM Document representing the test subject or a description of it.
      */

@@ -7,13 +7,15 @@
     <body>
         <h1>Release Notes</h1>
 
-        <h2>${project.version} (2015-03-DD)</h2>
+        <h2>${project.version} (2015-03-31)</h2>
         <p>This release includes the following enhancements:</p>
         <ul>
             <li style="list-style: square;">Add tests for GetRecords with BBOX 
-            parameter</li>
+            parameter (bounding box search)</li>
             <li style="list-style: square;">Add tests for OpenSearch requests 
-            containing the geo:box template parameter</li>
+            containing the geo:box template parameter (bounding box search)</li>
+            <li style="list-style: square;">Add tests for OpenSearch requests 
+            containing the geo:uid template parameter (record search)</li>
         </ul>
 
         <h2>0.2 (2015-02-27)</h2>

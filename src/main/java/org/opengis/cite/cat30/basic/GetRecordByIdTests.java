@@ -4,10 +4,8 @@ import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmValue;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -33,6 +27,7 @@ import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ClientUtils;
+import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.validation.ValidationErrorHandler;
@@ -111,30 +106,20 @@ public class GetRecordByIdTests extends CommonFixture {
     }
 
     /**
-     * Extracts the record identifiers that occur in the sample data obtained
-     * from the SUT. Each csw:Record element must contain at least one
-     * dc:identifier element.
+     * Gets the record identifiers that occur in the sample data obtained from
+     * the SUT. Each csw:Record element must contain at least one dc:identifier
+     * element.
      *
      * @param testContext The test context containing various suite attributes.
-     *
-     * @throws SaxonApiException In the unlikely event that the attempt to find
-     * record identifiers in the response entity fails.
      */
     @BeforeClass
-    public void findRecordIdentifiers(ITestContext testContext)
-            throws SaxonApiException {
-        File dataFile = (File) testContext.getSuite().getAttribute(
-                SuiteAttribute.DATA_FILE.getName());
-        if (null == dataFile || !dataFile.exists()) {
-            throw new SkipException("Data file does not exist.");
+    public void getRecordIdentifiers(ITestContext testContext) {
+        DatasetInfo dataset = (DatasetInfo) testContext.getSuite().getAttribute(
+                SuiteAttribute.DATASET.getName());
+        if (null == dataset) {
+            throw new SkipException("Dataset info not found in test context.");
         }
-        List<String> identifiers = new ArrayList<>();
-        Source src = new StreamSource(dataFile);
-        Map<String, String> nsBindings = Collections.singletonMap(Namespaces.DCMES, "dc");
-        XdmValue value = XMLUtils.evaluateXPath2(src, "//dc:identifier", nsBindings);
-        for (XdmItem item : value) {
-            identifiers.add(item.getStringValue());
-        }
+        List<String> identifiers = dataset.getRecordIdentifiers();
         if (identifiers.isEmpty()) {
             throw new SkipException("No dc:identifier elements found in sample data.");
         }

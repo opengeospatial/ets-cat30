@@ -28,6 +28,10 @@ import java.net.URI;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import org.opengis.cite.cat30.util.XMLUtils;
+import org.opengis.cite.geomatics.Extents;
+import org.opengis.geometry.Envelope;
+import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.FactoryException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -61,7 +65,8 @@ public class VerifyGetRecordsKVPTests {
     }
 
     @Test
-    public void getBriefRecordsByBBOX_allIntersect() throws SAXException, IOException {
+    public void getBriefRecordsByBBOX_allIntersect()
+            throws SAXException, IOException, FactoryException, TransformException {
         Client client = mock(Client.class);
         when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
                 .thenReturn(client);
@@ -75,13 +80,14 @@ public class VerifyGetRecordsKVPTests {
         GetRecordsKVPTests iut = new GetRecordsKVPTests();
         iut.initCommonFixture(testContext);
         // BOX2D(32.5 -117.6, 34 -115) with CRS EPSG:4326
-        iut.setBoundingBoxes(buildBoundingBoxList(1));
+        iut.setExtent(buildEnvelope(1));
         iut.setGetEndpoint(URI.create("http://localhost/csw/v3"));
         iut.getBriefRecordsByBBOX();
     }
 
     @Test
-    public void getBriefRecordsByBBOX_noneIntesect() throws SAXException, IOException {
+    public void getBriefRecordsByBBOX_noneIntesect()
+            throws SAXException, IOException, FactoryException, TransformException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("The envelopes do not intersect");
         Client client = mock(Client.class);
@@ -97,13 +103,14 @@ public class VerifyGetRecordsKVPTests {
         GetRecordsKVPTests iut = new GetRecordsKVPTests();
         iut.initCommonFixture(testContext);
         // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
-        iut.setBoundingBoxes(buildBoundingBoxList(2));
+        iut.setExtent(buildEnvelope(2));
         iut.setGetEndpoint(URI.create("http://localhost/csw/v3"));
         iut.getBriefRecordsByBBOX();
     }
 
     @Test
-    public void getSummaryRecordsByWGS84BBOX_noneIntesect() throws SAXException, IOException {
+    public void getSummaryRecordsByWGS84BBOX_noneIntesect()
+            throws SAXException, IOException, FactoryException, TransformException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("The envelopes do not intersect");
         Client client = mock(Client.class);
@@ -119,12 +126,13 @@ public class VerifyGetRecordsKVPTests {
         GetRecordsKVPTests iut = new GetRecordsKVPTests();
         iut.initCommonFixture(testContext);
         // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
-        iut.setBoundingBoxes(buildBoundingBoxList(2));
+        iut.setExtent(buildEnvelope(2));
         iut.setGetEndpoint(URI.create("http://localhost/csw/v3"));
         iut.getSummaryRecordsByWGS84BBOX();
     }
 
-    private List<Node> buildBoundingBoxList(int id) throws SAXException, IOException {
+    private Envelope buildEnvelope(int id)
+            throws SAXException, IOException, FactoryException, TransformException {
         String path = String.format("/rsp/GetRecordsResponse-%d.xml", id);
         Document doc = docBuilder.parse(getClass().getResourceAsStream(path));
         NodeList boxNodes = null;
@@ -133,7 +141,7 @@ public class VerifyGetRecordsKVPTests {
                     "//csw:Record/ows:BoundingBox[1] | //csw:Record/ows:WGS84BoundingBox[1]", null);
         } catch (XPathExpressionException ex) { // ignore--expression ok
         }
-        return XMLUtils.getNodeListAsList(boxNodes);
+        return Extents.coalesceBoundingBoxes(XMLUtils.getNodeListAsList(boxNodes));
     }
 
 }

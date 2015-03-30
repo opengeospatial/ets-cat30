@@ -62,6 +62,10 @@ public class Namespaces {
      */
     public static final String OS_GEO = "http://a9.com/-/opensearch/extensions/geo/1.0/";
     /**
+     * <a href="http://www.georss.org/" target="_blank">GeoRSS</a> namespace.
+     */
+    public static final String GEORSS = "http://www.georss.org/georss/10";
+    /**
      * W3C XML Schema namespace
      */
     public static final URI XSD = URI

@@ -2,6 +2,7 @@ package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.ClientResponse;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
@@ -14,6 +15,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.opengis.cite.cat30.util.NamespaceBindings;
+import org.opengis.cite.cat30.util.SpatialUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
@@ -206,26 +208,39 @@ public class ETSAssert {
     }
 
     /**
-     * Asserts that all bounding boxes (ows:BoundingBox or ows:WGS84BoundingBox
-     * elements) appearing in the query results intersect the given envelope.
+     * Asserts that all bounding boxes appearing in the search results intersect
+     * the given envelope. The following bounding box representations are
+     * recognized:
+     * <ul>
+     * <li>ows:BoundingBox</li>
+     * <li>ows:WGS84BoundingBox</li>
+     * <li>georss:box (EPSG 4326)</li>
+     * </ul>
      *
      * @param bbox An envelope specifying a spatial extent in some CRS.
-     * @param results A Source object for reading the query results; the
-     * document element is typically csw:GetRecordsResponse or atom:feed.
+     * @param results A Source object for reading the query results (the
+     * document element is typically csw:GetRecordsResponse or atom:feed).
      */
     public static void assertEnvelopeIntersectsBoundingBoxes(final Envelope bbox,
             final Source results) {
-        NodeList bboxNodeList = null;
+        NodeList boxNodeList = null;
+        Map<String, String> nsBindings = Collections.singletonMap(
+                Namespaces.GEORSS, "georss");
         try {
-            bboxNodeList = (NodeList) XMLUtils.evaluateXPath(results,
-                    "//ows:BoundingBox | //ows:WGS84BoundingBox", null,
-                    XPathConstants.NODESET);
+            boxNodeList = (NodeList) XMLUtils.evaluateXPath(results,
+                    "//ows:BoundingBox | //ows:WGS84BoundingBox | //georss:box",
+                    nsBindings, XPathConstants.NODESET);
         } catch (XPathExpressionException xpe) { // ignore--expression is ok
         }
-        for (int i = 0; i < bboxNodeList.getLength(); i++) {
-            Node bboxNode = bboxNodeList.item(i);
+        for (int i = 0; i < boxNodeList.getLength(); i++) {
+            Node bboxNode = boxNodeList.item(i);
             try {
-                Envelope envelope = Extents.createEnvelope(bboxNode);
+                Envelope envelope;
+                if (bboxNode.getNamespaceURI().equals(Namespaces.GEORSS)) {
+                    envelope = SpatialUtils.envelopeFomGeoRSSBox(bboxNode);
+                } else {
+                    envelope = Extents.createEnvelope(bboxNode);
+                }
                 SpatialAssert.assertIntersects(bbox, envelope);
             } catch (FactoryException fex) {
                 StringBuilder msg = new StringBuilder(
