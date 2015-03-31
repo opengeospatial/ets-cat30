@@ -86,7 +86,7 @@ public class VerifyGetRecordsKVPTests {
     }
 
     @Test
-    public void getBriefRecordsByBBOX_noneIntesect()
+    public void getBriefRecordsByBBOX_noneIntersect()
             throws SAXException, IOException, FactoryException, TransformException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("The envelopes do not intersect");
@@ -109,7 +109,7 @@ public class VerifyGetRecordsKVPTests {
     }
 
     @Test
-    public void getSummaryRecordsByWGS84BBOX_noneIntesect()
+    public void getSummaryRecordsByWGS84BBOX_noneIntersect()
             throws SAXException, IOException, FactoryException, TransformException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("The envelopes do not intersect");

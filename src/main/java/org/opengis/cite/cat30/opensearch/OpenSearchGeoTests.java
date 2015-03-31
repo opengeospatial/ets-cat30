@@ -137,7 +137,6 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element urlElem = (Element) urlTemplate;
             String mediaType = urlElem.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(urlElem, values);
-            System.out.println(uri);
             ClientRequest req = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
             ClientResponse rsp = this.client.handle(req);
@@ -169,7 +168,6 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            System.out.println(uri);
             ClientRequest req = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
             ClientResponse rsp = this.client.handle(req);
@@ -208,7 +206,6 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            System.out.println(uri);
             ClientRequest req = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
             ClientResponse rsp = this.client.handle(req);
@@ -249,7 +246,6 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            System.out.println(uri);
             ClientRequest req = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
             ClientResponse rsp = this.client.handle(req);
