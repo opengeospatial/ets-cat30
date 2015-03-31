@@ -6,9 +6,7 @@ import java.util.EnumMap;
 import javax.xml.validation.Schema;
 import org.opengis.cite.cat30.util.HttpMessagePart;
 import org.testng.ITestContext;
-import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.w3c.dom.Document;
@@ -27,7 +25,6 @@ public class CommonFixture {
      * HTTP client component (JAX-RS Client API).
      */
     protected Client client;
-
     /**
      * Service capabilities document (csw:Capabilities).
      */
@@ -100,25 +97,6 @@ public class CommonFixture {
     }
 
     /**
-     * Augments the test result with details about the request and response
-     * messages in the event that a test method failed. The value of the
-     * "request" and "response" attributes is a String that contains information
-     * about the content of an outgoing or incoming message: target resource,
-     * status code, headers, entity (if present). The entity is represented as a
-     * String with UTF-8 character encoding.
-     *
-     * @param result A test result.
-     */
-    @AfterMethod
-    public void setAttributesOnTestFailure(ITestResult result) {
-        if (result.getStatus() != ITestResult.FAILURE) {
-            return;
-        }
-        result.setAttribute("response", getMessageInfo(this.responseInfo));
-        result.setAttribute("request", getMessageInfo(this.requestInfo));
-    }
-
-    /**
      * Summarizes the content of an HTTP message for diagnostic purposes.
      *
      * @param msgMap An EnumMap containing information about an HTTP message.
@@ -137,6 +115,6 @@ public class CommonFixture {
             }
             info.append('\n');
         }
-        return info.toString();
+        return (info.length() > 0) ? info.toString() : "No details available.";
     }
 }

@@ -6,6 +6,7 @@
   <listeners>
     <listener class-name="org.opengis.cite.cat30.TestRunListener" />
     <listener class-name="org.opengis.cite.cat30.SuiteFixtureListener" />
+    <listener class-name="org.opengis.cite.cat30.TestFailureListener" />
   </listeners>
 
   <test name="Basic-Catalogue">
