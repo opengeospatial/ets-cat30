@@ -31,6 +31,7 @@ public class DatasetInfo {
     private final File dataFile;
     private Envelope geographicExtent;
     private List<String> recordIdentifiers;
+    private List<String> recordTitles;
 
     public DatasetInfo(File dataFile) {
         if (!dataFile.isFile()) {
@@ -69,37 +70,51 @@ public class DatasetInfo {
     }
 
     /**
-     * Returns a sequence of record identifiers found in the sample data.
+     * Returns a sequence of record identifiers (dc:identifier) found in the
+     * sample data.
      *
-     * @return A List containing the values of all dc:identifier elements
-     * appearing in the data.
+     * @return A List containing all element values.
      */
     public List<String> getRecordIdentifiers() {
         if (null == this.recordIdentifiers) {
-            this.recordIdentifiers = findRecordIdentifiers(dataFile);
+            this.recordIdentifiers = findPropertyValues(dataFile,
+                    "//dc:identifier");
         }
         return recordIdentifiers;
     }
 
     /**
-     * Extracts the record identifiers that occur in the sample data obtained
-     * from the IUT. Each csw:Record element must contain at least one
-     * dc:identifier element.
+     * Returns a sequence of record titles (dc:title) found in the sample data.
+     * At least one such element must appear in every record.
+     *
+     * @return A List containing all element values.
+     */
+    public List<String> getRecordTitles() {
+        if (null == this.recordTitles) {
+            this.recordTitles = findPropertyValues(dataFile, "//dc:title");
+        }
+        return recordTitles;
+    }
+
+    /**
+     * Evaluates an XPath expression against the sample data and returns the
+     * results as a list of string values.
      *
      * @param file A File containing catalog data (csw:GetRecordsResponse).
-     * @return A list of record identifiers; the list may be empty if none are
+     * @param xpath An XPath expression denoting a record property.
+     * @return A list of property values; the list may be empty if none are
      * found in the sample data.
      */
-    List<String> findRecordIdentifiers(File file) {
+    List<String> findPropertyValues(File file, String xpath) {
         List<String> idList = new ArrayList<>();
-        Source src = new StreamSource(dataFile);
+        Source src = new StreamSource(file);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.DCMES, "dc");
         XdmValue value = null;
         try {
-            value = XMLUtils.evaluateXPath2(src, "//dc:identifier", nsBindings);
+            value = XMLUtils.evaluateXPath2(src, xpath, nsBindings);
         } catch (SaxonApiException ex) {
             Logger.getLogger(DatasetInfo.class.getName()).log(Level.WARNING,
-                    "Failed to evaluate XPath expression.", ex);
+                    "Failed to evaluate XPath expression: " + xpath, ex);
         }
         for (XdmItem item : value) {
             idList.add(item.getStringValue());

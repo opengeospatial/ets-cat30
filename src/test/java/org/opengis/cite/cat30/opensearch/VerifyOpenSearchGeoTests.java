@@ -79,7 +79,7 @@ public class VerifyOpenSearchGeoTests {
         when(rsp.getEntity(Document.class)).thenReturn(rspEntity);
         OpenSearchGeoTests iut = new OpenSearchGeoTests();
         iut.initCommonFixture(testContext);
-        iut.initFixture(testContext);
+        iut.initOpenSearchGeoTestsFixture(testContext);
         iut.boundingBoxQuery();
     }
 }

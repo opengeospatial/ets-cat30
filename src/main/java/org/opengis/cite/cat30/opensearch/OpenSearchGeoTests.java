@@ -101,7 +101,7 @@ public class OpenSearchGeoTests extends CommonFixture {
      * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void initFixture(ITestContext testContext) {
+    public void initOpenSearchGeoTestsFixture(ITestContext testContext) {
         this.openSearchDescr = (Document) testContext.getSuite().getAttribute(
                 SuiteAttribute.OPENSEARCH_DESCR.getName());
         if (null == this.openSearchDescr) {

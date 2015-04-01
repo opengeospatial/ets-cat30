@@ -1,7 +1,6 @@
 package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.Client;
-import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import javax.xml.validation.Schema;
 import org.opengis.cite.cat30.util.HttpMessagePart;
@@ -94,27 +93,5 @@ public class CommonFixture {
     public void clearMessageSummaries() {
         this.requestInfo = new EnumMap(HttpMessagePart.class);
         this.responseInfo = new EnumMap(HttpMessagePart.class);
-    }
-
-    /**
-     * Summarizes the content of an HTTP message for diagnostic purposes.
-     *
-     * @param msgMap An EnumMap containing information about an HTTP message.
-     *
-     * @return A String summarizing the message content.
-     */
-    protected String getMessageInfo(EnumMap<HttpMessagePart, Object> msgMap) {
-        StringBuilder info = new StringBuilder();
-        for (HttpMessagePart key : msgMap.keySet()) {
-            info.append(key).append(":\n");
-            Object value = msgMap.get(key);
-            if (value.getClass().isArray()) {
-                info.append(new String((byte[]) value, StandardCharsets.UTF_8));
-            } else {
-                info.append(value.toString());
-            }
-            info.append('\n');
-        }
-        return (info.length() > 0) ? info.toString() : "No details available.";
     }
 }

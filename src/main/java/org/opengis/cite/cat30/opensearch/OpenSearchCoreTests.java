@@ -1,5 +1,18 @@
 package org.opengis.cite.cat30.opensearch;
 
+import java.util.List;
+import javax.xml.namespace.QName;
+import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.SuiteAttribute;
+import org.opengis.cite.cat30.util.DatasetInfo;
+import org.opengis.cite.cat30.util.OpenSearchTemplateUtils;
+import org.opengis.cite.cat30.util.ServiceMetadataUtils;
+import org.testng.ITestContext;
+import org.testng.SkipException;
+import org.testng.annotations.BeforeClass;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 /**
  * Verifies behavior of the SUT when processing queries that contain one or more
  * core OpenSearch parameters. The relevant query parameter bindings are shown
@@ -45,4 +58,52 @@ package org.opengis.cite.cat30.opensearch;
  */
 public class OpenSearchCoreTests {
 
+    private Document openSearchDescr;
+    private List<Node> searchTermsTemplates;
+    /**
+     * A list of record titles retrieved from the IUT.
+     */
+    private List<String> recordTitles;
+
+    /**
+     * Initializes the test fixture. A Document representing an OpenSearch
+     * description document is obtained from the test context and the URL
+     * templates it contains are extracted.
+     *
+     * @param testContext The test context containing various suite attributes.
+     */
+    @BeforeClass
+    public void initOpenSearchCoreTestsFixture(ITestContext testContext) {
+        this.openSearchDescr = (Document) testContext.getSuite().getAttribute(
+                SuiteAttribute.OPENSEARCH_DESCR.getName());
+        if (null == this.openSearchDescr) {
+            throw new SkipException("OpenSearch description not found in test context.");
+        }
+        List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(
+                this.openSearchDescr);
+        QName searchTermsParam = new QName(Namespaces.OS_GEO, "searchTerms");
+        this.searchTermsTemplates = OpenSearchTemplateUtils.filterURLTemplatesByParam(
+                urlTemplates, searchTermsParam);
+        if (this.searchTermsTemplates.isEmpty()) {
+            throw new SkipException("No URL templates containing {searchTerms} parameter.");
+        }
+        DatasetInfo dataset = (DatasetInfo) testContext.getSuite().getAttribute(
+                SuiteAttribute.DATASET.getName());
+        if (null == dataset) {
+            throw new SkipException("Dataset info not found in test context.");
+        }
+        this.recordTitles = dataset.getRecordTitles();
+    }
+
+    public void singleKeywordSearch() {
+    }
+
+    public void multipleKeywordSearch() {
+    }
+
+    public void keywordSearch_emptyResultSet() {
+    }
+
+    public void executeSampleQueries() {
+    }
 }
