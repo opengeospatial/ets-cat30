@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
+import org.opengis.cite.cat30.ReusableEntityFilter;
 import org.w3c.dom.Document;
 
 /**
@@ -31,9 +32,9 @@ public class ClientUtils {
 
     /**
      * Builds a client component for interacting with HTTP endpoints. The client
-     * will automatically redirect to the URI declared in 3xx responses. Request
-     * and response messages may be logged to a JDK logger (in the namespace
-     * "com.sun.jersey.api.client").
+     * will automatically redirect to the URI declared in 3xx responses. The
+     * connection timeout is 10 s. Request and response messages may be logged
+     * to a JDK logger (in the namespace "com.sun.jersey.api.client").
      *
      * @return A Client component.
      */
@@ -41,7 +42,10 @@ public class ClientUtils {
         ClientConfig config = new DefaultClientConfig();
         config.getProperties().put(
                 ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
+        config.getProperties().put(
+                ClientConfig.PROPERTY_CONNECT_TIMEOUT, 10000);
         Client client = Client.create(config);
+        client.addFilter(new ReusableEntityFilter());
         client.addFilter(new LoggingFilter());
         return client;
     }
@@ -122,8 +126,8 @@ public class ClientUtils {
         infoMap.put(HttpMessagePart.HEADERS, rsp.getHeaders());
         if (rsp.hasEntity()) {
             // response entities are rarely very large
-            byte[] body = rsp.getEntity(byte[].class);
-            infoMap.put(HttpMessagePart.BODY, body);
+            byte[] entity = rsp.getEntity(byte[].class);
+            infoMap.put(HttpMessagePart.BODY, entity);
         }
     }
 

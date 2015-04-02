@@ -2,6 +2,7 @@ package org.opengis.cite.cat30;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
+import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.HttpMessagePart;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -28,7 +29,13 @@ public class TestFailureListener extends TestListenerAdapter {
         Object instance = result.getInstance();
         if (CommonFixture.class.isInstance(instance)) {
             CommonFixture fixture = CommonFixture.class.cast(instance);
+            if (null != fixture.request) {
+                ClientUtils.extractRequestInfo(fixture.request, fixture.requestInfo);
+            }
             result.setAttribute("request", getMessageInfo(fixture.requestInfo));
+            if (null != fixture.response) {
+                ClientUtils.extractResponseInfo(fixture.response, fixture.responseInfo);
+            }
             result.setAttribute("response", getMessageInfo(fixture.responseInfo));
         }
     }

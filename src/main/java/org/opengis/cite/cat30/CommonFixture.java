@@ -1,6 +1,8 @@
 package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientRequest;
+import com.sun.jersey.api.client.ClientResponse;
 import java.util.EnumMap;
 import javax.xml.validation.Schema;
 import org.opengis.cite.cat30.util.HttpMessagePart;
@@ -38,6 +40,14 @@ public class CommonFixture {
      * Appendix B).
      */
     protected Schema atomSchema;
+    /**
+     * An HTTP request message.
+     */
+    protected ClientRequest request;
+    /**
+     * An HTTP response message.
+     */
+    protected ClientResponse response;
     /**
      * A Map containing information about an HTTP response message.
      */
@@ -90,7 +100,9 @@ public class CommonFixture {
     }
 
     @BeforeMethod
-    public void clearMessageSummaries() {
+    public void clearMessages() {
+        this.request = null;
+        this.response = null;
         this.requestInfo = new EnumMap(HttpMessagePart.class);
         this.responseInfo = new EnumMap(HttpMessagePart.class);
     }

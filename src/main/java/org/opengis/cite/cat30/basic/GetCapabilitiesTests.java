@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.basic;
 
-import com.sun.jersey.api.client.ClientRequest;
 import java.net.URI;
 
 import javax.ws.rs.HttpMethod;
@@ -24,16 +23,17 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMSource;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.ClientUtils;
-import org.opengis.cite.cat30.util.HttpMessagePart;
 
 /**
  * Provides tests pertaining to the <code>GetCapabilities</code> request. This
@@ -102,17 +102,18 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        ClientRequest req = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        ClientUtils.extractRequestInfo(req, this.requestInfo);
-        ClientResponse rsp = this.client.handle(req);
-        Assert.assertEquals(rsp.getStatus(),
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        ClientUtils.extractResponseInfo(rsp, this.responseInfo);
-        ByteArrayInputStream bais = new ByteArrayInputStream(
-                (byte[]) responseInfo.get(HttpMessagePart.BODY));
-        Source source = new StreamSource(bais);
+        Source source = response.getEntity(DOMSource.class);
+        try { // NOTE: bufferEntity was called by *EntityFilter
+            response.getEntityInputStream().reset();
+        } catch (IOException ex) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+        }
         Validator validator = this.cswSchema.newValidator();
         ETSAssert.assertSchemaValid(validator, source);
         URL schemaUrl = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
