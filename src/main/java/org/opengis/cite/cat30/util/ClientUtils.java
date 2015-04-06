@@ -18,9 +18,13 @@ import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.net.URI;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import org.opengis.cite.cat30.ReusableEntityFilter;
 import org.w3c.dom.Document;
 
@@ -109,6 +113,66 @@ public class ClientUtils {
     }
 
     /**
+     * Creates a copy of the given MediaType object but without any parameters.
+     *
+     * @param mediaType A MediaType descriptor.
+     * @return A new (immutable) MediaType object having the same type and
+     * subtype.
+     */
+    public static MediaType removeParameters(MediaType mediaType) {
+        return new MediaType(mediaType.getType(), mediaType.getSubtype());
+    }
+
+    /**
+     * Obtains the (XML) response entity as a JAXP Source object and resets the
+     * entity input stream for subsequent reads.
+     *
+     * @param response A representation of an HTTP response message.
+     * @param targetURI The target URI from which the entity was retrieved (may
+     * be null).
+     * @return A Source to read the entity from; its system identifier is set
+     * using the given targetURI value (this may be used to resolve any relative
+     * URIs found in the source).
+     */
+    public static Source getResponseEntityAsSource(ClientResponse response,
+            String targetURI) {
+        Source source = response.getEntity(DOMSource.class);
+        if (null != targetURI && !targetURI.isEmpty()) {
+            source.setSystemId(targetURI);
+        }
+        if (response.getEntityInputStream().markSupported()) {
+            try {
+                // NOTE: entity was buffered by client filter
+                response.getEntityInputStream().reset();
+            } catch (IOException ex) {
+                Logger.getLogger(ClientUtils.class.getName()).log(Level.WARNING,
+                        "Failed to reset response entity.", ex);
+            }
+        }
+        return source;
+    }
+
+    /**
+     * Obtains the (XML) response entity as a DOM Document and resets the entity
+     * input stream for subsequent reads.
+     *
+     * @param response A representation of an HTTP response message.
+     * @param targetURI The target URI from which the entity was retrieved (may
+     * be null).
+     * @return A Document representing the entity; its base URI is set using the
+     * given targetURI value (this may be used to resolve any relative URIs
+     * found in the document).
+     */
+    public static Document getResponseEntityAsDocument(ClientResponse response,
+            String targetURI) {
+        DOMSource domSource = (DOMSource) getResponseEntityAsSource(response,
+                targetURI);
+        Document entityDoc = (Document) domSource.getNode();
+        entityDoc.setDocumentURI(domSource.getSystemId());
+        return entityDoc;
+    }
+
+    /**
      * Extracts details about a response message into the given EnumMap object.
      * The map keys (of type {@link HttpMessagePart}) correspond to various
      * parts of the message. The message body is stored as a byte[] array.
@@ -162,14 +226,4 @@ public class ClientUtils {
         }
     }
 
-    /**
-     * Creates a copy of the given MediaType object but without any parameters.
-     *
-     * @param mediaType A MediaType descriptor.
-     * @return A new (immutable) MediaType object having the same type and
-     * subtype.
-     */
-    public static MediaType removeParameters(MediaType mediaType) {
-        return new MediaType(mediaType.getType(), mediaType.getSubtype());
-    }
 }

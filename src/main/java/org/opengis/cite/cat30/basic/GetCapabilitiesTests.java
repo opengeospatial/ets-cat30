@@ -4,7 +4,6 @@ import java.net.URI;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.transform.Source;
 import javax.xml.validation.Validator;
 
@@ -20,17 +19,10 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import javax.xml.transform.dom.DOMSource;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.ClientUtils;
@@ -108,12 +100,7 @@ public class GetCapabilitiesTests extends CommonFixture {
         Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Source source = response.getEntity(DOMSource.class);
-        try { // NOTE: bufferEntity was called by *EntityFilter
-            response.getEntityInputStream().reset();
-        } catch (IOException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-        }
+        Source source = ClientUtils.getResponseEntityAsSource(response, null);
         Validator validator = this.cswSchema.newValidator();
         ETSAssert.assertSchemaValid(validator, source);
         URL schemaUrl = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
@@ -129,15 +116,14 @@ public class GetCapabilitiesTests extends CommonFixture {
      */
     @Test(description = "Requirements: 011")
     public void getCapabilitiesWithMixedCaseParamNames() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add("Request", CAT3.GET_CAPABILITIES);
-        qryParams.add("SERVICE", CAT3.SERVICE_TYPE_CODE);
-        qryParams.add("acceptversions", CAT3.SPEC_VERSION);
-        WebResource resource = this.client.resource(
-                this.getCapabilitiesURI).queryParams(qryParams);
-        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        Document doc = rsp.getEntity(Document.class);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put("Request", CAT3.GET_CAPABILITIES);
+        qryParams.put("SERVICE", CAT3.SERVICE_TYPE_CODE);
+        qryParams.put("acceptversions", CAT3.SPEC_VERSION);
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Document doc = ClientUtils.getResponseEntityAsDocument(response, null);
         QName qName = new QName(Namespaces.CSW, "Capabilities");
         ETSAssert.assertQualifiedName(doc.getDocumentElement(), qName);
     }
@@ -154,15 +140,14 @@ public class GetCapabilitiesTests extends CommonFixture {
      */
     @Test(description = "Requirements: 012")
     public void getCapabilitiesWithInvalidParamValue() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, "getCapabilities");
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        WebResource resource = this.client.resource(
-                this.getCapabilitiesURI).queryParams(qryParams);
-        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL, CAT3.REQUEST);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, "getCapabilities");
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL, CAT3.REQUEST);
     }
 
     /**
@@ -175,14 +160,13 @@ public class GetCapabilitiesTests extends CommonFixture {
      */
     @Test(description = "Requirements: 010")
     public void getCapabilitiesIsMissingServiceParam() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
-        qryParams.add(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
-        WebResource resource = this.client.resource(
-                this.getCapabilitiesURI).queryParams(qryParams);
-        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        ETSAssert.assertExceptionReport(rsp, CAT3.MISSING_PARAM_VAL, CAT3.SERVICE);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.MISSING_PARAM_VAL, CAT3.SERVICE);
     }
 
     /**
@@ -198,15 +182,14 @@ public class GetCapabilitiesTests extends CommonFixture {
      */
     @Test(description = "Requirements: 036,037,042")
     public void getCapabilitiesWithUnsupportedVersion() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.ACCEPT_VERSIONS, "9999.12.31");
-        WebResource resource = this.client.resource(
-                this.getCapabilitiesURI).queryParams(qryParams);
-        Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        ETSAssert.assertExceptionReport(rsp, CAT3.VER_NEGOTIATION_FAILED,
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, "9999.12.31");
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.VER_NEGOTIATION_FAILED,
                 CAT3.ACCEPT_VERSIONS);
     }
 

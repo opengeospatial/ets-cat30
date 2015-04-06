@@ -59,17 +59,29 @@
     <iso:rule id="R48" context="ows:OperationsMetadata">
       <iso:assert test="ows:Constraint[ends-with(@name,'OpenSearch')]/ows:DefaultValue or 
       ows:Constraint[ends-with(@name,'OpenSearch')]//ows:Value">
-      No ows:Constraint value found for conformance class 'OpenSearch'.
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/OpenSearch'.
       </iso:assert>
       <iso:assert test="ows:Constraint[ends-with(@name,'GetCapabilities-XML')]/ows:DefaultValue or 
       ows:Constraint[ends-with(@name,'GetCapabilities-XML')]//ows:Value">
-      No ows:Constraint value found for conformance class 'GetCapabilities-XML'.
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetCapabilities-XML'.
       </iso:assert>
       <iso:assert test="ows:Constraint[ends-with(@name,'GetRecordById-XML')]/ows:DefaultValue or 
       ows:Constraint[ends-with(@name,'GetRecordById-XML')]//ows:Value">
-      No ows:Constraint value found for conformance class 'GetRecordById-XML'.
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetRecordById-XML'.
       </iso:assert>
-      <!-- TODO: Add assertions for the remaining conformance classes -->
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetRecords-Basic-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetRecords-Basic-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetRecords-Basic-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetRecords-Distributed-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetRecords-Distributed-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetRecords-Distributed-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetRecords-Distributed-KVP')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetRecords-Distributed-KVP')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetRecords-Distributed-KVP'.
+      </iso:assert>
+      <!-- TODO: Add assertions for the all other optional conformance classes -->
     </iso:rule>
   </iso:pattern>
 
@@ -88,19 +100,32 @@
     </iso:rule>
     <iso:rule context="fes:Filter_Capabilities/fes:Conformance">
       <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinSpatialFilter']/ows:DefaultValue) = 'TRUE'">
-      The filter constraint 'ImplementsMinSpatialFilter' must be 'TRUE' for all conforming implementations.
+      The filter conformance constraint 'ImplementsMinSpatialFilter' must be 'TRUE' (see OGC 09-026r1).
+      </iso:assert>
+    </iso:rule>
+    <iso:rule context="fes:Filter_Capabilities/fes:Conformance">
+      <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinimumXPath']/ows:DefaultValue) = 'TRUE'">
+      The filter conformance constraint 'ImplementsMinimumXPath' must be 'TRUE' (see OGC 09-026r1).
       </iso:assert>
     </iso:rule>
   </iso:pattern>
 
   <iso:pattern id="OperationPattern">
     <iso:p>Constraints that apply to Operation elements.</iso:p>
+    <iso:rule id="R137-R138" context="ows:Operation[@name='GetRecords']">
+      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value[1] eq $CSW_NS">
+      GetRecords: the first (default) value of the outputSchema parameter must be '<iso:value-of select="$CSW_NS"/>'  (7.3.4.4).
+      </iso:assert>
+      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value = $ATOM_NS">
+      GetRecords: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>' (7.3.4.4).
+      </iso:assert>
+    </iso:rule>
     <iso:rule id="R137-R138" context="ows:Operation[@name='GetRecordById']">
       <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value[1] eq $CSW_NS">
-      GetRecordById: the first allowed value of the outputSchema parameter must be '<iso:value-of select="$CSW_NS"/>'.
+      GetRecordById: the first (default) value of the outputSchema parameter must be '<iso:value-of select="$CSW_NS"/>' (7.4.4.4).
       </iso:assert>
-      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value eq $ATOM_NS">
-      GetRecordById: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>'.
+      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value = $ATOM_NS">
+      GetRecordById: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>' (7.4.4.4).
       </iso:assert>
     </iso:rule>
   </iso:pattern>
