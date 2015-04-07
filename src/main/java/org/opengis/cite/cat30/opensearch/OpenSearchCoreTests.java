@@ -2,6 +2,7 @@ package org.opengis.cite.cat30.opensearch;
 
 import java.util.List;
 import javax.xml.namespace.QName;
+import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.DatasetInfo;
@@ -56,7 +57,7 @@ import org.w3c.dom.Node;
  *  target="_blank">1.1 Draft 5</a></li>
  * </ul>
  */
-public class OpenSearchCoreTests {
+public class OpenSearchCoreTests extends CommonFixture {
 
     private Document openSearchDescr;
     private List<Node> searchTermsTemplates;

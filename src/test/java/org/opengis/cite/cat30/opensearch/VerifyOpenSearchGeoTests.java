@@ -24,6 +24,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.io.File;
 import java.net.URL;
 import javax.xml.validation.Schema;
+import org.mockito.Mockito;
 import org.opengis.cite.cat30.basic.VerifyGetRecordsKVPTests;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.ValidationUtils;
@@ -76,10 +77,11 @@ public class VerifyOpenSearchGeoTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/feed-1.xml"));
-        when(rsp.getEntity(Document.class)).thenReturn(rspEntity);
-        OpenSearchGeoTests iut = new OpenSearchGeoTests();
-        iut.initCommonFixture(testContext);
-        iut.initOpenSearchGeoTestsFixture(testContext);
-        iut.boundingBoxQuery();
+        OpenSearchGeoTests spy = Mockito.spy(new OpenSearchGeoTests());
+        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
+                any(ClientResponse.class), anyString());
+        spy.initCommonFixture(testContext);
+        spy.initOpenSearchGeoTestsFixture(testContext);
+        spy.boundingBoxQuery();
     }
 }

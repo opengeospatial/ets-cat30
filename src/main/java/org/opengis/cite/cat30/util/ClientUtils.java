@@ -6,7 +6,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URL;
-import java.util.EnumMap;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientRequest;
@@ -171,59 +170,4 @@ public class ClientUtils {
         entityDoc.setDocumentURI(domSource.getSystemId());
         return entityDoc;
     }
-
-    /**
-     * Extracts details about a response message into the given EnumMap object.
-     * The map keys (of type {@link HttpMessagePart}) correspond to various
-     * parts of the message. The message body is stored as a byte[] array.
-     *
-     * @param rsp An object representing an HTTP response message.
-     * @param infoMap The collection into which message elements are put; if
-     * null, a new one is created. Existing values may be replaced.
-     */
-    public static void extractResponseInfo(ClientResponse rsp,
-            EnumMap<HttpMessagePart, Object> infoMap) {
-        if (null == infoMap) {
-            infoMap = new EnumMap(HttpMessagePart.class);
-        }
-        infoMap.put(HttpMessagePart.STATUS, rsp.getStatus());
-        infoMap.put(HttpMessagePart.HEADERS, rsp.getHeaders());
-        if (rsp.hasEntity()) {
-            // response entities are rarely very large
-            byte[] entity = rsp.getEntity(byte[].class);
-            infoMap.put(HttpMessagePart.BODY, entity);
-        }
-    }
-
-    /**
-     * Extracts details about a request message into the given EnumMap object.
-     * The map keys (of type {@link HttpMessagePart}) correspond to various
-     * parts of the message. If the request contains a message body, it should
-     * be represented as a DOM Document node or as an object having a meaningful
-     * toString() implementation.
-     *
-     * @param req An object representing an HTTP request message.
-     * @param infoMap The collection into which message elements are put; if
-     * null, a new one is created. Existing values may be replaced.
-     */
-    public static void extractRequestInfo(ClientRequest req,
-            EnumMap<HttpMessagePart, Object> infoMap) {
-        if (null == infoMap) {
-            infoMap = new EnumMap(HttpMessagePart.class);
-        }
-        infoMap.put(HttpMessagePart.URI, req.getURI());
-        infoMap.put(HttpMessagePart.HEADERS, req.getHeaders());
-        Object entity = req.getEntity();
-        if (null != entity) {
-            String body;
-            if (Document.class.isInstance(entity)) {
-                Document doc = Document.class.cast(entity);
-                body = XMLUtils.writeNodeToString(doc);
-            } else {
-                body = entity.toString();
-            }
-            infoMap.put(HttpMessagePart.BODY, body);
-        }
-    }
-
 }

@@ -4,12 +4,10 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
-import java.util.EnumMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.xml.validation.Schema;
 import org.opengis.cite.cat30.util.ClientUtils;
-import org.opengis.cite.cat30.util.HttpMessagePart;
 import org.testng.ITestContext;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -52,14 +50,6 @@ public class CommonFixture {
      * An HTTP response message.
      */
     protected ClientResponse response;
-    /**
-     * A Map containing information about an HTTP response message.
-     */
-    protected EnumMap<HttpMessagePart, Object> responseInfo;
-    /**
-     * A Map containing information about an HTTP request message.
-     */
-    protected EnumMap<HttpMessagePart, Object> requestInfo;
 
     /**
      * Initializes the common test fixture with the following objects:
@@ -107,8 +97,6 @@ public class CommonFixture {
     public void clearMessages() {
         this.request = null;
         this.response = null;
-        this.requestInfo = new EnumMap(HttpMessagePart.class);
-        this.responseInfo = new EnumMap(HttpMessagePart.class);
     }
 
     /**

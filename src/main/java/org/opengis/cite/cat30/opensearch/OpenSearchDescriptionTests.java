@@ -1,28 +1,26 @@
 package org.opengis.cite.cat30.opensearch;
 
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.logging.Level;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
 import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
-import org.opengis.cite.cat30.SuiteAttribute;
+import org.opengis.cite.cat30.util.ClientUtils;
+import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.validation.RelaxNGValidator;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
 import org.testng.ITestContext;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
@@ -64,7 +62,6 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     private URI baseUri;
     private static final String SCHEMATRON_OPENSEARCH_DESCR
             = CommonFixture.ROOT_PKG_PATH + "sch/opensearch-1.1.sch";
-    private Document openSearchDescr;
 
     /**
      * Initializes the test fixture by:
@@ -82,31 +79,32 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      */
     @BeforeClass
     public void initFixture(ITestContext testContext) {
-        URL schemaUrl = getClass().getResource(CommonFixture.ROOT_PKG_PATH
+        URL rncSchema = getClass().getResource(CommonFixture.ROOT_PKG_PATH
                 + "rnc/osd-1.1-draft5.rnc");
         try {
-            this.osdValidator = new RelaxNGValidator(schemaUrl);
+            this.osdValidator = new RelaxNGValidator(rncSchema);
         } catch (SAXException | IOException ex) {
             TestSuiteLogger.log(Level.WARNING, getClass().getName(), ex);
         }
-        this.openSearchDescr = (Document) testContext.getSuite().getAttribute(
-                SuiteAttribute.OPENSEARCH_DESCR.getName());
-        if (null == this.openSearchDescr) {
-            throw new SkipException("OpenSearch description not found in test context.");
-        }
+        this.baseUri = ServiceMetadataUtils.getOperationEndpoint(
+                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
     }
 
     /**
      * [Test] Requests an OpenSearch description document as the most preferred
      * media type. The generic XML media type is included in the Accept header
-     * with a q parameter value &lt; 1 ("application/xml; q=0.5").
+     * with a q parameter value &lt; 1:
+     *
+     * <pre>Accept: application/xml; q=0.5, application/opensearchdescription+xml</pre>
      */
     @Test(description = "Requirements: 008; Tests: 008")
     public void preferOpenSearchDescription() {
-        WebResource resource = this.client.resource(this.baseUri);
         String xmlNotPreferred = MediaType.APPLICATION_XML + "; q=0.5";
-        Builder builder = resource.accept(xmlNotPreferred, CAT3.APP_OPENSEARCH_XML);
-        Document entity = builder.get(Document.class);
+        request = ClientUtils.buildGetRequest(this.baseUri, null,
+                MediaType.valueOf(xmlNotPreferred),
+                MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
+        response = this.client.handle(request);
+        Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         QName osdDocElemName = new QName(Namespaces.OSD11, "OpenSearchDescription");
         ETSAssert.assertQualifiedName(entity.getDocumentElement(), osdDocElemName);
     }
@@ -124,7 +122,11 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      */
     @Test(description = "Requirements: 021; Tests: 021")
     public void validOpenSearchDescription() throws SAXException, IOException {
-        Source entity = new DOMSource(this.openSearchDescr);
+        request = ClientUtils.buildGetRequest(this.baseUri, null,
+                MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
+                MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
+        response = this.client.handle(request);
+        Source entity = ClientUtils.getResponseEntityAsSource(response, null);
         this.osdValidator.validate(entity);
         ValidationErrorHandler err = osdValidator.getErrorHandler();
         Assert.assertFalse(err.errorsDetected(),

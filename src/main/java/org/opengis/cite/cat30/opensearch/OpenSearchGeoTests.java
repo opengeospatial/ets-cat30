@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.opensearch;
 
-import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
 import java.util.Collections;
@@ -137,10 +136,10 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element urlElem = (Element) urlTemplate;
             String mediaType = urlElem.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(urlElem, values);
-            ClientRequest req = ClientUtils.buildGetRequest(uri, null,
+            request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            ClientResponse rsp = this.client.handle(req);
-            Assert.assertEquals(rsp.getStatus(),
+            response = this.client.handle(request);
+            Assert.assertEquals(response.getStatus(),
                     ClientResponse.Status.NOT_FOUND.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         }
@@ -168,13 +167,13 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            ClientRequest req = ClientUtils.buildGetRequest(uri, null,
+            request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            ClientResponse rsp = this.client.handle(req);
-            Assert.assertEquals(rsp.getStatus(),
+            response = this.client.handle(request);
+            Assert.assertEquals(response.getStatus(),
                     ClientResponse.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-            Document entity = rsp.getEntity(Document.class);
+            Document entity = getResponseEntityAsDocument(response, null);
             String recordPath;
             if (mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
                 recordPath = "atom:feed/atom:entry";
@@ -206,10 +205,10 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            ClientRequest req = ClientUtils.buildGetRequest(uri, null,
+            request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            ClientResponse rsp = this.client.handle(req);
-            Assert.assertEquals(rsp.getStatus(),
+            response = this.client.handle(request);
+            Assert.assertEquals(response.getStatus(),
                     ClientResponse.Status.BAD_REQUEST.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         }
@@ -246,13 +245,13 @@ public class OpenSearchGeoTests extends CommonFixture {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            ClientRequest req = ClientUtils.buildGetRequest(uri, null,
+            request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            ClientResponse rsp = this.client.handle(req);
-            Assert.assertEquals(rsp.getStatus(),
+            response = this.client.handle(request);
+            Assert.assertEquals(response.getStatus(),
                     ClientResponse.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-            Document entity = rsp.getEntity(Document.class);
+            Document entity = getResponseEntityAsDocument(response, null);
             QName docElem;
             if (mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
                 docElem = new QName(Namespaces.ATOM, "feed");

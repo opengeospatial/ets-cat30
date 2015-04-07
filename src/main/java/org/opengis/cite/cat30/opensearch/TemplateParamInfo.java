@@ -4,7 +4,8 @@ import java.util.Objects;
 import javax.xml.namespace.QName;
 
 /**
- * Provides information about a URL template parameter.
+ * Provides information about a URL template parameter appearing in an
+ * OpenSearch description document.
  *
  * @see
  * <a target="_blank" href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_URL_template_syntax">OpenSearch
@@ -48,21 +49,16 @@ public class TemplateParamInfo {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
+    public boolean equals(Object that) {
+        boolean isEqual;
+        if (that == null || this.getClass() != that.getClass()) {
+            isEqual = false;
+        } else {
+            final TemplateParamInfo other = (TemplateParamInfo) that;
+            isEqual = this.name.equals(other.name)
+                    && this.isRequired == other.isRequired;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TemplateParamInfo other = (TemplateParamInfo) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (this.isRequired != other.isRequired) {
-            return false;
-        }
-        return true;
+        return isEqual;
     }
 
     /**

@@ -1,11 +1,14 @@
 package org.opengis.cite.cat30;
 
+import com.sun.jersey.api.client.ClientRequest;
+import com.sun.jersey.api.client.ClientResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.EnumMap;
+import javax.ws.rs.core.MediaType;
 import org.opengis.cite.cat30.util.ClientUtils;
-import org.opengis.cite.cat30.util.HttpMessagePart;
+import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+import org.w3c.dom.Document;
 
 /**
  * A listener that augments a test result with diagnostic information in the
@@ -29,38 +32,66 @@ public class TestFailureListener extends TestListenerAdapter {
         Object instance = result.getInstance();
         if (CommonFixture.class.isInstance(instance)) {
             CommonFixture fixture = CommonFixture.class.cast(instance);
-            if (null != fixture.request) {
-                ClientUtils.extractRequestInfo(fixture.request, fixture.requestInfo);
-            }
-            result.setAttribute("request", getMessageInfo(fixture.requestInfo));
-            if (null != fixture.response) {
-                ClientUtils.extractResponseInfo(fixture.response, fixture.responseInfo);
-            }
-            result.setAttribute("response", getMessageInfo(fixture.responseInfo));
+            result.setAttribute("request", getRequestMessageInfo(fixture.request));
+            result.setAttribute("response", getResponseMessageInfo(fixture.response));
         }
     }
 
     /**
-     * Summarizes the content of an HTTP message for diagnostic purposes.
+     * Gets diagnostic information about a request message. If the request
+     * contains a message body, it should be represented as a DOM Document node
+     * or as an object having a meaningful toString() implementation.
      *
-     * @param msgMap An EnumMap containing information gleaned from an HTTP
-     * message.
-     *
-     * @return A String summarizing the message content.
+     * @param req An object representing an HTTP request message.
+     * @return A string containing information gleaned from the request message.
      */
-    String getMessageInfo(EnumMap<HttpMessagePart, Object> msgMap) {
-        StringBuilder info = new StringBuilder();
-        for (HttpMessagePart key : msgMap.keySet()) {
-            info.append(key).append(":\n");
-            Object value = msgMap.get(key);
-            if (value.getClass().isArray()) {
-                info.append(new String((byte[]) value, StandardCharsets.UTF_8));
-            } else {
-                info.append(value.toString());
-            }
-            info.append('\n');
+    String getRequestMessageInfo(ClientRequest req) {
+        if (null == req) {
+            return "No request message.";
         }
-        return (info.length() > 0) ? info.toString() : "No details available.";
+        StringBuilder msgInfo = new StringBuilder();
+        msgInfo.append("Method: ").append(req.getMethod()).append('\n');
+        msgInfo.append("Target URI: ").append(req.getURI()).append('\n');
+        msgInfo.append("Headers: ").append(req.getHeaders()).append('\n');
+        if (null != req.getEntity()) {
+            Object entity = req.getEntity();
+            String body;
+            if (Document.class.isInstance(entity)) {
+                Document doc = Document.class.cast(entity);
+                body = XMLUtils.writeNodeToString(doc);
+            } else {
+                body = entity.toString();
+            }
+            msgInfo.append(body).append('\n');
+        }
+        return msgInfo.toString();
+    }
+
+    /**
+     * Gets diagnostic information about a response message.
+     *
+     * @param rsp An object representing an HTTP response message.
+     * @return A string containing information gleaned from the response
+     * message.
+     */
+    String getResponseMessageInfo(ClientResponse rsp) {
+        if (null == rsp) {
+            return "No response message.";
+        }
+        StringBuilder msgInfo = new StringBuilder();
+        msgInfo.append("Status: ").append(rsp.getStatus()).append('\n');
+        msgInfo.append("Headers: ").append(rsp.getHeaders()).append('\n');
+        if (rsp.hasEntity()) {
+            if (rsp.getType().isCompatible(MediaType.APPLICATION_XML_TYPE)) {
+                Document doc = ClientUtils.getResponseEntityAsDocument(rsp, null);
+                msgInfo.append(XMLUtils.writeNodeToString(doc));
+            } else {
+                byte[] body = rsp.getEntity(byte[].class);
+                msgInfo.append(new String(body, StandardCharsets.UTF_8));
+            }
+            msgInfo.append('\n');
+        }
+        return msgInfo.toString();
     }
 
 }
