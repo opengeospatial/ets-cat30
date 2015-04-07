@@ -17,10 +17,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
+import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeSuite;
 
@@ -90,13 +93,12 @@ public class SuitePreconditions {
             throw new SkipException(
                     "Failed to save GetRecords response to temp file.");
         }
-        /* TODO: uncomment block when have actual implementation
-         QName docElemName = XMLUtils.nameOfDocumentElement(new StreamSource(dataFile));
-         if (!docElemName.getLocalPart().equals("GetRecordsResponse")) {
-         throw new SkipException(
-         "Did not receive GetRecords response: " + docElemName);
-         }
-         */
+        QName docElemName = XMLUtils.nameOfDocumentElement(new StreamSource(dataFile));
+        if (!docElemName.getLocalPart().equals("GetRecordsResponse")) {
+            throw new SkipException(
+                    "fetchSampleData: Did not receive GetRecords response: "
+                    + docElemName);
+        }
         TestSuiteLogger.log(Level.INFO,
                 "fetchSampleData: Saved GetRecords response to file: "
                 + dataFile.getAbsolutePath());

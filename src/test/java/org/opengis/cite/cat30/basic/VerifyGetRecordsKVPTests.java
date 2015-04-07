@@ -25,14 +25,13 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
-import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
+import org.mockito.Mockito;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class VerifyGetRecordsKVPTests {
@@ -76,13 +75,14 @@ public class VerifyGetRecordsKVPTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
-        when(rsp.getEntity(Document.class)).thenReturn(rspEntity);
-        GetRecordsKVPTests iut = new GetRecordsKVPTests();
-        iut.initCommonFixture(testContext);
+        GetRecordsKVPTests spy = Mockito.spy(new GetRecordsKVPTests());
+        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
+                any(ClientResponse.class), anyString());
+        spy.initCommonFixture(testContext);
         // BOX2D(32.5 -117.6, 34 -115) with CRS EPSG:4326
-        iut.setExtent(buildEnvelope(1));
-        iut.setGetEndpoint(URI.create("http://localhost/csw/v3"));
-        iut.getBriefRecordsByBBOX();
+        spy.setExtent(buildEnvelope(1));
+        spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
+        spy.getBriefRecordsByBBOX();
     }
 
     @Test
@@ -99,13 +99,14 @@ public class VerifyGetRecordsKVPTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
-        when(rsp.getEntity(Document.class)).thenReturn(rspEntity);
-        GetRecordsKVPTests iut = new GetRecordsKVPTests();
-        iut.initCommonFixture(testContext);
+        GetRecordsKVPTests spy = Mockito.spy(new GetRecordsKVPTests());
+        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
+                any(ClientResponse.class), anyString());
+        spy.initCommonFixture(testContext);
         // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
-        iut.setExtent(buildEnvelope(2));
-        iut.setGetEndpoint(URI.create("http://localhost/csw/v3"));
-        iut.getBriefRecordsByBBOX();
+        spy.setExtent(buildEnvelope(2));
+        spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
+        spy.getBriefRecordsByBBOX();
     }
 
     @Test
@@ -122,13 +123,14 @@ public class VerifyGetRecordsKVPTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
-        when(rsp.getEntity(Document.class)).thenReturn(rspEntity);
-        GetRecordsKVPTests iut = new GetRecordsKVPTests();
-        iut.initCommonFixture(testContext);
+        GetRecordsKVPTests spy = Mockito.spy(new GetRecordsKVPTests());
+        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
+                any(ClientResponse.class), anyString());
+        spy.initCommonFixture(testContext);
         // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
-        iut.setExtent(buildEnvelope(2));
-        iut.setGetEndpoint(URI.create("http://localhost/csw/v3"));
-        iut.getSummaryRecordsByWGS84BBOX();
+        spy.setExtent(buildEnvelope(2));
+        spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
+        spy.getSummaryRecordsByWGS84BBOX();
     }
 
     private Envelope buildEnvelope(int id)

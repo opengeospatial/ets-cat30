@@ -1,7 +1,5 @@
 package org.opengis.cite.cat30.basic;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.*;
 
 import java.io.IOException;
@@ -22,13 +20,16 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class VerifyGetRecordByIdTests {
 
@@ -67,24 +68,23 @@ public class VerifyGetRecordByIdTests {
         Client client = mock(Client.class);
         when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
                 .thenReturn(client);
-        WebResource resource = mock(WebResource.class);
-        WebResource.Builder builder = mock(WebResource.Builder.class);
         ClientResponse rsp = mock(ClientResponse.class);
-        when(resource.accept(any(MediaType.class))).thenReturn(builder);
-        when(builder.get(ClientResponse.class)).thenReturn(rsp);
-        when(client.resource(any(URI.class))).thenReturn(resource);
-        when(resource.queryParams(any(MultivaluedMap.class))).thenReturn(resource);
-        Document entity = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/atom/entry-invalid.xml"));
+        when(client.handle(any(ClientRequest.class))).thenReturn(rsp);
         when(rsp.getStatus()).thenReturn(
                 ClientResponse.Status.OK.getStatusCode());
-        when(rsp.getEntity(Document.class)).thenReturn(entity);
-        GetRecordByIdTests iut = new GetRecordByIdTests();
-        iut.initCommonFixture(testContext);
+        when(rsp.getStatus()).thenReturn(
+                ClientResponse.Status.OK.getStatusCode());
+        Document entity = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/atom/entry-invalid.xml"));
+        GetRecordByIdTests spy = Mockito.spy(new GetRecordByIdTests());
+        Mockito.doReturn(entity).when(spy).getResponseEntityAsDocument(any(ClientResponse.class), anyString());
+        ClientRequest req = mock(ClientRequest.class);
+        Mockito.doReturn(req).when(spy).buildGetRequest(any(URI.class), any(Map.class), any(MediaType.class));
+        spy.initCommonFixture(testContext);
         List<String> idList = new ArrayList<>();
         idList.add("id-01");
-        iut.setIdList(idList);
-        iut.getRecordByIdAsAtomEntryUsingAcceptHeader();
+        spy.setIdList(idList);
+        spy.getRecordByIdAsAtomEntryUsingAcceptHeader();
     }
 
 }

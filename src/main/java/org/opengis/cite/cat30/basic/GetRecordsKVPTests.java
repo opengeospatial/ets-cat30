@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.basic;
 
-import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
@@ -140,13 +139,13 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.NAMESPACE, String.format("xmlns(tns=%s)", Namespaces.CSW));
         qryParams.put(CAT3.TYPE_NAMES, "tns:Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        Assert.assertEquals(rsp.getStatus(),
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = getResponseEntityAsDocument(response, null);
         String expr = "count(//csw:SearchResults/csw:BriefRecord) > 0";
         ETSAssert.assertXPath(expr, entity, null);
     }
@@ -163,13 +162,13 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        Assert.assertEquals(rsp.getStatus(),
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = getResponseEntityAsDocument(response, null);
         String expr = "count(//csw:SearchResults/csw:SummaryRecord) > 0";
         ETSAssert.assertXPath(expr, entity, null);
     }
@@ -197,16 +196,16 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        Assert.assertEquals(rsp.getStatus(),
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Assert.assertEquals(ClientUtils.removeParameters(rsp.getType()),
+        Assert.assertEquals(ClientUtils.removeParameters(response.getType()),
                 MediaType.APPLICATION_ATOM_XML_TYPE,
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_MEDIA_TYPE));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = getResponseEntityAsDocument(response, null);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
         String expr = "count(/atom:feed/atom:entry) > 0";
         ETSAssert.assertXPath(expr, entity, nsBindings);
@@ -240,10 +239,10 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.OUTPUT_FORMAT, "text/example");
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.WILDCARD_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL,
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.OUTPUT_FORMAT);
     }
 
@@ -261,10 +260,10 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.OUTPUT_SCHEMA, "urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0");
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL,
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.OUTPUT_SCHEMA);
     }
 
@@ -290,12 +289,10 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         qryParams.put(CAT3.BBOX,
                 "472944,5363287,492722,5455253,urn:ogc:def:crs:EPSG::0000");
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientUtils.extractRequestInfo(req, this.requestInfo);
-        ClientResponse rsp = this.client.handle(req);
-        ClientUtils.extractResponseInfo(rsp, this.responseInfo);
-        ETSAssert.assertExceptionReport(rsp, CAT3.INVALID_PARAM_VAL, CAT3.BBOX);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL, CAT3.BBOX);
     }
 
     /**
@@ -326,13 +323,13 @@ public class GetRecordsKVPTests extends CommonFixture {
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         Envelope bbox = this.geoExtent;
         qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        Assert.assertEquals(rsp.getStatus(),
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = getResponseEntityAsDocument(response, null);
         Source results = new DOMSource(entity);
         ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, results);
     }
@@ -374,13 +371,13 @@ public class GetRecordsKVPTests extends CommonFixture {
             throw new RuntimeException("Failed to create WGS84 envelope.", ex);
         }
         qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        Assert.assertEquals(rsp.getStatus(),
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = getResponseEntityAsDocument(response, null);
         Source results = new DOMSource(entity);
         ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, results);
     }

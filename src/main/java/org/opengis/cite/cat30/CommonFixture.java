@@ -3,8 +3,12 @@ package org.opengis.cite.cat30;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import java.net.URI;
 import java.util.EnumMap;
+import java.util.Map;
+import javax.ws.rs.core.MediaType;
 import javax.xml.validation.Schema;
+import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.HttpMessagePart;
 import org.testng.ITestContext;
 import org.testng.SkipException;
@@ -106,4 +110,43 @@ public class CommonFixture {
         this.requestInfo = new EnumMap(HttpMessagePart.class);
         this.responseInfo = new EnumMap(HttpMessagePart.class);
     }
+
+    /**
+     * Obtains the (XML) response entity as a DOM Document. This convenience
+     * method wraps a static method call to facilitate unit testing (Mockito
+     * workaround).
+     *
+     * @param response A representation of an HTTP response message.
+     * @param targetURI The target URI from which the entity was retrieved (may
+     * be null).
+     * @return A Document representing the entity.
+     *
+     * @see
+     * ClientUtils#getResponseEntityAsDocument(com.sun.jersey.api.client.ClientResponse,
+     * java.lang.String)
+     */
+    public Document getResponseEntityAsDocument(ClientResponse response,
+            String targetURI) {
+        return ClientUtils.getResponseEntityAsDocument(response, targetURI);
+    }
+
+    /**
+     * Builds an HTTP request message that uses the GET method. This convenience
+     * method wraps a static method call to facilitate unit testing (Mockito
+     * workaround).
+     *
+     * @param endpoint A URI indicating the target resource.
+     * @param qryParams A Map containing query parameters (may be null);
+     * @param mediaTypes A list of acceptable media types; if not specified,
+     * generic XML ("application/xml") is preferred.
+     * @return A ClientRequest object.
+     *
+     * @see ClientUtils#buildGetRequest(java.net.URI, java.util.Map,
+     * javax.ws.rs.core.MediaType...)
+     */
+    public ClientRequest buildGetRequest(URI endpoint,
+            Map<String, String> qryParams, MediaType... mediaTypes) {
+        return ClientUtils.buildGetRequest(endpoint, qryParams, mediaTypes);
+    }
+
 }

@@ -1,9 +1,6 @@
 package org.opengis.cite.cat30.basic;
 
-import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -15,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Validator;
@@ -137,15 +133,15 @@ public class GetRecordByIdTests extends CommonFixture {
      */
     @Test(description = "Requirements: 127,141")
     public void getRecordById_noMatch() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
-        qryParams.add(CAT3.ID, "urn:example:" + System.currentTimeMillis());
-        WebResource resource = this.client.resource(this.getURI).queryParams(qryParams);
-        WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.ID, "urn:example:" + System.currentTimeMillis());
+        request = ClientUtils.buildGetRequest(this.getURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.NOT_FOUND.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
     }
@@ -161,20 +157,20 @@ public class GetRecordByIdTests extends CommonFixture {
      */
     @Test(description = "Requirements: 124,134")
     public void getSummaryRecordById() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
-        qryParams.add(CAT3.ID, id);
-        WebResource resource = this.client.resource(this.getURI).queryParams(qryParams);
-        WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
+        qryParams.put(CAT3.ID, id);
+        request = ClientUtils.buildGetRequest(this.getURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         String expr = String.format("/csw:SummaryRecord/dc:identifier = '%s'",
                 id);
         ETSAssert.assertXPath(expr, entity, null);
@@ -189,21 +185,21 @@ public class GetRecordByIdTests extends CommonFixture {
      */
     @Test(description = "Requirements: 123")
     public void getBriefRecordById() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
-        qryParams.add(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
-        qryParams.add(CAT3.ID, id);
-        WebResource resource = this.client.resource(this.getURI).queryParams(qryParams);
-        WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
+        qryParams.put(CAT3.ID, id);
+        request = ClientUtils.buildGetRequest(this.getURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         String expr = String.format("/csw:BriefRecord/dc:identifier = '%s'",
                 id);
         ETSAssert.assertXPath(expr, entity, null);
@@ -220,21 +216,21 @@ public class GetRecordByIdTests extends CommonFixture {
      */
     @Test(description = "Requirements: 123")
     public void getFullRecordById() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
-        qryParams.add(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
-        qryParams.add(CAT3.ID, id);
-        WebResource resource = this.client.resource(this.getURI).queryParams(qryParams);
-        WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
+        qryParams.put(CAT3.ID, id);
+        request = ClientUtils.buildGetRequest(this.getURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         String expr = String.format("/csw:Record/dc:identifier = '%s'",
                 id);
         ETSAssert.assertXPath(expr, entity, null);
@@ -275,20 +271,20 @@ public class GetRecordByIdTests extends CommonFixture {
      */
     @Test(description = "Requirements: 003,139,140")
     public void getRecordByIdAsAtomEntryUsingAcceptHeader() {
-        MultivaluedMap<String, String> qryParams = new MultivaluedMapImpl();
-        qryParams.add(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
-        qryParams.add(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.add(CAT3.VERSION, CAT3.SPEC_VERSION);
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
-        qryParams.add(CAT3.ID, id);
-        WebResource resource = this.client.resource(this.getURI).queryParams(qryParams);
-        WebResource.Builder builder = resource.accept(MediaType.APPLICATION_ATOM_XML_TYPE);
-        ClientResponse rsp = builder.get(ClientResponse.class);
-        Assert.assertEquals(rsp.getStatus(),
+        qryParams.put(CAT3.ID, id);
+        request = buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_ATOM_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = getResponseEntityAsDocument(response, null);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
         String expr = String.format("/atom:entry/dc:identifier = '%s'",
                 id);
@@ -325,13 +321,13 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        ClientRequest req = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
-        Assert.assertEquals(rsp.getStatus(),
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = rsp.getEntity(Document.class);
+        Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
         String expr = String.format("/atom:entry/dc:identifier = '%s'",
                 id);
