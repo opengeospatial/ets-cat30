@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Validator;
@@ -25,6 +28,7 @@ import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.DatasetInfo;
+import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
@@ -37,6 +41,7 @@ import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -69,10 +74,10 @@ public class GetRecordsKVPTests extends CommonFixture {
     private Envelope geoExtent;
 
     /**
-     * A list of (Element) nodes representing bounding boxes found in the sample
-     * data.
+     * A list of record titles retrieved from the IUT.
      */
-    //private List<Node> bboxNodes;
+    private List<String> recordTitles;
+
     void setExtent(Envelope extent) {
         this.geoExtent = extent;
     }
@@ -99,15 +104,16 @@ public class GetRecordsKVPTests extends CommonFixture {
     }
 
     /**
-     * Gets the total geographic extent of the sample data obtained from the
-     * SUT. Each csw:Record element may contain at least one ows:BoundingBox (or
+     * Gets information about the sample data obtained from the IUT, including
+     * its total geographic extent and a collection of record titles. Each
+     * csw:Record element may contain at least one ows:BoundingBox (or
      * ows:WGS84BoundingBox) element that describes the spatial coverage of a
      * catalogued resource.
      *
      * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void getGeographicExtent(ITestContext testContext) {
+    public void getDatasetInfo(ITestContext testContext) {
         DatasetInfo dataset = (DatasetInfo) testContext.getSuite().getAttribute(
                 SuiteAttribute.DATASET.getName());
         if (null == dataset) {
@@ -115,6 +121,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         }
         Envelope env = dataset.getGeographicExtent();
         setExtent(env);
+        this.recordTitles = dataset.getRecordTitles();
     }
 
     /**
@@ -380,5 +387,100 @@ public class GetRecordsKVPTests extends CommonFixture {
         Document entity = getResponseEntityAsDocument(response, null);
         Source results = new DOMSource(entity);
         ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, results);
+    }
+
+    /**
+     * The <code>Filter-FES-KVP</code> conformance class requires support for
+     * text searches using the 'q' query parameter. This test submits a
+     * GetRecords request where the 'q' parameter value is a word that occurs in
+     * at least one catalog record.
+     *
+     * <p>
+     * <strong>Note: </strong>According to Table 4 in <em>OGC OpenSearch Geo and
+     * Time Extensions</em> (OGC 10-032r8), the domain of keyword matching
+     * should include the record elements indicated below.</p>
+     *
+     * <table border="1" style="border-collapse: collapse;">
+     * <thead>
+     * <tr>
+     * <th>csw:Record</th>
+     * <th>atom:entry</th>
+     * </tr>
+     * </thead>
+     * <tbody>
+     * <tr>
+     * <td>
+     * <ul>
+     * <li>dc:title</li>
+     * <li>dc:description (dct:abstract)</li>
+     * <li>dc:subject</li>
+     * </ul>
+     * </td>
+     * <td>
+     * <ul>
+     * <li>atom:title</li>
+     * <li>atom:summary</li>
+     * <li>atom:category</li>
+     * </ul>
+     * </td>
+     * </tr>
+     * </tbody>
+     * </table>
+     *
+     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <ul>
+     * <li>OGC 12-176r6, Table 1: Conformance classes [Filter-FES-KVP]</li>
+     * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
+     * <li>OGC 10-032r8, Table 4: Search operation queryable mappings</li>
+     * </ul>
+     */
+    @Test(description = "???")
+    public void basicTextSearch() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
+        int randomIndex = ThreadLocalRandom.current().nextInt(this.recordTitles.size());
+        String[] titleWords = this.recordTitles.get(randomIndex).split("\\s+");
+        String keyword = titleWords[titleWords.length - 1];
+        qryParams.put(CAT3.Q, keyword);
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        QName recordName = new QName(Namespaces.CSW, "Record");
+        NodeList recordList = entity.getElementsByTagNameNS(
+                recordName.getNamespaceURI(), recordName.getLocalPart());
+        Assert.assertTrue(recordList.getLength() > 0,
+                ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
+        ETSAssert.assertTextOccurs(keyword, recordList);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request where the 'q' parameter value is
+     * randomly generated text. The result set is expected to be empty.
+     */
+    @Test(description = "???")
+    public void textSearchProducesEmptyResultSet() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
+        qryParams.put(CAT3.Q, Records.generateRandomText());
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        ETSAssert.assertEmptyResultSet(entity);
     }
 }

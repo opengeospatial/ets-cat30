@@ -7,11 +7,13 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-04-DD)</h2>
-    <p>This release includes the following enhancements:</p>
+    <h2>${project.version} (2015-04-09)</h2>
+    <p>This release extends the test suite to cover basic text search:</p>
     <ul>
-      <li style="list-style: square;">Add tests for OpenSearch queries with 
-      the searchTerms parameter (text search)</li>
+      <li style="list-style: square;">Add tests for GetRecords (KVP) request with 
+      the 'q' query parameter</li>
+      <li style="list-style: square;">Add tests for OpenSearch queries with the 
+      searchTerms parameter</li>
     </ul>
 
     <h2>0.3 (2015-03-31)</h2>

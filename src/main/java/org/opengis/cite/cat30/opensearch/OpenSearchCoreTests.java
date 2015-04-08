@@ -5,14 +5,9 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
-import javax.xml.transform.dom.DOMSource;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmValue;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
 import org.opengis.cite.cat30.ErrorMessage;
@@ -22,9 +17,8 @@ import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.OpenSearchTemplateUtils;
+import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
-import org.opengis.cite.cat30.util.TestSuiteLogger;
-import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.SkipException;
@@ -132,7 +126,7 @@ public class OpenSearchCoreTests extends CommonFixture {
             throw new AssertionError("No URL templates containing {searchTerms} parameter.");
         }
         Map<QName, String> values = new HashMap<>();
-        values.put(SEARCH_TERMS_PARAM, generateRandomCharSequence());
+        values.put(SEARCH_TERMS_PARAM, Records.generateRandomText());
         for (Node template : this.searchTermsTemplates) {
             Element urlElem = (Element) template;
             String mediaType = urlElem.getAttribute("type");
@@ -185,24 +179,7 @@ public class OpenSearchCoreTests extends CommonFixture {
                     recordName.getNamespaceURI(), recordName.getLocalPart());
             Assert.assertTrue(records.getLength() > 0,
                     ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
-            for (int i = 0; i < records.getLength(); i++) {
-                Element record = (Element) records.item(i);
-                // case-insensitive match of text content in all child elements
-                String expr = String.format("child::*[matches(., '%s', 'i')]", searchTerm);
-                try {
-                    XdmValue result = XMLUtils.evaluateXPath2(
-                            new DOMSource(record), expr, null);
-                    Assert.assertTrue(result.size() > 0,
-                            ErrorMessage.format(ErrorMessageKeys.XPATH_RESULT,
-                                    getRecordId(record), expr));
-                    TestSuiteLogger.log(Level.FINE, getRecordId(record)
-                            + "keywordSearch - matching fields:\n"
-                            + XMLUtils.writeXdmValueToString(result));
-                } catch (SaxonApiException sae) {
-                    throw new AssertionError(
-                            "Cannot evaluate XPath expression: " + expr, sae);
-                }
-            }
+            ETSAssert.assertTextOccurs(searchTerm, records);
         }
     }
 
@@ -210,41 +187,5 @@ public class OpenSearchCoreTests extends CommonFixture {
     }
 
     public void executeSampleQueries() {
-    }
-
-    /**
-     * Generates a random sequence of 5-14 characters in the range [a-z].
-     *
-     * @return A String containing lower case letters (Latin alphabet).
-     */
-    String generateRandomCharSequence() {
-        Random r = new Random();
-        int length = r.nextInt(10) + 5;
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            char letter = (char) (r.nextInt(26) + 'a');
-            str.append(letter);
-        }
-        return str.toString();
-    }
-
-    /**
-     * Gets the identifier of the given record representation.
-     *
-     * @param record An Element node representing an entry in a result set
-     * (csw:Record or atom:entry).
-     * @return The element name with a record identifier appended (the first
-     * identifier if there is more than one).
-     */
-    String getRecordId(Element record) {
-        StringBuilder str = new StringBuilder(record.getNodeName());
-        NodeList idList = record.getElementsByTagNameNS(Namespaces.DCMES, "identifier");
-        if (idList.getLength() == 0) {
-            idList = record.getElementsByTagNameNS(Namespaces.ATOM, "id");
-        }
-        if (idList.getLength() > 0) {
-            str.append("[").append(idList.item(0).getTextContent()).append("]");
-        }
-        return str.toString();
     }
 }

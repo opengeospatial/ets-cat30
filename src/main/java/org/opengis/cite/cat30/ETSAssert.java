@@ -1,23 +1,28 @@
 package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.ClientResponse;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
 import org.opengis.cite.cat30.util.NamespaceBindings;
+import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.SpatialUtils;
-import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.cite.geomatics.SpatialAssert;
@@ -30,11 +35,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Provides a set of custom assertion methods.
  */
 public class ETSAssert {
+
+    private static final Logger LOGR = Logger.getLogger(
+            ETSAssert.class.getPackage().getName());
 
     private ETSAssert() {
     }
@@ -89,7 +98,7 @@ public class ETSAssert {
         } catch (XPathExpressionException xpe) {
             String msg = ErrorMessage
                     .format(ErrorMessageKeys.XPATH_ERROR, expr);
-            TestSuiteLogger.log(Level.WARNING, msg, xpe);
+            LOGR.log(Level.WARNING, msg, xpe);
             throw new AssertionError(msg);
         }
         Element elemNode;
@@ -115,7 +124,7 @@ public class ETSAssert {
         validator.setErrorHandler(errHandler);
         try {
             validator.validate(source);
-        } catch (Exception e) {
+        } catch (SAXException | IOException e) {
             throw new AssertionError(ErrorMessage.format(
                     ErrorMessageKeys.XML_ERROR, e.getMessage()));
         }
@@ -275,5 +284,34 @@ public class ETSAssert {
                 throw new AssertionError("Unknown content: " + docElem.getNodeName());
         }
         assertXPath(xpath, docElem, nsBindings);
+    }
+
+    /**
+     * Asserts that the given text value occurs in the content of at least one
+     * field in all of the given records. The comparison is not case-sensitive.
+     *
+     * @param expectedText The expected text.
+     * @param recordList A list of nodes representing catalog records
+     * (csw:Record, atom:entry).
+     */
+    public static void assertTextOccurs(String expectedText, NodeList recordList) {
+        for (int i = 0; i < recordList.getLength(); i++) {
+            Element record = (Element) recordList.item(i);
+            // case-insensitive match of text content in all child elements
+            String expr = String.format("child::*[matches(., '%s', 'i')]", expectedText);
+            try {
+                XdmValue result = XMLUtils.evaluateXPath2(
+                        new DOMSource(record), expr, null);
+                Assert.assertTrue(result.size() > 0,
+                        ErrorMessage.format(ErrorMessageKeys.XPATH_RESULT,
+                                Records.getRecordId(record), expr));
+                LOGR.log(Level.FINE, "In {0} found matching fields for ''{1}'':\n{2}",
+                        new Object[]{Records.getRecordId(record), expectedText,
+                            XMLUtils.writeXdmValueToString(result)});
+            } catch (SaxonApiException sae) {
+                throw new AssertionError(
+                        "Cannot evaluate XPath expression: " + expr, sae);
+            }
+        }
     }
 }

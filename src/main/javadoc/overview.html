@@ -77,13 +77,55 @@ dt {
       <dd>Support for OpenSearch 1.1 parameters, including extensions for simple 
     spatial (bounding box) queries.</dd>
     </dl>
+    
+    <p>Several namespace bindings are assumed in this documentation (see below). 
+    However, in an instance document (such as a request or response entity) the 
+    actual prefix bound to a given namespace is not significant; any legal 
+    <a target="_blank" href="http://www.w3.org/TR/xml-names/#NT-NCName">NCName</a> 
+    may be used.</p>
+
+    <table border="1" style="border-collapse: collapse;">
+      <caption>Table 1 - Namespace bindings</caption>
+      <thead>
+        <tr>
+          <th>Prefix</th>
+          <th>Namespace name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>atom</td>
+          <td>http://www.w3.org/2005/Atom</td>
+        </tr>
+        <tr>
+          <td>csw</td>
+          <td>http://www.opengis.net/cat/csw/3.0</td>
+        </tr>
+        <tr>
+          <td>dc</td>
+          <td>http://purl.org/dc/elements/1.1/</td>
+        </tr>
+        <tr>
+          <td>dct</td>
+          <td>http://purl.org/dc/terms/</td>
+        </tr>
+        <tr>
+          <td>georss</td>
+          <td>http://www.georss.org/georss/10</td>
+        </tr>
+        <tr>
+          <td>os</td>
+          <td>http://a9.com/-/spec/opensearch/1.1/</td>
+        </tr>
+      </tbody>
+    </table>
 
     <p>The test run arguments are summarized in the following table. The <em>Obligation</em> 
 	descriptor can have the following values: M (mandatory), O (optional), or C 
 	(conditional).</p>
 
     <table border="1" style="border-collapse: collapse;">
-      <caption>Test run arguments</caption>
+      <caption>Table 2 - Test run arguments</caption>
       <thead>
         <tr>
           <th>Name</th>
