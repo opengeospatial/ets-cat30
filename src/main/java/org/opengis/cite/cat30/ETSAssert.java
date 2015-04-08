@@ -3,6 +3,7 @@ package org.opengis.cite.cat30;
 import com.sun.jersey.api.client.ClientResponse;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
@@ -249,5 +250,30 @@ public class ETSAssert {
                 throw new AssertionError(msg.toString(), fex);
             }
         }
+    }
+
+    /**
+     * Asserts that the given response entity includes no search results.
+     *
+     * @param entity A Document representing a search response (with atom:feed
+     * or csw:GetRecordsResponse as the expected document element).
+     */
+    public static void assertEmptyResultSet(Document entity) {
+        Map<String, String> nsBindings = new HashMap<>();
+        nsBindings.put(Namespaces.ATOM, "atom");
+        nsBindings.put(Namespaces.OSD11, "os");
+        String xpath;
+        Element docElem = entity.getDocumentElement();
+        switch (docElem.getNamespaceURI()) {
+            case Namespaces.ATOM:
+                xpath = "os:totalResults = 0 and count(atom:entry) = 0";
+                break;
+            case Namespaces.CSW:
+                xpath = "csw:SearchResults/@numberOfRecordsMatched = 0 and count(csw:SearchResults/*) = 0";
+                break;
+            default:
+                throw new AssertionError("Unknown content: " + docElem.getNodeName());
+        }
+        assertXPath(xpath, docElem, nsBindings);
     }
 }

@@ -70,4 +70,28 @@ public class VerifyETSAssert {
         String xpath = "//ows:OperationsMetadata/ows:Constraint[@name='XMLEncoding']/ows:DefaultValue = 'TRUE'";
         ETSAssert.assertXPath(xpath, doc, null);
     }
+
+    @Test
+    public void emptyAtomFeed() throws SAXException, IOException {
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/atom/feed-empty.xml"));
+        ETSAssert.assertEmptyResultSet(doc);
+    }
+
+    @Test
+    public void searchResponseNotEmpty() throws SAXException, IOException {
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("csw:SearchResults/@numberOfRecordsMatched = 0");
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/rsp/GetRecordsResponse-1.xml"));
+        ETSAssert.assertEmptyResultSet(doc);
+    }
+
+    @Test
+    public void emptySearchResponse() throws SAXException, IOException {
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/rsp/GetRecordsResponse-empty.xml"));
+        ETSAssert.assertEmptyResultSet(doc);
+    }
+
 }

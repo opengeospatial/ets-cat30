@@ -41,6 +41,7 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.XsltCompiler;
@@ -428,5 +429,34 @@ public class XMLUtils {
             nodes.add(nodeList.item(i));
         }
         return nodes;
+    }
+
+    /**
+     * Writes the content of an XdmValue sequence to a string. Each item in the
+     * sequence is either an atomic value or a node.
+     *
+     * @param value A value in the XDM data model.
+     * @return A String representing the content of the sequence.
+     *
+     * @see
+     * <a target="_blank" href="http://www.saxonica.com/html/documentation/javadoc/net/sf/saxon/s9api/XdmValue.html">Saxon
+     * API: XdmValue</a>
+     * @see
+     * <a target="_blank" href="http://www.w3.org/TR/xpath-datamodel/">XQuery
+     * 1.0 and XPath 2.0 Data Model (XDM) (Second Edition)</a>
+     */
+    public static String writeXdmValueToString(XdmValue value) {
+        StringBuilder str = new StringBuilder();
+        for (XdmItem item : value) {
+            if (item.isAtomicValue()) {
+                str.append(item.getStringValue());
+            } else {
+                XdmNode node = (XdmNode) item;
+                str.append(node.getNodeName()).append(": ");
+                str.append(node.getStringValue());
+            }
+            str.append('\n');
+        }
+        return str.toString();
     }
 }
