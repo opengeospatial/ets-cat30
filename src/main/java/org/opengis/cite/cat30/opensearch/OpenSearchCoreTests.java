@@ -183,9 +183,29 @@ public class OpenSearchCoreTests extends CommonFixture {
         }
     }
 
-    public void multipleKeywordSearch() {
+    /**
+     * Executes example queries defined in the OpenSearch description document.
+     * It is recommended that the document contains at least one query having
+     * role="example" in order to allow testing or demonstration of the search
+     * engine.
+     *
+     * @see
+     * <a target="_blank" href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_Query_element">OpenSearch
+     * Query element</a>
+     * @see
+     * <a target="_blank" href="http://www.opensearch.org/Documentation/Developer_best_practices_guide">Developer
+     * best practices guide</a>
+     */
+    @Test(description = "OpenSearch recommended practice")
+    public void executeExampleQueries() {
+        List<Node> exampleQueryList = ServiceMetadataUtils.getOpenSearchQueriesByRole(
+                this.openSearchDescr, new QName(Namespaces.OSD11, "example"));
+        if (exampleQueryList.isEmpty()) {
+            throw new SkipException("No example queries found in OpenSearch description.");
+        }
+        // TODO: Execute queries
     }
 
-    public void executeSampleQueries() {
+    public void multipleKeywordSearch() {
     }
 }

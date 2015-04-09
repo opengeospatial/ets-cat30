@@ -8,8 +8,10 @@
     <h1>Release Notes</h1>
 
     <h2>${project.version} (2015-04-09)</h2>
-    <p>This release extends the test suite to cover basic text search:</p>
+    <p>This release extends the test suite to cover basic text and record searches:</p>
     <ul>
+      <li style="list-style: square;">Add test for GetRecords (KVP) request with 
+      the 'recordIds' query parameter</li>
       <li style="list-style: square;">Add tests for GetRecords (KVP) request with 
       the 'q' query parameter</li>
       <li style="list-style: square;">Add tests for OpenSearch queries with the 

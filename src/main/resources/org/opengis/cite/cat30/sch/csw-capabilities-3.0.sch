@@ -81,7 +81,62 @@
       ows:Constraint[ends-with(@name,'GetRecords-Distributed-KVP')]//ows:Value">
       No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetRecords-Distributed-KVP'.
       </iso:assert>
-      <!-- TODO: Add assertions for the all other optional conformance classes -->
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetRecords-Async-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetRecords-Async-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetRecords-Async-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetRecords-Async-KVP')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetRecords-Async-KVP')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetRecords-Async-KVP'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetDomain-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetDomain-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetDomain-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'GetDomain-KVP')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'GetDomain-KVP')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/GetDomain-KVP'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Transaction')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Transaction')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Transaction'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Harvest-Basic-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Harvest-Basic-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Harvest-Basic-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Harvest-Basic-KVP')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Harvest-Basic-KVP')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Harvest-Basic-KVP'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Harvest-Async-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Harvest-Async-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Harvest-Async-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Harvest-Async-KVP')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Harvest-Async-KVP')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Harvest-Async-KVP'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Harvest-Periodic-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Harvest-Periodic-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Harvest-Periodic-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Harvest-Periodic-KVP')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Harvest-Periodic-KVP')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Harvest-Periodic-KVP'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Filter-CQL')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Filter-CQL')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Filter-CQL'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Filter-FES-XML')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Filter-FES-XML')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Filter-FES-XML'.
+      </iso:assert>
+      <iso:assert test="ows:Constraint[ends-with(@name,'Filter-FES-KVP-Advanced')]/ows:DefaultValue or 
+      ows:Constraint[ends-with(@name,'Filter-FES-KVP-Advanced')]//ows:Value">
+      No ows:Constraint value found for conformance class 'http://www.opengis.net/spec/csw/3.0/conf/Filter-FES-KVP-Advanced'.
+      </iso:assert>
     </iso:rule>
   </iso:pattern>
 
@@ -118,6 +173,15 @@
       </iso:assert>
       <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value = $ATOM_NS">
       GetRecords: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>' (7.3.4.4).
+      </iso:assert>
+      <iso:assert test="ows:Parameter[matches(@name,'bbox','i')]">
+      GetRecords: 'bbox' parameter is missing (Table 6, Bounding box search).
+      </iso:assert>
+      <iso:assert test="ows:Parameter[matches(@name,'recordIds','i')]">
+      GetRecords: 'recordIds' parameter is missing (Table 6, Record search).
+      </iso:assert>
+      <iso:assert test="ows:Parameter[matches(@name,'q','i')]">
+      GetRecords: 'q' parameter is missing (Table 6, Text search).
       </iso:assert>
     </iso:rule>
     <iso:rule id="R137-R138" context="ows:Operation[@name='GetRecordById']">

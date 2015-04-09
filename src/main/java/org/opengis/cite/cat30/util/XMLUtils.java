@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,27 +77,31 @@ public class XMLUtils {
     }
 
     /**
-     * Writes the content of a DOM Node to a String. The XML declaration is
-     * always omitted.
+     * Writes the content of a DOM Node to a string. The XML declaration is
+     * omitted and the character encoding is set to "US-ASCII" (any character
+     * outside of this set is serialized as a numeric character reference).
      *
      * @param node The DOM Node to be serialized.
      * @return A String representing the content of the given node.
      */
     public static String writeNodeToString(Node node) {
-        StringWriter writer = null;
+        if (null == node) {
+            return "";
+        }
+        Writer writer = null;
         try {
             Transformer idTransformer = TransformerFactory.newInstance()
                     .newTransformer();
             Properties outProps = new Properties();
-            outProps.setProperty("encoding", "UTF-16");
-            outProps.setProperty("omit-xml-declaration", "yes");
-            outProps.setProperty("indent", "yes");
+            outProps.setProperty(OutputKeys.ENCODING, "US-ASCII");
+            outProps.setProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            outProps.setProperty(OutputKeys.INDENT, "yes");
             idTransformer.setOutputProperties(outProps);
             writer = new StringWriter();
             idTransformer.transform(new DOMSource(node), new StreamResult(
                     writer));
         } catch (TransformerException ex) {
-            TestSuiteLogger.log(Level.WARNING, "Failed to serialize DOM node: "
+            TestSuiteLogger.log(Level.WARNING, "Failed to serialize node "
                     + node.getNodeName(), ex);
         }
         return writer.toString();

@@ -87,15 +87,15 @@ public class ServiceMetadataUtils {
 
     /**
      * Returns a list of nodes representing the URL templates defined in an
-     * OpenSearch description document. Each node in the list will be associated
-     * with an unmodifiable {@code List<TemplateParamInfo>} containing
-     * information about the declared template parameters; it can be accessed
-     * via {@link Node#getUserData(java.lang.String) getUserData} using the key
-     * value {@link #URL_TEMPLATE_PARAMS}.
+     * OpenSearch description document. Each node in the resulting list will be
+     * associated with an unmodifiable {@code List<TemplateParamInfo>}
+     * containing information about the declared template parameters; it can be
+     * accessed via {@link Node#getUserData(java.lang.String) getUserData} using
+     * the key value {@link #URL_TEMPLATE_PARAMS}.
      *
      * @param osDescr An OpenSearchDescription document
      * (osd:OpenSearchDescription).
-     * @return A sequence of Element nodes (osd:Url) containing URL templates.
+     * @return A sequence of Element nodes (os:Url) containing URL templates.
      */
     public static List<Node> getOpenSearchURLTemplates(final Document osDescr) {
         List<Node> urlList = new ArrayList<>();
@@ -122,6 +122,30 @@ public class ServiceMetadataUtils {
             urlList.add(urlElem);
         }
         return urlList;
+    }
+
+    /**
+     * Returns a list of nodes representing queries defined in an OpenSearch
+     * description document.
+     *
+     * @param osDescr An OpenSearchDescription document.
+     * @param role The (qualified) name of a query role.
+     * @return A sequence of Element nodes (os:Query) that define specific
+     * search requests; the list may be empty if no matching queries are found.
+     */
+    public static List<Node> getOpenSearchQueriesByRole(final Document osDescr,
+            QName role) {
+        List<Node> queryList = new ArrayList<>();
+        NodeList nodes = osDescr.getElementsByTagNameNS(Namespaces.OSD11, "Query");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element query = (Element) nodes.item(i);
+            QName roleName = OpenSearchTemplateUtils.getTemplateParameterName(
+                    query.getAttribute("role"), query);
+            if (roleName.equals(role)) {
+                queryList.add(query);
+            }
+        }
+        return queryList;
     }
 
 }

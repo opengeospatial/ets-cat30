@@ -3,6 +3,7 @@ package org.opengis.cite.cat30.basic;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,8 @@ import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -72,11 +75,14 @@ public class GetRecordsKVPTests extends CommonFixture {
      * An Envelope defining the total geographic extent of the sample data.
      */
     private Envelope geoExtent;
-
     /**
      * A list of record titles retrieved from the IUT.
      */
     private List<String> recordTitles;
+    /**
+     * A list of record identifiers retrieved from the IUT.
+     */
+    private List<String> recordIdentifiers;
 
     void setExtent(Envelope extent) {
         this.geoExtent = extent;
@@ -104,11 +110,11 @@ public class GetRecordsKVPTests extends CommonFixture {
     }
 
     /**
-     * Gets information about the sample data obtained from the IUT, including
-     * its total geographic extent and a collection of record titles. Each
-     * csw:Record element may contain at least one ows:BoundingBox (or
-     * ows:WGS84BoundingBox) element that describes the spatial coverage of a
-     * catalogued resource.
+     * Gets information about the sample data obtained from the IUT, including:
+     * its total geographic extent; a collection of record titles; and a set of
+     * record identifiers. Each csw:Record element may contain at least one
+     * ows:BoundingBox (or ows:WGS84BoundingBox) element that describes the
+     * spatial coverage of a catalogued resource.
      *
      * @param testContext The test context containing various suite attributes.
      */
@@ -122,6 +128,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Envelope env = dataset.getGeographicExtent();
         setExtent(env);
         this.recordTitles = dataset.getRecordTitles();
+        this.recordIdentifiers = dataset.getRecordIdentifiers();
     }
 
     /**
@@ -342,7 +349,7 @@ public class GetRecordsKVPTests extends CommonFixture {
     }
 
     /**
-     * [Test] Submits a GetRecords request with a BBOX parameter that uses the
+     * [Test] Submits a GetRecords request with a 'bbox' parameter that uses the
      * default CRS ("urn:ogc:def:crs:OGC:1.3:CRS84"). The summary records in the
      * response must all contain an ows:BoundingBox (or ows:WGS84BoundingBox)
      * element that intersects the specified bounding box.
@@ -390,6 +397,51 @@ public class GetRecordsKVPTests extends CommonFixture {
     }
 
     /**
+     * [Test] Submits a GetRecords request with a 'recordIds' parameter that
+     * contains a (comma-separated) list of two record identifiers. Two matching
+     * records (csw:SummaryRecord) are expected in the response.
+     */
+    @Test(description = "OGC 12-176, Table 6 - Record search")
+    public void getMultipleRecordsById() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
+        List<String> idList = new ArrayList<>();
+        // select first and last identifiers
+        idList.add(this.recordIdentifiers.get(0));
+        StringBuilder paramValue = new StringBuilder();
+        paramValue.append(idList.get(0)).append(',');
+        idList.add(this.recordIdentifiers.get(this.recordIdentifiers.size() - 1));
+        paramValue.append(idList.get(1));
+        qryParams.put(CAT3.REC_ID_LIST, paramValue.toString());
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        QName recordName = new QName(Namespaces.CSW, "SummaryRecord");
+        NodeList recordList = entity.getElementsByTagNameNS(
+                recordName.getNamespaceURI(), recordName.getLocalPart());
+        Assert.assertEquals(recordList.getLength(), 2,
+                ErrorMessage.format(ErrorMessageKeys.RESULT_SET_SIZE, recordName));
+        for (int i = 0; i < recordList.getLength(); i++) {
+            Element record = (Element) recordList.item(i);
+            NodeList identifiers = record.getElementsByTagNameNS(Namespaces.DCMES, "identifier");
+            List<Node> recIdList = XMLUtils.getNodeListAsList(identifiers);
+            // retain common elements (intersection)
+            recIdList.retainAll(idList);
+            Assert.assertFalse(recIdList.isEmpty(),
+                    ErrorMessage.format(ErrorMessageKeys.ID_NOT_FOUND,
+                            Records.getRecordId(record)));
+        }
+    }
+
+    /**
      * The <code>Filter-FES-KVP</code> conformance class requires support for
      * text searches using the 'q' query parameter. This test submits a
      * GetRecords request where the 'q' parameter value is a word that occurs in
@@ -434,7 +486,7 @@ public class GetRecordsKVPTests extends CommonFixture {
      * <li>OGC 10-032r8, Table 4: Search operation queryable mappings</li>
      * </ul>
      */
-    @Test(description = "???")
+    @Test(description = "OGC 12-176, Table 6 - Text search")
     public void basicTextSearch() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
@@ -465,7 +517,7 @@ public class GetRecordsKVPTests extends CommonFixture {
      * [Test] Submits a GetRecords request where the 'q' parameter value is
      * randomly generated text. The result set is expected to be empty.
      */
-    @Test(description = "???")
+    @Test(description = "OGC 12-176, Table 6 - Text search")
     public void textSearchProducesEmptyResultSet() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
