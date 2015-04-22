@@ -104,4 +104,23 @@ public class VerifyOpenSearchCoreTests {
         spy.initOpenSearchCoreTestsFixture(testContext);
         spy.singleKeywordSearch();
     }
+
+    @Test
+    public void executeSampleQuery() throws SAXException, IOException {
+        Client client = mock(Client.class);
+        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
+                .thenReturn(client);
+        ClientResponse rsp = mock(ClientResponse.class);
+        when(client.handle(any(ClientRequest.class))).thenReturn(rsp);
+        when(rsp.getStatus()).thenReturn(
+                ClientResponse.Status.OK.getStatusCode());
+        Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/rsp/feed-1.xml"));
+        OpenSearchCoreTests spy = Mockito.spy(new OpenSearchCoreTests());
+        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
+                any(ClientResponse.class), anyString());
+        spy.initCommonFixture(testContext);
+        spy.initOpenSearchCoreTestsFixture(testContext);
+        spy.executeExampleQueries();
+    }
 }

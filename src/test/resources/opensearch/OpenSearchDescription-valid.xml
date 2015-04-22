@@ -10,7 +10,7 @@
   <LongName>Example.com Web Search Service</LongName>
   <Image height="64" width="64" type="image/png">http://example.com/websearch.png</Image>
   <Image height="16" width="16" type="image/vnd.microsoft.icon">http://example.com/websearch.ico</Image>
-  <Query role="example" searchTerms="cat" />
+  <Query role="example" title="Sample spatial search" geo:box="-6.171,44.792,17.92,68.41" />
   <Developer>Example.com Development Team</Developer>
   <Attribution>Example.com, Inc., All Rights Reserved</Attribution>
   <SyndicationRight>open</SyndicationRight>

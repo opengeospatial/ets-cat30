@@ -12,6 +12,8 @@
     <ul>
       <li style="list-style: square;">Add tests for basic text search with 
       multiple terms (implicit AND)</li>
+      <li style="list-style: square;">Verify sample queries specified in OpenSearch 
+      description</li>
     </ul>
 
     <h2>0.4 (2015-04-09)</h2>

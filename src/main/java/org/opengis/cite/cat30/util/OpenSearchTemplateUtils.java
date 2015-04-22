@@ -4,6 +4,8 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -13,6 +15,7 @@ import javax.xml.namespace.QName;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.opensearch.TemplateParamInfo;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -26,8 +29,8 @@ public class OpenSearchTemplateUtils {
      *
      * @param param A parameter in a URL template (e.g. "searchTerms",
      * "geo:box?").
-     * * @param contextNode The context node used to perform a namespace lookup
-     * if necessary.
+     * @param contextNode The context node; this is used to perform a namespace
+     * lookup if necessary.
      * @return A QName representing the name of the template parameter.
      */
     public static QName getTemplateParameterName(String param, Node contextNode) {
@@ -162,6 +165,30 @@ public class OpenSearchTemplateUtils {
             default:
                 paramInfo.setType(String.class);
         }
+    }
+
+    /**
+     * Extracts the actual parameters from an OpenSearch query specification.
+     *
+     * @param query A Node representing an osd:Query element.
+     * @return A Map containing the query parameters, where the key is the
+     * (qualified) parameter name.
+     */
+    public static Map<QName, String> getQueryParameters(Node query) {
+        Map<QName, String> params = new HashMap<>();
+        NamedNodeMap attribs = query.getAttributes();
+        List<String> metadataAttribs = Arrays.asList(
+                new String[]{"role", "title", "totalResults"});
+        for (int i = 0; i < attribs.getLength(); i++) {
+            Node attr = attribs.item(i);
+            String attrName = attr.getNodeName();
+            if (metadataAttribs.contains(attrName)) {
+                continue; //ignore metadata attributes
+            }
+            QName paramName = getTemplateParameterName(attrName, query);
+            params.put(paramName, attr.getNodeValue());
+        }
+        return params;
     }
 
 }

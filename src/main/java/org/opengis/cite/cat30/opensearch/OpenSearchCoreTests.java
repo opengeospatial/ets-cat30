@@ -79,6 +79,7 @@ public class OpenSearchCoreTests extends CommonFixture {
     private static final QName SEARCH_TERMS_PARAM = new QName(
             Namespaces.OSD11, "searchTerms");
     private Document openSearchDescr;
+    private List<Node> templates;
     private List<Node> searchTermsTemplates;
     /**
      * Information about the sample data retrieved from the IUT.
@@ -107,11 +108,11 @@ public class OpenSearchCoreTests extends CommonFixture {
         if (null == this.openSearchDescr) {
             throw new SkipException("OpenSearch description not found in test context.");
         }
-        List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(
+        this.templates = ServiceMetadataUtils.getOpenSearchURLTemplates(
                 this.openSearchDescr);
         QName searchTermsParam = new QName(Namespaces.OSD11, "searchTerms");
         this.searchTermsTemplates = OpenSearchTemplateUtils.filterURLTemplatesByParam(
-                urlTemplates, searchTermsParam);
+                templates, searchTermsParam);
         DatasetInfo dataset = (DatasetInfo) testContext.getSuite().getAttribute(
                 SuiteAttribute.DATASET.getName());
         if (null == dataset) {
@@ -136,6 +137,9 @@ public class OpenSearchCoreTests extends CommonFixture {
         for (Node template : this.searchTermsTemplates) {
             Element urlElem = (Element) template;
             String mediaType = urlElem.getAttribute("type");
+            if (!mediaType.contains("xml")) {
+                continue; // ignore non-XML media types
+            }
             URI targetURI = OpenSearchTemplateUtils.buildRequestURI(urlElem, values);
             request = ClientUtils.buildGetRequest(targetURI, null,
                     MediaType.valueOf(mediaType));
@@ -166,7 +170,12 @@ public class OpenSearchCoreTests extends CommonFixture {
         values.put(SEARCH_TERMS_PARAM, searchTerm);
         for (Node template : this.searchTermsTemplates) {
             Element urlElem = (Element) template;
-            NodeList records = invokeQuery(urlElem, values);
+            NodeList records;
+            try {
+                records = invokeQuery(urlElem, values);
+            } catch (UnsupportedOperationException e) {
+                continue; // skip query if it produces non-XML results
+            }
             Assert.assertEquals(response.getStatus(),
                     ClientResponse.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
@@ -195,7 +204,12 @@ public class OpenSearchCoreTests extends CommonFixture {
         params.put(SEARCH_TERMS_PARAM, URIUtils.getPercentEncodedString(searchTerms));
         for (Node template : this.searchTermsTemplates) {
             Element urlElem = (Element) template;
-            NodeList records = invokeQuery(urlElem, params);
+            NodeList records;
+            try {
+                records = invokeQuery(urlElem, params);
+            } catch (UnsupportedOperationException e) {
+                continue; // skip query if it produces non-XML results
+            }
             Assert.assertEquals(response.getStatus(),
                     ClientResponse.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
@@ -207,10 +221,10 @@ public class OpenSearchCoreTests extends CommonFixture {
     }
 
     /**
-     * Executes example queries defined in the OpenSearch description document.
-     * It is recommended that the document contains at least one query having
-     * role="example" in order to allow testing or demonstration of the search
-     * engine.
+     * Executes example queries specified in the OpenSearch description
+     * document. It is recommended that the document contains at least one query
+     * having role="example" in order to allow testing or demonstration of the
+     * search service.
      *
      * @see
      * <a target="_blank" href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_Query_element">OpenSearch
@@ -226,7 +240,27 @@ public class OpenSearchCoreTests extends CommonFixture {
         if (exampleQueryList.isEmpty()) {
             throw new SkipException("No example queries found in OpenSearch description.");
         }
-        // TODO: Execute queries
+        for (Node query : exampleQueryList) {
+            Map<QName, String> params = OpenSearchTemplateUtils.getQueryParameters(query);
+            // Assume all params are allowed in template
+            List<Node> qryTemplates = OpenSearchTemplateUtils.filterURLTemplatesByParam(
+                    this.templates, params.keySet().iterator().next());
+            for (Node template : qryTemplates) {
+                Element qryTemplate = (Element) template;
+                NodeList records;
+                try {
+                    records = invokeQuery(qryTemplate, params);
+                } catch (UnsupportedOperationException e) {
+                    continue; // skip query if it produces non-XML results
+                }
+                Assert.assertEquals(response.getStatus(),
+                        ClientResponse.Status.OK.getStatusCode(),
+                        ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+                Assert.assertTrue(records.getLength() > 0,
+                        ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
+                                Records.getRecordName(qryTemplate.getAttribute("type"))));
+            }
+        }
     }
 
     /**
@@ -241,6 +275,10 @@ public class OpenSearchCoreTests extends CommonFixture {
      */
     NodeList invokeQuery(Element qryTemplate, Map<QName, String> parameters) {
         String mediaType = qryTemplate.getAttribute("type");
+        if (!mediaType.contains("xml")) {
+            throw new UnsupportedOperationException(
+                    "URL template does not produce XML results: " + mediaType);
+        }
         URI targetURI = OpenSearchTemplateUtils.buildRequestURI(qryTemplate, parameters);
         request = ClientUtils.buildGetRequest(targetURI, null,
                 MediaType.valueOf(mediaType));
