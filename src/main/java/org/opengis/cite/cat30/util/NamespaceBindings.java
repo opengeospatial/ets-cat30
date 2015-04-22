@@ -99,6 +99,7 @@ public class NamespaceBindings implements NamespaceContext {
         nsBindings.addNamespaceBinding(Namespaces.GML, "gml");
         nsBindings.addNamespaceBinding(Namespaces.CSW, "csw");
         nsBindings.addNamespaceBinding(Namespaces.DCMES, "dc");
+        nsBindings.addNamespaceBinding(Namespaces.DCMI, "dct");
         return nsBindings;
     }
 

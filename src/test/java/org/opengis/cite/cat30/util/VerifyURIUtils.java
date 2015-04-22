@@ -81,4 +81,10 @@ public class VerifyURIUtils {
         Document doc = URIUtils.parseURI(uri);
         assertNull(doc);
     }
+
+    @Test
+    public void percentEncodeStringWithNonASCIIChar() {
+        String result = URIUtils.getPercentEncodedString("Ville Montréal");
+        assertEquals("Unexpected encoding.", "Ville%20Montr%C3%A9al", result);
+    }
 }

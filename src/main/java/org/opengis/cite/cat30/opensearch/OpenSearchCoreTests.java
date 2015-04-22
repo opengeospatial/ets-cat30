@@ -19,6 +19,7 @@ import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.OpenSearchTemplateUtils;
 import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
+import org.opengis.cite.cat30.util.URIUtils;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.SkipException;
@@ -80,6 +81,10 @@ public class OpenSearchCoreTests extends CommonFixture {
     private Document openSearchDescr;
     private List<Node> searchTermsTemplates;
     /**
+     * Information about the sample data retrieved from the IUT.
+     */
+    private DatasetInfo datasetInfo;
+    /**
      * A list of record titles retrieved from the IUT.
      */
     private List<String> recordTitles;
@@ -112,6 +117,7 @@ public class OpenSearchCoreTests extends CommonFixture {
         if (null == dataset) {
             throw new SkipException("Dataset info not found in test context.");
         }
+        this.datasetInfo = dataset;
         this.recordTitles = dataset.getRecordTitles();
     }
 
@@ -120,7 +126,7 @@ public class OpenSearchCoreTests extends CommonFixture {
      * generated sequence of 5-14 characters in the range [a-z]. The result set
      * is expected to be empty.
      */
-    @Test(description = "Requirement-nnn")
+    @Test(description = "OGC 12-176, Table 6: Text search")
     public void keywordSearch_emptyResultSet() {
         if (this.searchTermsTemplates.isEmpty()) {
             throw new AssertionError("No URL templates containing {searchTerms} parameter.");
@@ -143,11 +149,11 @@ public class OpenSearchCoreTests extends CommonFixture {
     }
 
     /**
-     * [Test] Submits a keyword search where the searchTerms value is a title
+     * [Test] Submits a keyword search where the {searchTerms} value is a title
      * word that occurs in at least one catalog record.
      */
-    @Test(description = "Requirement-nnn")
-    public void keywordSearch() {
+    @Test(description = "OGC 12-176, Table 6: Text search")
+    public void singleKeywordSearch() {
         if (this.searchTermsTemplates.isEmpty()) {
             throw new AssertionError("No URL templates containing {searchTerms} parameter.");
         }
@@ -160,26 +166,43 @@ public class OpenSearchCoreTests extends CommonFixture {
         values.put(SEARCH_TERMS_PARAM, searchTerm);
         for (Node template : this.searchTermsTemplates) {
             Element urlElem = (Element) template;
-            String mediaType = urlElem.getAttribute("type");
-            URI targetURI = OpenSearchTemplateUtils.buildRequestURI(urlElem, values);
-            request = ClientUtils.buildGetRequest(targetURI, null,
-                    MediaType.valueOf(mediaType));
-            response = this.client.handle(request);
+            NodeList records = invokeQuery(urlElem, values);
             Assert.assertEquals(response.getStatus(),
                     ClientResponse.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-            Document entity = getResponseEntityAsDocument(response, null);
-            QName recordName;
-            if (mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
-                recordName = new QName(Namespaces.ATOM, "entry");
-            } else {
-                recordName = new QName(Namespaces.CSW, "Record");
-            }
-            NodeList records = entity.getElementsByTagNameNS(
-                    recordName.getNamespaceURI(), recordName.getLocalPart());
             Assert.assertTrue(records.getLength() > 0,
-                    ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
-            ETSAssert.assertTextOccurs(searchTerm, records);
+                    ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
+                            Records.getRecordName(urlElem.getAttribute("type"))));
+            ETSAssert.assertAllTermsOccur(records, searchTerm);
+        }
+    }
+
+    /**
+     * [Test] Submits a keyword search request where the {searchTerms} value
+     * contains two terms. Both terms must occur in each matching record
+     * (implicit AND), but case is not significant.
+     */
+    @Test(description = "OGC 12-176, Table 6: Text search")
+    public void multipleKeywordSearch() {
+        if (this.searchTermsTemplates.isEmpty()) {
+            throw new AssertionError("No URL templates containing {searchTerms} parameter.");
+        }
+        QName titleName = new QName(Namespaces.DCMES, "title");
+        QName subjectName = new QName(Namespaces.DCMES, "subject");
+        String searchTerms = Records.findMatchingSearchTerms(
+                this.datasetInfo.getDataFile(), titleName, subjectName);
+        Map<QName, String> params = new HashMap<>();
+        params.put(SEARCH_TERMS_PARAM, URIUtils.getPercentEncodedString(searchTerms));
+        for (Node template : this.searchTermsTemplates) {
+            Element urlElem = (Element) template;
+            NodeList records = invokeQuery(urlElem, params);
+            Assert.assertEquals(response.getStatus(),
+                    ClientResponse.Status.OK.getStatusCode(),
+                    ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+            Assert.assertTrue(records.getLength() > 0,
+                    ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
+                            Records.getRecordName(urlElem.getAttribute("type"))));
+            ETSAssert.assertAllTermsOccur(records, searchTerms.split("\\s+"));
         }
     }
 
@@ -196,7 +219,7 @@ public class OpenSearchCoreTests extends CommonFixture {
      * <a target="_blank" href="http://www.opensearch.org/Documentation/Developer_best_practices_guide">Developer
      * best practices guide</a>
      */
-    @Test(description = "OpenSearch recommended practice")
+    @Test(description = "OpenSearchDescription: Query element")
     public void executeExampleQueries() {
         List<Node> exampleQueryList = ServiceMetadataUtils.getOpenSearchQueriesByRole(
                 this.openSearchDescr, new QName(Namespaces.OSD11, "example"));
@@ -206,6 +229,26 @@ public class OpenSearchCoreTests extends CommonFixture {
         // TODO: Execute queries
     }
 
-    public void multipleKeywordSearch() {
+    /**
+     * Invokes the query defined by the given OpenSearch template. The supplied
+     * parameters replace the corresponding substitution variables in the
+     * template.
+     *
+     * @param qryTemplate An Element representing an OpenSearch query template
+     * (osd:Url).
+     * @param parameters A Map containing the actual query parameters.
+     * @return A NodeList containing the records extracted from the response.
+     */
+    NodeList invokeQuery(Element qryTemplate, Map<QName, String> parameters) {
+        String mediaType = qryTemplate.getAttribute("type");
+        URI targetURI = OpenSearchTemplateUtils.buildRequestURI(qryTemplate, parameters);
+        request = ClientUtils.buildGetRequest(targetURI, null,
+                MediaType.valueOf(mediaType));
+        response = this.client.handle(request);
+        Document entity = getResponseEntityAsDocument(response, null);
+        QName recordName = Records.getRecordName(mediaType);
+        NodeList records = entity.getElementsByTagNameNS(
+                recordName.getNamespaceURI(), recordName.getLocalPart());
+        return records;
     }
 }

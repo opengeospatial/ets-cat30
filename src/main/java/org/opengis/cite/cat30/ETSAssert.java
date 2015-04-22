@@ -287,30 +287,32 @@ public class ETSAssert {
     }
 
     /**
-     * Asserts that the given text value occurs in the content of at least one
-     * field in all of the given records. The comparison is not case-sensitive.
+     * Asserts that the given search terms all occur in the content of each
+     * record in the given collection. The comparison is not case-sensitive.
      *
-     * @param expectedText The expected text.
      * @param recordList A list of nodes representing catalog records
-     * (csw:Record, atom:entry).
+     * (csw:Record or atom:entry).
+     * @param searchTerms A list of search terms.
      */
-    public static void assertTextOccurs(String expectedText, NodeList recordList) {
-        for (int i = 0; i < recordList.getLength(); i++) {
-            Element record = (Element) recordList.item(i);
-            // case-insensitive match of text content in all child elements
-            String expr = String.format("child::*[matches(., '%s', 'i')]", expectedText);
-            try {
-                XdmValue result = XMLUtils.evaluateXPath2(
-                        new DOMSource(record), expr, null);
-                Assert.assertTrue(result.size() > 0,
-                        ErrorMessage.format(ErrorMessageKeys.XPATH_RESULT,
-                                Records.getRecordId(record), expr));
-                LOGR.log(Level.FINE, "In {0} found matching fields for ''{1}'':\n{2}",
-                        new Object[]{Records.getRecordId(record), expectedText,
-                            XMLUtils.writeXdmValueToString(result)});
-            } catch (SaxonApiException sae) {
-                throw new AssertionError(
-                        "Cannot evaluate XPath expression: " + expr, sae);
+    public static void assertAllTermsOccur(NodeList recordList, String... searchTerms) {
+        for (String term : searchTerms) {
+            for (int i = 0; i < recordList.getLength(); i++) {
+                Element record = (Element) recordList.item(i);
+                // case-insensitive match of text content in all child elements
+                String expr = String.format("child::*[matches(., '%s', 'i')]", term);
+                try {
+                    XdmValue result = XMLUtils.evaluateXPath2(
+                            new DOMSource(record), expr, null);
+                    Assert.assertTrue(result.size() > 0,
+                            ErrorMessage.format(ErrorMessageKeys.XPATH_RESULT,
+                                    Records.getRecordId(record), expr));
+                    LOGR.log(Level.FINE, "In {0} found matching fields for ''{1}'':\n{2}",
+                            new Object[]{Records.getRecordId(record), term,
+                                XMLUtils.writeXdmValueToString(result)});
+                } catch (SaxonApiException sae) {
+                    throw new AssertionError(
+                            "Cannot evaluate XPath expression: " + expr, sae);
+                }
             }
         }
     }

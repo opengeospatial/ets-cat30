@@ -1,10 +1,7 @@
 package org.opengis.cite.cat30.util;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -12,10 +9,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmValue;
-import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
@@ -32,6 +25,7 @@ public class DatasetInfo {
     private Envelope geographicExtent;
     private List<String> recordIdentifiers;
     private List<String> recordTitles;
+    private List<String> topics;
 
     public DatasetInfo(File dataFile) {
         if (!dataFile.isFile()) {
@@ -77,7 +71,7 @@ public class DatasetInfo {
      */
     public List<String> getRecordIdentifiers() {
         if (null == this.recordIdentifiers) {
-            this.recordIdentifiers = findPropertyValues(dataFile,
+            this.recordIdentifiers = Records.findPropertyValues(dataFile,
                     "//dc:identifier");
         }
         return recordIdentifiers;
@@ -85,41 +79,30 @@ public class DatasetInfo {
 
     /**
      * Returns a sequence of record titles (dc:title) found in the sample data.
-     * At least one such element must appear in every record.
+     * At least one such element must appear in every record representation.
      *
      * @return A List containing all element values.
      */
     public List<String> getRecordTitles() {
         if (null == this.recordTitles) {
-            this.recordTitles = findPropertyValues(dataFile, "//dc:title");
+            this.recordTitles = Records.findPropertyValues(dataFile, "//dc:title");
         }
         return recordTitles;
     }
 
     /**
-     * Evaluates an XPath expression against the sample data and returns the
-     * results as a list of string values.
+     * Returns a sequence of topic (dc:subject) values found in the sample data.
+     * A record may contain zero or more subject elements that convey a set of
+     * topics (e.g. keywords, key phrases, classification codes) that apply to
+     * it.
      *
-     * @param file A File containing catalog data (csw:GetRecordsResponse).
-     * @param xpath An XPath expression denoting a record property.
-     * @return A list of property values; the list may be empty if none are
-     * found in the sample data.
+     * @return A List containing all topic values.
      */
-    List<String> findPropertyValues(File file, String xpath) {
-        List<String> idList = new ArrayList<>();
-        Source src = new StreamSource(file);
-        Map<String, String> nsBindings = Collections.singletonMap(Namespaces.DCMES, "dc");
-        XdmValue value = null;
-        try {
-            value = XMLUtils.evaluateXPath2(src, xpath, nsBindings);
-        } catch (SaxonApiException ex) {
-            Logger.getLogger(DatasetInfo.class.getName()).log(Level.WARNING,
-                    "Failed to evaluate XPath expression: " + xpath, ex);
+    public List<String> getRecordTopics() {
+        if (null == this.topics) {
+            this.topics = Records.findPropertyValues(dataFile, "//dc:subject");
         }
-        for (XdmItem item : value) {
-            idList.add(item.getStringValue());
-        }
-        return idList;
+        return topics;
     }
 
     /**

@@ -19,6 +19,8 @@ import org.xml.sax.SAXException;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Provides a collection of utility methods for manipulating or resolving URI
@@ -32,14 +34,11 @@ public class URIUtils {
      * Parses the content of the given URI as an XML document and returns a new
      * DOM Document object. Entity reference nodes will not be expanded. XML
      * inclusions (xi:include elements) will be processed if present.
-     * 
-     * @param uriRef
-     *            An absolute URI specifying the location of an XML resource.
+     *
+     * @param uriRef An absolute URI specifying the location of an XML resource.
      * @return A DOM Document node representing an XML resource.
-     * @throws SAXException
-     *             If the resource cannot be parsed.
-     * @throws IOException
-     *             If the resource is not accessible.
+     * @throws SAXException If the resource cannot be parsed.
+     * @throws IOException If the resource is not accessible.
      */
     public static Document parseURI(URI uriRef) throws SAXException,
             IOException {
@@ -72,13 +71,11 @@ public class URIUtils {
      * Dereferences the given URI and stores the resulting resource
      * representation in a local file. The file will be located in the default
      * temporary file directory.
-     * 
-     * @param uriRef
-     *            An absolute URI specifying the location of some resource.
+     *
+     * @param uriRef An absolute URI specifying the location of some resource.
      * @return A File containing the content of the resource; it may be empty if
-     *         resolution failed for any reason.
-     * @throws IOException
-     *             If an IO error occurred.
+     * resolution failed for any reason.
+     * @throws IOException If an IO error occurred.
      */
     public static File dereferenceURI(URI uriRef) throws IOException {
         if ((null == uriRef) || !uriRef.isAbsolute()) {
@@ -115,16 +112,14 @@ public class URIUtils {
 
     /**
      * Constructs an absolute URI from the given URI reference and a base URI.
-     * 
+     *
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-5.2">RFC 3986,
-     *      5.2</a>
-     * 
-     * @param baseURI
-     *            The base URI; if present, it must be an absolute URI.
-     * @param uriRef
-     *            A URI reference that may be relative to the given base URI.
+     * 5.2</a>
+     *
+     * @param baseURI The base URI; if present, it must be an absolute URI.
+     * @param uriRef A URI reference that may be relative to the given base URI.
      * @return The resulting URI.
-     * 
+     *
      */
     public static URI resolveRelativeURI(String baseURI, String uriRef) {
         URI uri = (null != baseURI) ? URI.create(baseURI) : URI.create("");
@@ -133,5 +128,35 @@ public class URIUtils {
                     "Base URI has no scheme component: " + baseURI);
         }
         return uri.resolve(uriRef);
+    }
+
+    /**
+     * Replaces characters not allowed in the query component of a URI with
+     * their equivalent percent-encoded values (UTF-8). While this may encode
+     * more "unsafe" characters than is strictly necessary according to RFC 3986
+     * (see ABNF fragment below), it should not affect query processing.
+     *
+     * <pre>
+     * query = *( pchar / "/" / "?" )
+     * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+     * unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
+     * </pre>
+     *
+     * @param str The sequence of characters to be encoded.
+     * @return A percent-encoded string.
+     *
+     * @see
+     * <a target="_blank" href="https://tools.ietf.org/html/rfc3986#section-2.1">RFC
+     * 3986, 2.1</a>
+     */
+    public static String getPercentEncodedString(String str) {
+        String encoded = null;
+        try {
+            // URLEncoder is intended for HTML form encoding
+            encoded = URLEncoder.encode(str, "UTF-8").replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException ex) {
+            // UTF-8 is supported
+        }
+        return encoded;
     }
 }

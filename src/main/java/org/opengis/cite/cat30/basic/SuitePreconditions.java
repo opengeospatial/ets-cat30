@@ -37,7 +37,7 @@ public class SuitePreconditions {
      * Verifies that a service capabilities document was supplied as a test run
      * argument and that the implementation it describes is available.
      *
-     * @param testContext Information about the (pending) test run.
+     * @param testContext Information about the test run.
      */
     @BeforeSuite
     public void verifyTestSubject(ITestContext testContext) {
@@ -79,7 +79,7 @@ public class SuitePreconditions {
      * produces a matching record, GetRecords request with a spatial filter).
      * </p>
      *
-     * @param testContext Information about the (pending) test run.
+     * @param testContext Information about the test run.
      */
     @BeforeSuite
     public void fetchSampleData(ITestContext testContext) {

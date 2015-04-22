@@ -13,7 +13,7 @@
       <dc:title>Lakes</dc:title>
       <dc:type>vector digital data</dc:type>
       <dc:subject>Lake</dc:subject>
-      <dc:subject> County of San Diego</dc:subject>
+      <dc:subject>County of San Diego</dc:subject>
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">\\BLACK-XP\E$\PublicFiles\Lakes\Lakes.shp</dct:references>
       <dct:references scheme="">None</dct:references>
@@ -50,7 +50,7 @@
       <dc:title>Aquifers</dc:title>
       <dc:type>vector digital data</dc:type>
       <dc:subject>Groundwater constraints</dc:subject>
-      <dc:subject> geologic formations</dc:subject>
+      <dc:subject>geologic formations</dc:subject>
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">\\BLACK-XP\C$\SDEUpdates\Aquifer\Aquifers.shp</dct:references>
       <dct:references scheme="">None</dct:references>
@@ -78,7 +78,6 @@
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">\\BLACK-XP\E$\PublicFiles\FEMA Flood
         2009\Flood_Plain.shp</dct:references>
-      <dct:references scheme="">None</dct:references>
       <dct:abstract>The National Flood Hazard Layer (NFHL) data incorporates all Digital Flood
         Insurance Rate Map(DFIRM) databases published by FEMA, and any Letters Of Map Revision
         (LOMRs) that have been issued against those databases since their publication date. The
@@ -143,8 +142,6 @@
       <dc:identifier>urn:uuid:b0db5ee8-f765-11e1-bf69-aa0000ae6bfc</dc:identifier>
       <dc:title>SANGIS.SLOPES</dc:title>
       <dc:type>vector digital data</dc:type>
-      <dc:subject>REQUIRED: Common-use word or phrase used to describe the subject of the data
-        set.</dc:subject>
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">None</dct:references>
       <dct:abstract>REQUIRED: A brief narrative summary of the data set.</dct:abstract>
@@ -161,8 +158,6 @@
       <dc:identifier>urn:uuid:b0e97c76-f765-11e1-bf69-aa0000ae6bfc</dc:identifier>
       <dc:title>SANGIS.SLOPES_1999</dc:title>
       <dc:type>vector digital data</dc:type>
-      <dc:subject>REQUIRED: Common-use word or phrase used to describe the subject of the data
-        set.</dc:subject>
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">None</dct:references>
       <dct:abstract>REQUIRED: A brief narrative summary of the data set.</dct:abstract>
@@ -195,8 +190,6 @@
       <dc:identifier>urn:uuid:b10934ee-f765-11e1-bf69-aa0000ae6bfc</dc:identifier>
       <dc:title>SANGIS.TOPO_1999_5</dc:title>
       <dc:type>vector digital data</dc:type>
-      <dc:subject>REQUIRED: Common-use word or phrase used to describe the subject of the data
-        set.</dc:subject>
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">None</dct:references>
       <dct:abstract>REQUIRED: A brief narrative summary of the data set.</dct:abstract>
@@ -213,8 +206,6 @@
       <dc:identifier>urn:uuid:b115fc56-f765-11e1-bf69-aa0000ae6bfc</dc:identifier>
       <dc:title>SANGIS.TOPO_1999_2</dc:title>
       <dc:type>vector digital data</dc:type>
-      <dc:subject>REQUIRED: Common-use word or phrase used to describe the subject of the data
-        set.</dc:subject>
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">None</dct:references>
       <dct:abstract>REQUIRED: A brief narrative summary of the data set.</dct:abstract>
@@ -231,8 +222,6 @@
       <dc:identifier>urn:uuid:b1254954-f765-11e1-bf69-aa0000ae6bfc</dc:identifier>
       <dc:title>SANGIS.TOPO_20</dc:title>
       <dc:type>vector digital data</dc:type>
-      <dc:subject>REQUIRED: Common-use word or phrase used to describe the subject of the data
-        set.</dc:subject>
       <dc:format>vector digital data</dc:format>
       <dct:references scheme="">None</dct:references>
       <dct:abstract>REQUIRED: A brief narrative summary of the data set.</dct:abstract>

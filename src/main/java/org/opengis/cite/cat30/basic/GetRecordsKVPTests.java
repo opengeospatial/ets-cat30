@@ -31,6 +31,7 @@ import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
+import org.opengis.cite.cat30.util.URIUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.cite.validation.ValidationErrorHandler;
@@ -76,6 +77,10 @@ public class GetRecordsKVPTests extends CommonFixture {
      */
     private Envelope geoExtent;
     /**
+     * Information about the sample data retrieved from the IUT.
+     */
+    private DatasetInfo datasetInfo;
+    /**
      * A list of record titles retrieved from the IUT.
      */
     private List<String> recordTitles;
@@ -83,6 +88,10 @@ public class GetRecordsKVPTests extends CommonFixture {
      * A list of record identifiers retrieved from the IUT.
      */
     private List<String> recordIdentifiers;
+    /**
+     * A list of record topics retrieved from the IUT.
+     */
+    private List<String> recordTopics;
 
     void setExtent(Envelope extent) {
         this.geoExtent = extent;
@@ -125,10 +134,12 @@ public class GetRecordsKVPTests extends CommonFixture {
         if (null == dataset) {
             throw new SkipException("Dataset info not found in test context.");
         }
-        Envelope env = dataset.getGeographicExtent();
+        this.datasetInfo = dataset;
+        Envelope env = datasetInfo.getGeographicExtent();
         setExtent(env);
-        this.recordTitles = dataset.getRecordTitles();
-        this.recordIdentifiers = dataset.getRecordIdentifiers();
+        this.recordTitles = datasetInfo.getRecordTitles();
+        this.recordIdentifiers = datasetInfo.getRecordIdentifiers();
+        this.recordTopics = datasetInfo.getRecordTopics();
     }
 
     /**
@@ -444,8 +455,8 @@ public class GetRecordsKVPTests extends CommonFixture {
     /**
      * The <code>Filter-FES-KVP</code> conformance class requires support for
      * text searches using the 'q' query parameter. This test submits a
-     * GetRecords request where the 'q' parameter value is a word that occurs in
-     * at least one catalog record.
+     * GetRecords request where the 'q' parameter value is a single term that
+     * occurs in at least one catalog record; case is not significant.
      *
      * <p>
      * <strong>Note: </strong>According to Table 4 in <em>OGC OpenSearch Geo and
@@ -487,7 +498,7 @@ public class GetRecordsKVPTests extends CommonFixture {
      * </ul>
      */
     @Test(description = "OGC 12-176, Table 6 - Text search")
-    public void basicTextSearch() {
+    public void singleTermTextSearch() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
@@ -510,7 +521,7 @@ public class GetRecordsKVPTests extends CommonFixture {
                 recordName.getNamespaceURI(), recordName.getLocalPart());
         Assert.assertTrue(recordList.getLength() > 0,
                 ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
-        ETSAssert.assertTextOccurs(keyword, recordList);
+        ETSAssert.assertAllTermsOccur(recordList, keyword);
     }
 
     /**
@@ -535,4 +546,40 @@ public class GetRecordsKVPTests extends CommonFixture {
         Document entity = getResponseEntityAsDocument(response, null);
         ETSAssert.assertEmptyResultSet(entity);
     }
+
+    /**
+     * [Test] This test submits a GetRecords request where the 'q' parameter
+     * value contains two terms. The terms are separated by a space character,
+     * and the parameter value as a whole is percent-encoded; both terms must
+     * occur in each matching record (implicit AND), but case is not
+     * significant.
+     */
+    @Test(description = "OGC 12-176, Table 6 - Text search")
+    public void multipleTermTextSearch() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
+        QName titleName = new QName(Namespaces.DCMES, "title");
+        QName subjectName = new QName(Namespaces.DCMES, "subject");
+        String searchTerms = Records.findMatchingSearchTerms(
+                this.datasetInfo.getDataFile(), titleName, subjectName);
+        qryParams.put(CAT3.Q, URIUtils.getPercentEncodedString(searchTerms));
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        QName recordName = new QName(Namespaces.CSW, "SummaryRecord");
+        NodeList recordList = entity.getElementsByTagNameNS(
+                recordName.getNamespaceURI(), recordName.getLocalPart());
+        Assert.assertTrue(recordList.getLength() > 0,
+                ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
+        ETSAssert.assertAllTermsOccur(recordList, searchTerms.split("\\s+"));
+    }
+
 }

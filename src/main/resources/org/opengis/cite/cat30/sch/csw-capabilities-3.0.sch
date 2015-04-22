@@ -174,15 +174,6 @@
       <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value = $ATOM_NS">
       GetRecords: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>' (7.3.4.4).
       </iso:assert>
-      <iso:assert test="ows:Parameter[matches(@name,'bbox','i')]">
-      GetRecords: 'bbox' parameter is missing (Table 6, Bounding box search).
-      </iso:assert>
-      <iso:assert test="ows:Parameter[matches(@name,'recordIds','i')]">
-      GetRecords: 'recordIds' parameter is missing (Table 6, Record search).
-      </iso:assert>
-      <iso:assert test="ows:Parameter[matches(@name,'q','i')]">
-      GetRecords: 'q' parameter is missing (Table 6, Text search).
-      </iso:assert>
     </iso:rule>
     <iso:rule id="R137-R138" context="ows:Operation[@name='GetRecordById']">
       <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value[1] eq $CSW_NS">

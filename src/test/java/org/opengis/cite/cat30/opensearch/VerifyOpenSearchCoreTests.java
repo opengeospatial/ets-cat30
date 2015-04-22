@@ -81,7 +81,7 @@ public class VerifyOpenSearchCoreTests {
         spy.initCommonFixture(testContext);
         spy.initOpenSearchCoreTestsFixture(testContext);
         spy.setSearchTerm("Mona");
-        spy.keywordSearch();
+        spy.singleKeywordSearch();
     }
 
     @Test
@@ -102,6 +102,6 @@ public class VerifyOpenSearchCoreTests {
                 any(ClientResponse.class), anyString());
         spy.initCommonFixture(testContext);
         spy.initOpenSearchCoreTestsFixture(testContext);
-        spy.keywordSearch();
+        spy.singleKeywordSearch();
     }
 }
