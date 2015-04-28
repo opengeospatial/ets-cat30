@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.core.MediaType;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -463,5 +464,18 @@ public class XMLUtils {
             str.append('\n');
         }
         return str.toString();
+    }
+
+    /**
+     * Determines if the given media type is an XML-based media type.
+     *
+     * @param mediaType A MediaType object.
+     * @return true if the type corresponds to an XML entity; false otherwise.
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc7303" target="_blank">RFC
+     * 7303: XML Media Types</a>
+     */
+    public static boolean isXML(final MediaType mediaType) {
+        return mediaType.getSubtype().endsWith("xml");
     }
 }

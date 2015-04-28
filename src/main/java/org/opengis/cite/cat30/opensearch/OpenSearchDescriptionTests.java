@@ -1,5 +1,6 @@
 package org.opengis.cite.cat30.opensearch;
 
+import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -17,6 +18,7 @@ import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
+import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.validation.RelaxNGValidator;
 import org.opengis.cite.validation.ValidationErrorHandler;
 import org.testng.Assert;
@@ -104,6 +106,11 @@ public class OpenSearchDescriptionTests extends CommonFixture {
                 MediaType.valueOf(xmlNotPreferred),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
         response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Assert.assertTrue(XMLUtils.isXML(response.getType()),
+                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getType()));
         Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         QName osdDocElemName = new QName(Namespaces.OSD11, "OpenSearchDescription");
         ETSAssert.assertQualifiedName(entity.getDocumentElement(), osdDocElemName);
@@ -126,6 +133,8 @@ public class OpenSearchDescriptionTests extends CommonFixture {
                 MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
         response = this.client.handle(request);
+        Assert.assertTrue(XMLUtils.isXML(response.getType()),
+                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getType()));
         Source entity = ClientUtils.getResponseEntityAsSource(response, null);
         this.osdValidator.validate(entity);
         ValidationErrorHandler err = osdValidator.getErrorHandler();

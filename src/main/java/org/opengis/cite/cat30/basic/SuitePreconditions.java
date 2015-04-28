@@ -17,8 +17,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
-import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.DatasetInfo;
@@ -93,11 +94,16 @@ public class SuitePreconditions {
             throw new SkipException(
                     "Failed to save GetRecords response to temp file.");
         }
-        QName docElemName = XMLUtils.nameOfDocumentElement(new StreamSource(dataFile));
-        if (!docElemName.getLocalPart().equals("GetRecordsResponse")) {
+        Boolean hasResults = null;
+        try {
+            hasResults = (Boolean) XMLUtils.evaluateXPath(
+                    new StreamSource(dataFile), "//csw:Record", null, XPathConstants.BOOLEAN);
+        } catch (XPathExpressionException ex) {
+            // not possible
+        }
+        if (!hasResults) {
             throw new SkipException(
-                    "fetchSampleData: Did not receive GetRecords response: "
-                    + docElemName);
+                    "fetchSampleData: No records found in response.");
         }
         TestSuiteLogger.log(Level.INFO,
                 "fetchSampleData: Saved GetRecords response to file: "

@@ -13,9 +13,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
+import javax.xml.xpath.XPathExpressionException;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.Namespaces;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * A CSW 3.0 client component.
@@ -69,8 +71,8 @@ public class CSWClient {
         qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         if (mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
-            qryParams.put(CAT3.TYPE_NAMES, "csw:Record");
-            qryParams.put(CAT3.NAMESPACE, "xmlns(csw=http://www.opengis.net/cat/csw/3.0)");
+            // default namespace is target namespace of default output schema
+            qryParams.put(CAT3.TYPE_NAMES, "Record");
         }
         ClientRequest req = ClientUtils.buildGetRequest(getRecordsURI, qryParams,
                 mediaType);
@@ -93,7 +95,7 @@ public class CSWClient {
     }
 
     /**
-     * Retrieves an OpenSearch description document from the IUT. The relevant
+     * Retrieves an OpenSearch description document from the IUT. The default
      * endpoint is the one corresponding to the (mandatory) GET method binding
      * for the GetCapabilities request. The <code>Accept</code> header indicates
      * a preference for the following media types:
@@ -101,7 +103,13 @@ public class CSWClient {
      * <li>{@value org.opengis.cite.cat30.CAT3#APP_VND_OPENSEARCH_XML}</li>
      * <li>{@value org.opengis.cite.cat30.CAT3#APP_OPENSEARCH_XML}</li>
      * </ul>
+     * <p>
+     * An alternative endpoint may be presented in the capabilities document
+     * using the "OpenSearchDescriptionDocument" constraint.
+     * </p>
      *
+     * @param uri An absolute URI from which the OpenSearch description can be
+     * retrieved; if null, the default endpoint is used.
      * @return A Document representing an OpenSearch description document, or
      * null if one is not available.
      *
@@ -109,15 +117,29 @@ public class CSWClient {
      * <a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_description_document"
      * target="_blank">OpenSearch description document</a>
      */
-    public Document getOpenSearchDescription() {
-        URI endpoint = ServiceMetadataUtils.getOperationEndpoint(
-                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
-        ClientRequest req = ClientUtils.buildGetRequest(endpoint, null,
+    public Document getOpenSearchDescription(URI uri) {
+        if (null == uri || !uri.isAbsolute()) {
+            uri = ServiceMetadataUtils.getOperationEndpoint(
+                    this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+        }
+        ClientRequest req = ClientUtils.buildGetRequest(uri, null,
                 MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
         ClientResponse rsp = this.client.handle(req);
-        if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
-            // probably 404 or 406
+        if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()
+                || !XMLUtils.isXML(rsp.getType())) {
+            String xpath = "//ows:Constraint[@name='OpenSearchDescriptionDocument']//ows:Value";
+            try {
+                NodeList result = XMLUtils.evaluateXPath(cswCapabilities, xpath, null);
+                if (result.getLength() > 0) {
+                    URI endpoint = URI.create(result.item(0).getTextContent());
+                    if (!endpoint.equals(uri)) { // only attempt once
+                        return getOpenSearchDescription(endpoint);
+                    }
+                }
+            } catch (XPathExpressionException ex) {
+                LOGR.log(Level.WARNING, "Failed to evaluate XPath expression: " + xpath, ex);
+            }
             LOGR.config(rsp.toString());
             return null;
         }

@@ -22,4 +22,5 @@ public class ErrorMessageKeys {
     public static final String EMPTY_RESULT_SET = "EmptyResultSet";
     public static final String RESULT_SET_SIZE = "ResultSetSize";
     public static final String ID_NOT_FOUND = "IdNotFound";
+    public static final String NOT_XML = "NotXML";
 }

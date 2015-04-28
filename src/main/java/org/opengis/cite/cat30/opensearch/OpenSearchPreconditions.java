@@ -69,10 +69,10 @@ public class OpenSearchPreconditions {
         }
         CSWClient cswClient = new CSWClient();
         cswClient.setServiceDescription(cswCapabilities);
-        Document openSearchDescr = cswClient.getOpenSearchDescription();
+        Document openSearchDescr = cswClient.getOpenSearchDescription(null);
         if (null == openSearchDescr) {
             throw new AssertionError(
-                    "OpenSearch description not available from IUT at GetCapabilities (GET) endpoint.");
+                    "OpenSearch description not available at GetCapabilities (GET) endpoint or via 'OpenSearchDescriptionDocument' constraint.");
         }
         testContext.getSuite().setAttribute(
                 SuiteAttribute.OPENSEARCH_DESCR.getName(), openSearchDescr);

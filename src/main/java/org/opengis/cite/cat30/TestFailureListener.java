@@ -3,7 +3,6 @@ package org.opengis.cite.cat30;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import java.nio.charset.StandardCharsets;
-import javax.ws.rs.core.MediaType;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.ITestResult;
@@ -82,12 +81,12 @@ public class TestFailureListener extends TestListenerAdapter {
         msgInfo.append("Status: ").append(rsp.getStatus()).append('\n');
         msgInfo.append("Headers: ").append(rsp.getHeaders()).append('\n');
         if (rsp.hasEntity()) {
-            if (rsp.getType().isCompatible(MediaType.APPLICATION_XML_TYPE)) {
+            if (XMLUtils.isXML(rsp.getType())) {
                 Document doc = ClientUtils.getResponseEntityAsDocument(rsp, null);
                 msgInfo.append(XMLUtils.writeNodeToString(doc));
             } else {
                 byte[] body = rsp.getEntity(byte[].class);
-                msgInfo.append(new String(body, StandardCharsets.UTF_8));
+                msgInfo.append(new String(body, StandardCharsets.US_ASCII));
             }
             msgInfo.append('\n');
         }
