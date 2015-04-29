@@ -7,13 +7,15 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-04-DD)</h2>
+    <h2>${project.version} (2015-04-29)</h2>
     <p>This release includes the following enhancements:</p>
     <ul>
       <li style="list-style: square;">Add tests for basic text search with 
       multiple terms (implicit AND)</li>
       <li style="list-style: square;">Verify sample queries specified in OpenSearch 
       description</li>
+      <li style="list-style: square;">Add test for retrieving OpenSearch 
+      description by using the 'OpenSearchDescriptionDocument' constraint.</li>
     </ul>
 
     <h2>0.4 (2015-04-09)</h2>

@@ -50,4 +50,14 @@ public class VerifyServiceMetadataUtils {
         TemplateParamInfo param3 = templateParams.get(2);
         assertEquals(param3.getName(), new QName(Namespaces.OS_GEO, "box"));
     }
+
+    @Test
+    public void getOpenSearchDescriptionConstraint() throws SAXException, IOException {
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/capabilities-basic.xml"));
+        List<String> values = ServiceMetadataUtils.getConstraintValues(
+                doc, "OpenSearchDescriptionDocument");
+        assertEquals("Unexpected number of values.", 1, values.size());
+        assertEquals(values.get(0), "http://www.sdisuite.de/terraCatalog/opensearch");
+    }
 }

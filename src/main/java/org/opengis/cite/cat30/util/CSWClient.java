@@ -8,16 +8,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
-import javax.xml.xpath.XPathExpressionException;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.Namespaces;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 /**
  * A CSW 3.0 client component.
@@ -95,6 +94,31 @@ public class CSWClient {
     }
 
     /**
+     * Retrieves a complete capabilities document from the specified endpoint.
+     *
+     * @param uri An absolute URI from which the capabilities can be retrieved;
+     * if null, the endpoint from a known capabilities document (which may
+     * differ from the one presented by the IUT) is used.
+     * @return A Document representing a capabilities document, or null if one
+     * is not available.
+     */
+    public Document getCapabilities(URI uri) {
+        if (null == uri || !uri.isAbsolute()) {
+            uri = ServiceMetadataUtils.getOperationEndpoint(
+                    this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
+        }
+        ClientRequest req = ClientUtils.buildGetRequest(uri, null,
+                MediaType.APPLICATION_XML_TYPE);
+        ClientResponse rsp = this.client.handle(req);
+        Document capabilitiesDoc = null;
+        if (rsp.getStatus() == ClientResponse.Status.OK.getStatusCode()
+                && XMLUtils.isXML(rsp.getType())) {
+            capabilitiesDoc = rsp.getEntity(Document.class);
+        }
+        return capabilitiesDoc;
+    }
+
+    /**
      * Retrieves an OpenSearch description document from the IUT. The default
      * endpoint is the one corresponding to the (mandatory) GET method binding
      * for the GetCapabilities request. The <code>Accept</code> header indicates
@@ -128,17 +152,13 @@ public class CSWClient {
         ClientResponse rsp = this.client.handle(req);
         if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()
                 || !XMLUtils.isXML(rsp.getType())) {
-            String xpath = "//ows:Constraint[@name='OpenSearchDescriptionDocument']//ows:Value";
-            try {
-                NodeList result = XMLUtils.evaluateXPath(cswCapabilities, xpath, null);
-                if (result.getLength() > 0) {
-                    URI endpoint = URI.create(result.item(0).getTextContent());
-                    if (!endpoint.equals(uri)) { // only attempt once
-                        return getOpenSearchDescription(endpoint);
-                    }
+            List<String> values = ServiceMetadataUtils.getConstraintValues(
+                    cswCapabilities, "OpenSearchDescriptionDocument");
+            if (null != values && !values.isEmpty()) {
+                URI endpoint = URI.create(values.get(0));
+                if (!endpoint.equals(uri)) { // only attempt once
+                    return getOpenSearchDescription(endpoint);
                 }
-            } catch (XPathExpressionException ex) {
-                LOGR.log(Level.WARNING, "Failed to evaluate XPath expression: " + xpath, ex);
             }
             LOGR.config(rsp.toString());
             return null;

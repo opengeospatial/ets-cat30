@@ -8,6 +8,8 @@ import org.testng.ITestContext;
 import org.w3c.dom.Document;
 
 import javax.xml.xpath.XPathExpressionException;
+import org.opengis.cite.cat30.ErrorMessage;
+import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.annotations.BeforeTest;
@@ -71,8 +73,8 @@ public class OpenSearchPreconditions {
         cswClient.setServiceDescription(cswCapabilities);
         Document openSearchDescr = cswClient.getOpenSearchDescription(null);
         if (null == openSearchDescr) {
-            throw new AssertionError(
-                    "OpenSearch description not available at GetCapabilities (GET) endpoint or via 'OpenSearchDescriptionDocument' constraint.");
+            throw new AssertionError(ErrorMessage.get(
+                    ErrorMessageKeys.OPENSEARCH_UNAVAIL));
         }
         testContext.getSuite().setAttribute(
                 SuiteAttribute.OPENSEARCH_DESCR.getName(), openSearchDescr);

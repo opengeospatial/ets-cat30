@@ -4,6 +4,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
@@ -15,6 +16,7 @@ import org.opengis.cite.cat30.ETSAssert;
 import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
@@ -64,6 +66,8 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     private URI baseUri;
     private static final String SCHEMATRON_OPENSEARCH_DESCR
             = CommonFixture.ROOT_PKG_PATH + "sch/opensearch-1.1.sch";
+    public static final String OPENSEARCH_CONSTRAINT
+            = "OpenSearchDescriptionDocument";
 
     /**
      * Initializes the test fixture by:
@@ -125,7 +129,7 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      * @throws IOException If an I/O error occurs while trying to access the
      * document.
      *
-     * @see "OGC 12-176r5, 6.5.6.5: Requirements for an OpenSearch enabled CSW"
+     * @see "[CAT-HTTP], 6.5.6.5: Requirements for an OpenSearch enabled CSW"
      */
     @Test(description = "Requirements: 021; Tests: 021")
     public void validOpenSearchDescription() throws SAXException, IOException {
@@ -145,4 +149,36 @@ public class OpenSearchDescriptionTests extends CommonFixture {
         ETSAssert.assertSchematronValid(schemaUrl, entity);
     }
 
+    /**
+     * [Test] Attempts to retrieve an OpenSearch description document using the
+     * URI presented in the capabilities document as the value of the
+     * {@value #OPENSEARCH_CONSTRAINT} constraint.
+     *
+     * @see "[CAT-HTTP], 6.5.6.2, Table 16"
+     */
+    @Test(description = "[CAT-HTTP]: 6.5.6.2, Table 16")
+    public void getOpenSearchDescriptionFromCapabilities() {
+        CSWClient cswClient = new CSWClient();
+        cswClient.setServiceDescription(this.cswCapabilities);
+        Document capabilitiesDoc = cswClient.getCapabilities(null);
+        List<String> values = ServiceMetadataUtils.getConstraintValues(
+                capabilitiesDoc, OPENSEARCH_CONSTRAINT);
+        if (null == values || values.isEmpty()) {
+            throw new AssertionError(ErrorMessage.format(
+                    ErrorMessageKeys.NAMED_ITEM_NOT_FOUND, OPENSEARCH_CONSTRAINT));
+        }
+        URI uri = URI.create(values.get(0));
+        request = ClientUtils.buildGetRequest(uri, null,
+                MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
+                MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Assert.assertTrue(XMLUtils.isXML(response.getType()),
+                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getType()));
+        Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
+        QName osdDocElemName = new QName(Namespaces.OSD11, "OpenSearchDescription");
+        ETSAssert.assertQualifiedName(entity.getDocumentElement(), osdDocElemName);
+    }
 }

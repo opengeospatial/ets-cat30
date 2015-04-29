@@ -74,7 +74,9 @@
     <ows:Constraint name="GetCapabilities-XML">
       <ows:AllowedValues>
         <ows:Value>false</ows:Value>
+        <ows:Value>true</ows:Value>
       </ows:AllowedValues>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
     </ows:Constraint>
     <ows:Constraint name="GetRecordById-XML">
       <ows:AllowedValues>
@@ -112,7 +114,7 @@
       </ows:AllowedValues>
     </ows:Constraint>
     <!-- enter the supported federated catalogues for distributed search as values below -->
-    <ows:Constraint name="FedeartedCatalogues">
+    <ows:Constraint name="FederatedCatalogues">
       <ows:AllowedValues>
         <ows:Value/>
       </ows:AllowedValues>
@@ -122,11 +124,25 @@
         <ows:Value>http://www.sdisuite.de/terraCatalog/soapService/services/CSWDiscovery?wsdl</ows:Value>
       </ows:AllowedValues>
     </ows:Constraint>
-    <ows:Constraint name="OpenSearch">
+    <ows:Constraint name="OpenSearchDescriptionDocument">
       <ows:AllowedValues>
-        <ows:Value>http://www.sdisuite.de/terraCatalog</ows:Value>
+          <ows:Value>http://www.sdisuite.de/terraCatalog/opensearch</ows:Value>
       </ows:AllowedValues>
+      <ows:DataType ows:reference="http://www.w3.org/2001/XMLSchema#anyURI" />
     </ows:Constraint>
+    <ows:ExtendedCapabilities>
+      <wadl:application xmlns:wadl="http://wadl.dev.java.net/2009/02">
+        <wadl:resources base="http://localhost:1999/">
+          <wadl:resource path="/helloworld">
+            <wadl:method name="GET" id="getClichedMessage">
+              <wadl:response>
+                <wadl:representation mediaType="text/plain"/>
+              </wadl:response>
+            </wadl:method>
+          </wadl:resource>
+        </wadl:resources>
+      </wadl:application>
+    </ows:ExtendedCapabilities>
   </ows:OperationsMetadata>
   <fes:Filter_Capabilities>
     <fes:Conformance xmlns:ows11="http://www.opengis.net/ows/1.1">

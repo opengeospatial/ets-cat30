@@ -148,4 +148,42 @@ public class ServiceMetadataUtils {
         return queryList;
     }
 
+    /**
+     * Searches a CSW capabilities document for the specified constraint and
+     * returns its allowed values. If there is more than one constraint with the
+     * same name in the document, all but the first are ignored. The default
+     * value is returned if present; otherwise the complete list of allowed
+     * values.
+     *
+     * @param cswMetadata A CSW capabilities document.
+     * @param name The name of the constraint.
+     * @return A list containing the allowed values of the constraint, or null
+     * if no such constraint exists or it has no value.
+     */
+    public static List<String> getConstraintValues(final Document cswMetadata,
+            String name) {
+        String xpath = String.format("//ows:Constraint[@name='%s']", name);
+        NodeList nodeList = null;
+        try {
+            nodeList = XMLUtils.evaluateXPath(cswMetadata, xpath, null);
+        } catch (XPathExpressionException ex) {
+            // expression is ok
+        }
+        List<String> valueList = null;
+        if (null != nodeList && nodeList.getLength() > 0) {
+            Element constraint = (Element) nodeList.item(0);
+            nodeList = constraint.getElementsByTagNameNS(Namespaces.OWS, "DefaultValue");
+            if (nodeList.getLength() == 0) {
+                nodeList = constraint.getElementsByTagNameNS(Namespaces.OWS, "Value");
+            }
+            if (nodeList.getLength() > 0) {
+                valueList = new ArrayList<String>();
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    valueList.add(nodeList.item(i).getTextContent());
+                }
+            }
+        }
+        return valueList;
+    }
+
 }
