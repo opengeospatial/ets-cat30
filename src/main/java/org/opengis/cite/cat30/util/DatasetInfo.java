@@ -1,6 +1,7 @@
 package org.opengis.cite.cat30.util;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -133,7 +134,10 @@ public class DatasetInfo {
         try {
             extent = Extents.coalesceBoundingBoxes(boxNodes);
         } catch (FactoryException | TransformException ex) {
-            throw new RuntimeException("Failed to coalesce bounding boxes.", ex);
+            StringBuilder msg = new StringBuilder("Failed to coalesce bounding boxes. ");
+            msg.append(new String(ex.getMessage().getBytes(),
+                    StandardCharsets.US_ASCII));
+            throw new RuntimeException(msg.toString());
         }
         return extent;
     }
