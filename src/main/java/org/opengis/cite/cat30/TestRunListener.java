@@ -28,13 +28,15 @@ import org.testng.IExecutionListener;
  */
 public class TestRunListener implements IExecutionListener {
 
+    private static final String DATA_SOURCE = "jdbc/EPSG";
+
     /**
      * Looks up the DataSource <code>jdbc/EPSG</code> (EPSG geodetic
      * parameters).
      */
     @Override
     public void onExecutionStart() {
-        lookupDataSource();
+        lookupDataSource(DATA_SOURCE);
     }
 
     @Override
@@ -42,23 +44,24 @@ public class TestRunListener implements IExecutionListener {
     }
 
     /**
-     * Looks for a JNDI DataSource named "jdbc/EPSG" that provides access to a
-     * database containing the official EPSG geodetic parameters. If one is
-     * found, it is set as a
+     * Looks for a JNDI DataSource that provides access to a database containing
+     * the official EPSG geodetic parameters. If it is found, it is set as a
      * {@link org.geotoolkit.factory.Hints#EPSG_DATA_SOURCE hint} when
      * initializing the EPSG factory. An embedded database will be created if
      * necessary.
+     *
+     * @param dsName The name of the data source.
      */
-    void lookupDataSource() {
+    void lookupDataSource(String dsName) {
         DataSource epsgDataSource = null;
         try {
             Context initContext = new InitialContext();
             Context envContext = (Context) initContext.lookup("java:/comp/env");
-            epsgDataSource = (DataSource) envContext.lookup("jdbc/EPSG");
+            epsgDataSource = (DataSource) envContext.lookup(dsName);
         } catch (NamingException nx) {
-            TestSuiteLogger
-                    .log(Level.CONFIG,
-                            "JNDI DataSource 'jdbc/EPSG' not found. An embedded database will be created if necessary.");
+            TestSuiteLogger.log(Level.CONFIG, String.format(
+                    "JNDI DataSource %s not found. An embedded database will be created if necessary.",
+                    dsName, nx.getMessage()));
         }
         if (null != epsgDataSource) {
             try (Connection conn = epsgDataSource.getConnection()) {
@@ -68,10 +71,9 @@ public class TestRunListener implements IExecutionListener {
                     dbInstaller.call();
                 }
             } catch (SQLException | FactoryException e) {
-                TestSuiteLogger.log(
-                        Level.CONFIG,
-                        "Failed to access DataSource 'jdbc/EPSG'\n."
-                        + e.getMessage());
+                TestSuiteLogger.log(Level.CONFIG, String.format(
+                        "Failed to access DataSource %s .\n %s",
+                        dsName, e.getMessage()));
             }
             Hints.putSystemDefault(Hints.EPSG_DATA_SOURCE, epsgDataSource);
         }

@@ -87,8 +87,8 @@ public class ClientUtils {
      *
      * @param endpoint A URI indicating the target resource.
      * @param qryParams A Map containing query parameters (may be null);
-     * @param mediaTypes A list of acceptable media types; if not specified,
-     * generic XML ("application/xml") is preferred.
+     * @param mediaTypes A list of acceptable media types; if not specified, the
+     * Accept header is omitted.
      *
      * @return A ClientRequest object.
      */
@@ -102,9 +102,7 @@ public class ClientUtils {
         }
         URI uri = uriBuilder.build();
         ClientRequest.Builder reqBuilder = ClientRequest.create();
-        if (null == mediaTypes || mediaTypes.length == 0) {
-            reqBuilder = reqBuilder.accept(MediaType.APPLICATION_XML_TYPE);
-        } else {
+        if (null != mediaTypes && mediaTypes.length > 0) {
             reqBuilder = reqBuilder.accept(mediaTypes);
         }
         ClientRequest req = reqBuilder.build(uri, HttpMethod.GET);

@@ -478,4 +478,19 @@ public class XMLUtils {
     public static boolean isXML(final MediaType mediaType) {
         return mediaType.getSubtype().endsWith("xml");
     }
+
+    /**
+     * Returns the text content of the nodes in the given list.
+     *
+     * @param nodeList A sequence of DOM nodes.
+     * @return A list of String values, each of which represents the content of
+     * a node (and its descendants, if any).
+     */
+    public static List<String> getNodeValues(NodeList nodeList) {
+        List<String> valueList = new ArrayList<>();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            valueList.add(nodeList.item(i).getTextContent());
+        }
+        return valueList;
+    }
 }

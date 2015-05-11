@@ -108,6 +108,53 @@ public class GetCapabilitiesTests extends CommonFixture {
     }
 
     /**
+     * [Test] Attempts to retrieve the capabilities document from the base URL
+     * (endpoint for GetCapabilities via GET). The Accept header indicates that
+     * any media type is acceptable ("&#42;/&#42;"); this is equivalent to
+     * omitting the Accept header. The response shall include a complete XML
+     * representation.
+     *
+     * @see "OGC 12-176r6, 6.4: Obtaining service metadata"
+     */
+    @Test(description = "Requirements: 006")
+    public void getCapabilitiesFromBaseURL() {
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI, null,
+                MediaType.WILDCARD_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Source source = ClientUtils.getResponseEntityAsSource(response, null);
+        URL schURL = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
+        ETSAssert.assertSchematronValid(schURL, source);
+    }
+
+    /**
+     * [Test] Attempts to retrieve the capabilities document from the base URL
+     * (endpoint for GetCapabilities via GET). The Accept header indicates XML
+     * as the preferred media type:
+     *
+     * <pre>Accept: text/html; q=0.5, application/xml</pre>
+     *
+     * The response shall include a complete XML representation.
+     *
+     * @see "OGC 12-176r6, 6.4:	Obtaining service metadata"
+     */
+    @Test(description = "Requirements: 007")
+    public void getCapabilitiesFromBaseURLAsXML() {
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI, null,
+                MediaType.valueOf(MediaType.TEXT_HTML + "; q=0.5"),
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Source source = ClientUtils.getResponseEntityAsSource(response, null);
+        URL schURL = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
+        ETSAssert.assertSchematronValid(schURL, source);
+    }
+
+    /**
      * [Test] Query parameter names must be handled in a case-insensitive
      * manner. The parameter names are all presented in mixed case; a complete
      * capabilities document is expected in response.

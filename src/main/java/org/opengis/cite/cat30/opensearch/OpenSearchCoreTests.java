@@ -125,7 +125,8 @@ public class OpenSearchCoreTests extends CommonFixture {
     /**
      * [Test] Submits a keyword search where the searchTerms value is a randomly
      * generated sequence of 5-14 characters in the range [a-z]. The result set
-     * is expected to be empty.
+     * is expected to be empty; that is, there are no matching entries
+     * (os:totalResults = 0).
      */
     @Test(description = "OGC 12-176, Table 6: Text search")
     public void keywordSearch_emptyResultSet() {

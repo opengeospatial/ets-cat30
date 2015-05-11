@@ -166,6 +166,9 @@ public class OpenSearchGeoTests extends CommonFixture {
         for (Node urlTemplate : uidTemplates) {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
+            if (!mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
+                continue;
+            }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
             request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
@@ -174,12 +177,7 @@ public class OpenSearchGeoTests extends CommonFixture {
                     ClientResponse.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
             Document entity = getResponseEntityAsDocument(response, null);
-            String recordPath;
-            if (mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
-                recordPath = "atom:feed/atom:entry";
-            } else {
-                recordPath = "csw:Record";
-            }
+            String recordPath = "atom:feed/atom:entry";
             String expr = String.format("/%s/dc:identifier = '%s'",
                     recordPath, id);
             ETSAssert.assertXPath(expr, entity,

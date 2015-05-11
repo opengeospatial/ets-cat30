@@ -44,7 +44,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -443,7 +442,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         for (int i = 0; i < recordList.getLength(); i++) {
             Element record = (Element) recordList.item(i);
             NodeList identifiers = record.getElementsByTagNameNS(Namespaces.DCMES, "identifier");
-            List<Node> recIdList = XMLUtils.getNodeListAsList(identifiers);
+            List<String> recIdList = XMLUtils.getNodeValues(identifiers);
             // retain common elements (intersection)
             recIdList.retainAll(idList);
             Assert.assertFalse(recIdList.isEmpty(),
