@@ -3,15 +3,25 @@ package org.opengis.cite.cat30.util;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
+import javax.xml.transform.dom.DOMSource;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import net.sf.saxon.s9api.Axis;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmSequenceIterator;
+import net.sf.saxon.s9api.XdmValue;
 
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.opensearch.TemplateParamInfo;
@@ -150,40 +160,97 @@ public class ServiceMetadataUtils {
 
     /**
      * Searches a CSW capabilities document for the specified constraint and
-     * returns its allowed values. If there is more than one constraint with the
-     * same name in the document, all but the first are ignored. The default
-     * value is returned if present; otherwise the complete list of allowed
-     * values.
+     * returns its set of allowed values. The default value is returned if
+     * present; otherwise the complete list of allowed values.
      *
      * @param cswMetadata A CSW capabilities document.
-     * @param name The name of the constraint.
-     * @return A list containing the allowed values of the constraint, or null
-     * if no such constraint exists or it has no value.
+     * @param name The name of the constraint (not case-sensitive).
+     * @return A set containing the allowed values of the constraint; it will be
+     * empty if no such constraint exists or it has no value.
      */
-    public static List<String> getConstraintValues(final Document cswMetadata,
+    public static Set<String> getConstraintValues(final Document cswMetadata,
             String name) {
-        String xpath = String.format("//ows:Constraint[@name='%s']", name);
-        NodeList nodeList = null;
+        Set<String> valueList = new HashSet<>();
+        String xpath = String.format("//ows:Constraint[matches(@name,'%s','i')]",
+                name);
         try {
-            nodeList = XMLUtils.evaluateXPath(cswMetadata, xpath, null);
-        } catch (XPathExpressionException ex) {
+            XdmValue result = XMLUtils.evaluateXPath2(
+                    new DOMSource(cswMetadata), xpath,
+                    Collections.singletonMap(Namespaces.OWS, "ows"));
+            addDomainValues(valueList, result);
+        } catch (SaxonApiException ex) {
             // expression is ok
         }
-        List<String> valueList = null;
-        if (null != nodeList && nodeList.getLength() > 0) {
-            Element constraint = (Element) nodeList.item(0);
-            nodeList = constraint.getElementsByTagNameNS(Namespaces.OWS, "DefaultValue");
-            if (nodeList.getLength() == 0) {
-                nodeList = constraint.getElementsByTagNameNS(Namespaces.OWS, "Value");
+        return valueList;
+    }
+
+    /**
+     * Searches a CSW capabilities document for the specified request parameter
+     * and returns its set of allowed values. A service-level parameter value
+     * may be overridden or supplemented by an operation-specific parameter
+     * value.
+     *
+     * @param cswMetadata A CSW capabilities document.
+     * @param reqName The name of a service request; if omitted, the search is
+     * restricted to service-level parameters.
+     * @param paramName The name of the request parameter (not case-sensitive).
+     * @return A set containing the allowed parameter values; it will be empty
+     * if no such parameter exists or it has no value.
+     */
+    public static Set<String> getParameterValues(final Document cswMetadata,
+            String reqName, String paramName) {
+        Set<String> valueSet = new HashSet<>();
+        String xpath = String.format(
+                "//ows:OperationsMetadata/ows:Parameter[matches(@name,'%s','i')]",
+                paramName);
+        Map<String, String> nsBindings
+                = Collections.singletonMap(Namespaces.OWS, "ows");
+        try {
+            XdmValue result = XMLUtils.evaluateXPath2(
+                    new DOMSource(cswMetadata), xpath, nsBindings);
+            addDomainValues(valueSet, result);
+            if (null != reqName) {
+                xpath = String.format(
+                        "//ows:Operation[@name='%s']/ows:Parameter[matches(@name,'%s','i')]",
+                        reqName, paramName);
+                result = XMLUtils.evaluateXPath2(
+                        new DOMSource(cswMetadata), xpath, nsBindings);
+                addDomainValues(valueSet, result);
             }
-            if (nodeList.getLength() > 0) {
-                valueList = new ArrayList<String>();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    valueList.add(nodeList.item(i).getTextContent());
-                }
+        } catch (SaxonApiException ex) {
+            // expressions are ok
+        }
+        return valueSet;
+    }
+
+    /**
+     * Adds the allowed values of operation metadata elements to the given set.
+     *
+     * @param valueSet The set to which the values are added.
+     * @param opMetadata A sequence of operation metadata elements
+     * (ows:Parameter or ows:Constraint, of type ows:DomainType).
+     */
+    static void addDomainValues(Set<String> valueSet, XdmValue opMetadata) {
+        if (null == opMetadata) {
+            return;
+        }
+        if (null == valueSet) {
+            valueSet = new HashSet<>();
+        }
+        QName defaultValue = new QName(Namespaces.OWS, "DefaultValue");
+        QName value = new QName(Namespaces.OWS, "Value");
+        for (XdmItem item : opMetadata) {
+            XdmNode node = (XdmNode) item;
+            XdmSequenceIterator nodes = node.axisIterator(Axis.DESCENDANT,
+                    new net.sf.saxon.s9api.QName(defaultValue));
+            if (!nodes.hasNext()) {
+                nodes = node.axisIterator(Axis.DESCENDANT,
+                        new net.sf.saxon.s9api.QName(value));
+            }
+            while (nodes.hasNext()) {
+                valueSet.add(nodes.next().getStringValue().trim());
             }
         }
-        return valueList;
     }
 
 }

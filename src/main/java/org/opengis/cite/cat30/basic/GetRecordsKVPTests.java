@@ -159,7 +159,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.NAMESPACE, String.format("xmlns(tns=%s)", Namespaces.CSW));
         qryParams.put(CAT3.TYPE_NAMES, "tns:Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
@@ -184,7 +184,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
@@ -217,7 +217,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
@@ -260,7 +260,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.OUTPUT_FORMAT, "text/example");
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
@@ -281,7 +281,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.OUTPUT_SCHEMA, "urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0");
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
@@ -308,7 +308,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         qryParams.put(CAT3.BBOX,
@@ -342,7 +342,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         Envelope bbox = this.geoExtent;
@@ -381,7 +381,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
         Envelope bbox = this.geoExtent;
@@ -416,7 +416,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
         List<String> idList = new ArrayList<>();
@@ -501,7 +501,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.recordTitles.size());
@@ -532,7 +532,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         qryParams.put(CAT3.Q, Records.generateRandomText());
@@ -558,7 +558,7 @@ public class GetRecordsKVPTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
         QName titleName = new QName(Namespaces.DCMES, "title");

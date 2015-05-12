@@ -15,7 +15,7 @@ public class CAT3 {
     public static final String SCHEMA_URI
             = "http://schemas.opengis.net/cat/csw/3.0/cswAll.xsd";
     public static final String SERVICE_TYPE_CODE = "CSW";
-    public static final String SPEC_VERSION = "3.0.0";
+    public static final String VERSION_3_0_0 = "3.0.0";
     public static final String GET_CAPABILITIES = "GetCapabilities";
     public static final String GET_RECORD_BY_ID = "GetRecordById";
     public static final String GET_RECORDS = "GetRecords";
@@ -26,6 +26,7 @@ public class CAT3 {
     public static final String SERVICE = "service";
     public static final String VERSION = "version";
     public static final String ACCEPT_VERSIONS = "acceptVersions";
+    public static final String ACCEPT_FORMATS = "acceptFormats";
     public static final String ID = "id";
     public static final String MAX_RECORDS = "maxRecords";
     public static final String ELEMENT_SET = "elementSetName";

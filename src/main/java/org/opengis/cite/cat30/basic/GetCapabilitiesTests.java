@@ -22,6 +22,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.xml.namespace.QName;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
@@ -93,7 +94,7 @@ public class GetCapabilitiesTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
         request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
         response = this.client.handle(request);
@@ -166,7 +167,7 @@ public class GetCapabilitiesTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put("Request", CAT3.GET_CAPABILITIES);
         qryParams.put("SERVICE", CAT3.SERVICE_TYPE_CODE);
-        qryParams.put("acceptversions", CAT3.SPEC_VERSION);
+        qryParams.put("acceptversions", CAT3.VERSION_3_0_0);
         request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
         response = this.client.handle(request);
@@ -190,7 +191,7 @@ public class GetCapabilitiesTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, "getCapabilities");
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
         request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
         response = this.client.handle(request);
@@ -209,7 +210,7 @@ public class GetCapabilitiesTests extends CommonFixture {
     public void getCapabilitiesIsMissingServiceParam() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
-        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
         request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
         response = this.client.handle(request);
@@ -240,4 +241,65 @@ public class GetCapabilitiesTests extends CommonFixture {
                 CAT3.ACCEPT_VERSIONS);
     }
 
+    /**
+     * [Test] Verifies that a request for a known but unsupported representation
+     * (format) of a capabilities document produces an exception report
+     * containing the exception code "InvalidParameterValue".
+     *
+     * The status code must be 400 (Bad Request) and the response entity must be
+     * an XML document having {http://www.opengis.net/ows/2.0}ExceptionReport as
+     * the document element.
+     *
+     * @see "OGC 06-121r9, Table 5: GetCapabilities operation request URL
+     * parameters"
+     */
+    @Test(description = "Requirements: 036,037,042")
+    public void getCapabilitiesInUnsupportedFormat() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.ACCEPT_FORMATS, "model/x3d+xml");
+        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                qryParams, MediaType.WILDCARD_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
+                CAT3.ACCEPT_FORMATS);
+    }
+
+    /**
+     * [Test] Verifies that a request for a supported representation (format) of
+     * a capabilities document produces the expected response entity. All
+     * supported formats must be listed in the capabilities document as values
+     * of the "AcceptFormats" parameter. The media type "text/xml" must be
+     * supported, but it need not be explicitly listed.
+     *
+     * @see "OGC 06-121r9, 7.3.5: AcceptFormats parameter"
+     * @see "OGC 12-176, Table 15"
+     */
+    @Test(description = "Requirements: 036,037,042")
+    public void getCapabilitiesInSupportedFormat() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
+        Set<String> allowedFormats = ServiceMetadataUtils.getParameterValues(
+                cswCapabilities, CAT3.GET_CAPABILITIES, CAT3.ACCEPT_FORMATS);
+        allowedFormats.add(MediaType.TEXT_XML);
+        for (String format : allowedFormats) {
+            qryParams.put(CAT3.ACCEPT_FORMATS, format);
+            request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                    qryParams, MediaType.WILDCARD_TYPE);
+            response = this.client.handle(request);
+            Assert.assertEquals(response.getStatus(),
+                    ClientResponse.Status.OK.getStatusCode(),
+                    ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+            // ignore media type parameters
+            MediaType mediaType = new MediaType(response.getType().getType(),
+                    response.getType().getSubtype());
+            Assert.assertEquals(mediaType,
+                    MediaType.valueOf(format),
+                    ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_MEDIA_TYPE));
+        }
+    }
 }

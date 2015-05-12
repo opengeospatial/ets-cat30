@@ -4,7 +4,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
@@ -161,13 +161,13 @@ public class OpenSearchDescriptionTests extends CommonFixture {
         CSWClient cswClient = new CSWClient();
         cswClient.setServiceDescription(this.cswCapabilities);
         Document capabilitiesDoc = cswClient.getCapabilities(null);
-        List<String> values = ServiceMetadataUtils.getConstraintValues(
+        Set<String> values = ServiceMetadataUtils.getConstraintValues(
                 capabilitiesDoc, OPENSEARCH_CONSTRAINT);
         if (null == values || values.isEmpty()) {
             throw new AssertionError(ErrorMessage.format(
                     ErrorMessageKeys.NAMED_ITEM_NOT_FOUND, OPENSEARCH_CONSTRAINT));
         }
-        URI uri = URI.create(values.get(0));
+        URI uri = URI.create(values.iterator().next());
         request = ClientUtils.buildGetRequest(uri, null,
                 MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));

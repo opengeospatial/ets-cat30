@@ -136,7 +136,7 @@ public class GetRecordByIdTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.ID, "urn:example:" + System.currentTimeMillis());
         request = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
@@ -160,7 +160,7 @@ public class GetRecordByIdTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
@@ -188,7 +188,7 @@ public class GetRecordByIdTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
@@ -219,7 +219,7 @@ public class GetRecordByIdTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
@@ -274,7 +274,7 @@ public class GetRecordByIdTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
@@ -316,7 +316,7 @@ public class GetRecordByIdTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);

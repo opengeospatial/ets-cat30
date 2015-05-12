@@ -8,8 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
@@ -66,7 +66,7 @@ public class CSWClient {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.SPEC_VERSION);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         if (mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
@@ -152,10 +152,10 @@ public class CSWClient {
         ClientResponse rsp = this.client.handle(req);
         if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()
                 || !XMLUtils.isXML(rsp.getType())) {
-            List<String> values = ServiceMetadataUtils.getConstraintValues(
+            Set<String> values = ServiceMetadataUtils.getConstraintValues(
                     cswCapabilities, "OpenSearchDescriptionDocument");
             if (null != values && !values.isEmpty()) {
-                URI endpoint = URI.create(values.get(0));
+                URI endpoint = URI.create(values.iterator().next());
                 if (!endpoint.equals(uri)) { // only attempt once
                     return getOpenSearchDescription(endpoint);
                 }
