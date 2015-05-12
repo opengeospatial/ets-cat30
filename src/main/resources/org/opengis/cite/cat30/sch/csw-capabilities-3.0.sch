@@ -146,6 +146,18 @@
       <iso:assert test="ows:Operation[@name='GetCapabilities']//ows:Get/@xlink:href">
       The GET method endpoint for GetCapabilities is missing.
       </iso:assert>
+      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'acceptVersions','i')]//ows:Value, '3.0.0')">
+      The 'AcceptVersions' parameter for GetCapabilities must include '3.0.0'.
+      </iso:assert>
+      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'acceptFormats','i')]//ows:Value, 'text/xml')">
+      The 'AcceptFormats' parameter for GetCapabilities must include 'text/xml'.
+      </iso:assert>
+      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'sections','i')]//ows:Value, 'Filter_Capabilities')">
+      The 'Sections' parameter for GetCapabilities must include 'Filter_Capabilities'.
+      </iso:assert>
+      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'sections','i')]//ows:Value, 'All')">
+      The 'Sections' parameter for GetCapabilities must include 'All' (WSC 2.0, 7.3.3)
+      </iso:assert>
       <iso:assert test="ows:Operation[@name='GetRecordById']">
       The mandatory GetRecordById operation is missing.
       </iso:assert>

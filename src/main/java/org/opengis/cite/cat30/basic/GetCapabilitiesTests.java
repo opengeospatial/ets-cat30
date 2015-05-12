@@ -23,10 +23,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.ClientUtils;
+import org.opengis.cite.cat30.util.TestSuiteLogger;
+import org.opengis.cite.cat30.util.XMLUtils;
 
 /**
  * Provides tests pertaining to the <code>GetCapabilities</code> request. This
@@ -300,6 +305,63 @@ public class GetCapabilitiesTests extends CommonFixture {
             Assert.assertEquals(mediaType,
                     MediaType.valueOf(format),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_MEDIA_TYPE));
+        }
+    }
+
+    /**
+     * [Test] Verifies that a request for a part of a capabilities document
+     * produces the expected response entity. All recognized section names must
+     * be listed in the capabilities document as values of the "Sections"
+     * parameter; the value "All" indicates that a complete document is
+     * requested.
+     *
+     * <p>
+     * The possible section names are listed below.</p>
+     * <ul>
+     * <li>All</li>
+     * <li>ServiceIdentification</li>
+     * <li>ServiceProvider</li>
+     * <li>OperationsMetadata</li>
+     * <li>Filter_Capabilities</li>
+     * </ul>
+     *
+     * @see "OGC 06-121r9, 7.3.3: Sections parameter"
+     * @see "OGC 12-176, Table 12"
+     */
+    @Test(description = "Requirements: 044")
+    public void getCapabilitiesBySection() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
+        Set<String> sections = ServiceMetadataUtils.getParameterValues(
+                cswCapabilities, CAT3.GET_CAPABILITIES, CAT3.SECTIONS);
+        sections.add("All");
+        for (String section : sections) {
+            qryParams.put(CAT3.SECTIONS, section);
+            request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+                    qryParams, MediaType.APPLICATION_XML_TYPE);
+            response = this.client.handle(request);
+            Assert.assertEquals(response.getStatus(),
+                    ClientResponse.Status.OK.getStatusCode(),
+                    ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+            Source source = ClientUtils.getResponseEntityAsSource(response, null);
+            if (section.equals("All")) {
+                URL schemaUrl = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
+                ETSAssert.assertSchematronValid(schemaUrl, source);
+            } else { // check that only requested section appears
+                String xpath = String.format(
+                        "count(/csw:Capabilities/*) = count(//*[local-name()='%s'])",
+                        section);
+                try {
+                    Boolean result = (Boolean) XMLUtils.evaluateXPath(
+                            source, xpath, null, XPathConstants.BOOLEAN);
+                    Assert.assertTrue(result, ErrorMessage.format(
+                            ErrorMessageKeys.XPATH_ERROR, xpath));
+                } catch (XPathExpressionException ex) {
+                    TestSuiteLogger.log(Level.WARNING, ex.getMessage());
+                }
+            }
         }
     }
 }

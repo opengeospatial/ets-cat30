@@ -27,6 +27,7 @@ public class CAT3 {
     public static final String VERSION = "version";
     public static final String ACCEPT_VERSIONS = "acceptVersions";
     public static final String ACCEPT_FORMATS = "acceptFormats";
+    public static final String SECTIONS = "sections";
     public static final String ID = "id";
     public static final String MAX_RECORDS = "maxRecords";
     public static final String ELEMENT_SET = "elementSetName";
