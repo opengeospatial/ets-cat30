@@ -135,6 +135,9 @@ public class OpenSearchGeoTests extends CommonFixture {
         for (Node urlTemplate : uidTemplates) {
             Element urlElem = (Element) urlTemplate;
             String mediaType = urlElem.getAttribute("type");
+            if (!mediaType.contains("xml")) {
+                continue; // ignore non-XML media types
+            }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(urlElem, values);
             request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
@@ -202,6 +205,9 @@ public class OpenSearchGeoTests extends CommonFixture {
         for (Node urlTemplate : boxTemplates) {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
+            if (!mediaType.contains("xml")) {
+                continue; // ignore non-XML media types
+            }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
             request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
@@ -242,6 +248,9 @@ public class OpenSearchGeoTests extends CommonFixture {
         for (Node urlTemplate : boxTemplates) {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");
+            if (!mediaType.contains("xml")) {
+                continue; // ignore non-XML media types
+            }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
             request = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));

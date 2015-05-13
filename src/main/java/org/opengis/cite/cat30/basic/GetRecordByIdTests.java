@@ -333,4 +333,79 @@ public class GetRecordByIdTests extends CommonFixture {
                 id);
         ETSAssert.assertXPath(expr, entity, nsBindings);
     }
+
+    /**
+     * [Test] Verifies that a request for a record representation in an
+     * unsupported format (media type) produces an exception report containing
+     * the exception code "InvalidParameterValue". The
+     * {@value org.opengis.cite.cat30.CAT3#OUTPUT_FORMAT} parameter has the
+     * value "model/vnd.collada+xml".
+     *
+     * @see "OGC 12-176r6, 7.4.4.3: outputFormat parameter"
+     */
+    @Test(description = "Requirements: 002,035,128")
+    public void getRecordByIdWithUnsupportedFormat() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.OUTPUT_FORMAT, "model/vnd.collada+xml");
+        int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
+        String id = this.idList.get(randomIndex);
+        qryParams.put(CAT3.ID, id);
+        request = ClientUtils.buildGetRequest(this.getURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
+                CAT3.OUTPUT_FORMAT);
+    }
+
+    /**
+     * [Test] Verifies that a request for a record that conforms to an
+     * unsupported output schema produces an exception report containing the
+     * exception code "InvalidParameterValue". The
+     * {@value org.opengis.cite.cat30.CAT3#OUTPUT_SCHEMA} parameter has the
+     * value "http://www.example.org/ns/alpha".
+     *
+     * @see "OGC 12-176r6, 7.4.4.4: outputSchema parameter"
+     */
+    @Test(description = "Requirements: 132,136")
+    public void getRecordByIdWithUnsupportedSchema() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.OUTPUT_SCHEMA, "http://www.example.org/ns/alpha");
+        int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
+        String id = this.idList.get(randomIndex);
+        qryParams.put(CAT3.ID, id);
+        request = ClientUtils.buildGetRequest(this.getURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
+                CAT3.OUTPUT_SCHEMA);
+    }
+
+    /**
+     * [Test] Verifies that a request for a record that omits the required 'id'
+     * parameter produces an exception report containing the exception code
+     * "MissingParameterValue".
+     *
+     * @see "OGC 12-176r6, Table 21: KVP encoding for GetRecordById operation
+     * request"
+     */
+    @Test(description = "Requirements: 037")
+    public void getRecordByIdWithMissingId() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
+        String id = this.idList.get(randomIndex);
+        qryParams.put(CAT3.ID, id);
+        request = ClientUtils.buildGetRequest(this.getURI,
+                qryParams, MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.MISSING_PARAM_VAL, CAT3.ID);
+    }
 }

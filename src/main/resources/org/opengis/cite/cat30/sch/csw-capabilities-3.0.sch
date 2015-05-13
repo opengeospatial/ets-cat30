@@ -17,10 +17,12 @@
 
   <iso:let name="CSW_NS" value="'http://www.opengis.net/cat/csw/3.0'" />
   <iso:let name="ATOM_NS" value="'http://www.w3.org/2005/Atom'" />
+  <iso:let name="XML_MEDIA_TYPE" value="'application/xml'" />
+  <iso:let name="ATOM_MEDIA_TYPE" value="'application/atom+xml'" />
 
   <iso:phase id="BasicCataloguePhase">
     <iso:active pattern="EssentialCapabilitiesPattern"/>
-    <iso:active pattern="TopLevelElementsPattern"/>
+    <iso:active pattern="CompleteRepresentationPattern"/>
     <iso:active pattern="ServiceConstraintsPattern"/>
     <iso:active pattern="ServiceIdentificationPattern"/>
     <iso:active pattern="BasicCataloguePattern"/>
@@ -43,8 +45,8 @@
     </iso:rule>
   </iso:pattern>
 
-  <iso:pattern id="TopLevelElementsPattern">
-    <iso:p>Rules regarding the inclusion of common service metadata elements.</iso:p>
+  <iso:pattern id="CompleteRepresentationPattern">
+    <iso:p>Rules regarding the inclusion of all service metadata elements.</iso:p>
     <iso:rule context="/*[1]">
       <iso:assert test="ows:ServiceIdentification">The ows:ServiceIdentification element is missing.</iso:assert>
       <iso:assert test="ows:ServiceProvider">The ows:ServiceProvider element is missing.</iso:assert>
@@ -146,24 +148,24 @@
       <iso:assert test="ows:Operation[@name='GetCapabilities']//ows:Get/@xlink:href">
       The GET method endpoint for GetCapabilities is missing.
       </iso:assert>
-      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'acceptVersions','i')]//ows:Value, '3.0.0')">
-      The 'AcceptVersions' parameter for GetCapabilities must include '3.0.0'.
-      </iso:assert>
-      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'acceptFormats','i')]//ows:Value, 'text/xml')">
-      The 'AcceptFormats' parameter for GetCapabilities must include 'text/xml'.
-      </iso:assert>
-      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'sections','i')]//ows:Value, 'Filter_Capabilities')">
-      The 'Sections' parameter for GetCapabilities must include 'Filter_Capabilities'.
-      </iso:assert>
-      <iso:assert test="index-of(ows:Operation[@name='GetCapabilities']/ows:Parameter[matches(@name,'sections','i')]//ows:Value, 'All')">
-      The 'Sections' parameter for GetCapabilities must include 'All' (WSC 2.0, 7.3.3)
-      </iso:assert>
       <iso:assert test="ows:Operation[@name='GetRecordById']">
       The mandatory GetRecordById operation is missing.
       </iso:assert>
       <iso:assert test="ows:Operation[@name='GetRecords']">
       The mandatory GetRecords operation is missing.
       </iso:assert>
+      <iso:report test="empty(index-of(//ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value, $CSW_NS))">
+      The outputSchema parameter must allow '<iso:value-of select="$CSW_NS"/>' (7.3.4.4).
+      </iso:report>
+      <iso:report test="empty(index-of(//ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value, $ATOM_NS))">
+      The outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>' (7.3.4.4).
+      </iso:report>
+      <iso:report test="empty(index-of(//ows:Parameter[matches(@name,'outputFormat','i')]//ows:Value, $XML_MEDIA_TYPE))">
+      The outputFormat parameter must allow '<iso:value-of select="$XML_MEDIA_TYPE"/>' (7.3.4.4).
+      </iso:report>
+      <iso:report test="empty(index-of(//ows:Parameter[matches(@name,'outputFormat','i')]//ows:Value, $ATOM_MEDIA_TYPE))">
+      The outputFormat parameter must allow '<iso:value-of select="$ATOM_MEDIA_TYPE"/>' (7.3.4.4).
+      </iso:report>
     </iso:rule>
     <iso:rule context="fes:Filter_Capabilities/fes:Conformance">
       <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinSpatialFilter']/ows:DefaultValue) = 'TRUE'">
@@ -178,21 +180,19 @@
   </iso:pattern>
 
   <iso:pattern id="OperationPattern">
-    <iso:p>Constraints that apply to Operation elements.</iso:p>
-    <iso:rule id="R137-R138" context="ows:Operation[@name='GetRecords']">
-      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value[1] eq $CSW_NS">
-      GetRecords: the first (default) value of the outputSchema parameter must be '<iso:value-of select="$CSW_NS"/>'  (7.3.4.4).
+    <iso:p>Constraints that apply to specific Operation elements.</iso:p>
+    <iso:rule id="R137-R138" context="ows:Operation[@name='GetCapabilities']">
+      <iso:assert test="index-of(ows:Parameter[matches(@name,'acceptVersions','i')]//ows:Value, '3.0.0')">
+      The 'AcceptVersions' parameter for GetCapabilities must include '3.0.0'.
       </iso:assert>
-      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value = $ATOM_NS">
-      GetRecords: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>' (7.3.4.4).
+      <iso:assert test="index-of(ows:Parameter[matches(@name,'acceptFormats','i')]//ows:Value, 'text/xml')">
+      The 'AcceptFormats' parameter for GetCapabilities must include 'text/xml'.
       </iso:assert>
-    </iso:rule>
-    <iso:rule id="R137-R138" context="ows:Operation[@name='GetRecordById']">
-      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value[1] eq $CSW_NS">
-      GetRecordById: the first (default) value of the outputSchema parameter must be '<iso:value-of select="$CSW_NS"/>' (7.4.4.4).
+      <iso:assert test="index-of(ows:Parameter[matches(@name,'sections','i')]//ows:Value, 'Filter_Capabilities')">
+      The 'Sections' parameter for GetCapabilities must include 'Filter_Capabilities'.
       </iso:assert>
-      <iso:assert test="ows:Parameter[matches(@name,'outputSchema','i')]//ows:Value = $ATOM_NS">
-      GetRecordById: outputSchema parameter must allow '<iso:value-of select="$ATOM_NS"/>' (7.4.4.4).
+      <iso:assert test="index-of(ows:Parameter[matches(@name,'sections','i')]//ows:Value, 'All')">
+      The 'Sections' parameter for GetCapabilities must include 'All' (WSC 2.0, 7.3.3)
       </iso:assert>
     </iso:rule>
   </iso:pattern>
