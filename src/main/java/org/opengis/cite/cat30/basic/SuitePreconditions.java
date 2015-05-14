@@ -25,7 +25,6 @@ import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeSuite;
 
 /**
@@ -91,7 +90,7 @@ public class SuitePreconditions {
         File dataFile = cswClient.saveFullRecords(20,
                 MediaType.APPLICATION_XML_TYPE);
         if (!dataFile.isFile()) {
-            throw new SkipException(
+            throw new AssertionError(
                     "Failed to save GetRecords response to temp file.");
         }
         Boolean hasResults = null;
@@ -102,8 +101,8 @@ public class SuitePreconditions {
             // not possible
         }
         if (!hasResults) {
-            throw new SkipException(
-                    "fetchSampleData: No records found in response.");
+            throw new AssertionError(
+                    "fetchSampleData: No csw:Record elements found in GetRecords response.");
         }
         TestSuiteLogger.log(Level.INFO,
                 "fetchSampleData: Saved GetRecords response to file: "
