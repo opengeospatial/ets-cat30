@@ -158,9 +158,13 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      */
     @Test(description = "[CAT-HTTP]: 6.5.6.2, Table 16")
     public void getOpenSearchDescriptionFromCapabilities() {
+        URI getCapabilitiesEndpoint = ServiceMetadataUtils.getOperationEndpoint(
+                this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
         CSWClient cswClient = new CSWClient();
-        cswClient.setServiceDescription(this.cswCapabilities);
-        Document capabilitiesDoc = cswClient.getCapabilities(null);
+        Document capabilitiesDoc = cswClient.getCapabilities(getCapabilitiesEndpoint);
+        Assert.assertNotNull(capabilitiesDoc,
+                "Failed to retrieve capabilities document as 'application/xml' from "
+                + getCapabilitiesEndpoint);
         Set<String> values = ServiceMetadataUtils.getConstraintValues(
                 capabilitiesDoc, OPENSEARCH_CONSTRAINT);
         if (null == values || values.isEmpty()) {

@@ -167,6 +167,8 @@ public class OpenSearchCoreTests extends CommonFixture {
             String[] titleWords = this.recordTitles.get(randomIndex).split("\\s+");
             searchTerm = titleWords[titleWords.length - 1];
         }
+        // remove any chars that may give rise to an invalid XPath expression
+        searchTerm = searchTerm.replaceAll("[()]", "");
         Map<QName, String> values = new HashMap<>();
         values.put(SEARCH_TERMS_PARAM, searchTerm);
         for (Node template : this.searchTermsTemplates) {

@@ -507,6 +507,8 @@ public class GetRecordsKVPTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.recordTitles.size());
         String[] titleWords = this.recordTitles.get(randomIndex).split("\\s+");
         String keyword = titleWords[titleWords.length - 1];
+        // remove any chars that may give rise to invalid XPath expression
+        keyword = keyword.replaceAll("[()]", "");
         qryParams.put(CAT3.Q, keyword);
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);

@@ -310,8 +310,10 @@ public class ETSAssert {
                             new Object[]{Records.getRecordId(record), term,
                                 XMLUtils.writeXdmValueToString(result)});
                 } catch (SaxonApiException sae) {
-                    throw new AssertionError(
-                            "Cannot evaluate XPath expression: " + expr, sae);
+                    throw new AssertionError(String.format(
+                            "Failed to evaluate XPath expression: %s \nReason: %s",
+                            expr,
+                            sae.getMessage()));
                 }
             }
         }
