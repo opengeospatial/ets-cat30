@@ -7,7 +7,18 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-04-29)</h2>
+	<h2>${project.version} (2015-05-20)</h2>
+    <p>This release expands test coverage as follows:</p>
+    <ul>
+      <li style="list-style: square;">Add negative tests for GetRecordById</li>
+      <li style="list-style: square;">Check operation parameters in capabilities document</li>
+      <li style="list-style: square;">Add tests for GetCapabilities requests with 'sections' 
+	  and 'acceptFormats' parameters</li>
+	  <li style="list-style: square;">Add tests covering Requirement-006, -007 
+	  (OGC 12-176r6, cl. 6.4)</li>
+    </ul>
+
+    <h2>0.5 (2015-04-29)</h2>
     <p>This release includes the following enhancements:</p>
     <ul>
       <li style="list-style: square;">Add tests for basic text search with 
