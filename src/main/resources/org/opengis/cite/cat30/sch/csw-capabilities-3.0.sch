@@ -8,6 +8,7 @@
   <iso:title>CSW 3.0 Capabilities</iso:title>
 
   <iso:ns prefix="ows" uri="http://www.opengis.net/ows/2.0" />
+  <iso:ns prefix="ows11" uri="http://www.opengis.net/ows/1.1" />
   <iso:ns prefix="csw" uri="http://www.opengis.net/cat/csw/3.0" />
   <iso:ns prefix="fes" uri="http://www.opengis.net/fes/2.0" />
   <iso:ns prefix="xlink" uri="http://www.w3.org/1999/xlink" />
@@ -168,12 +169,12 @@
       </iso:report>
     </iso:rule>
     <iso:rule context="fes:Filter_Capabilities/fes:Conformance">
-      <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinSpatialFilter']/ows:DefaultValue) = 'TRUE'">
+      <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinSpatialFilter']/ows11:DefaultValue) = 'TRUE'">
       The filter conformance constraint 'ImplementsMinSpatialFilter' must be 'TRUE' (see OGC 09-026r1).
       </iso:assert>
     </iso:rule>
     <iso:rule context="fes:Filter_Capabilities/fes:Conformance">
-      <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinimumXPath']/ows:DefaultValue) = 'TRUE'">
+      <iso:assert test="upper-case(fes:Constraint[@name='ImplementsMinimumXPath']/ows11:DefaultValue) = 'TRUE'">
       The filter conformance constraint 'ImplementsMinimumXPath' must be 'TRUE' (see OGC 09-026r1).
       </iso:assert>
     </iso:rule>
