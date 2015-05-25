@@ -90,11 +90,9 @@ public class GetRecordByIdTests extends CommonFixture {
     /**
      * Finds the GET and POST method endpoints for the GetCapabilities request
      * in the capabilities document.
-     *
-     * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void findRequestEndpoints(ITestContext testContext) {
+    public void findRequestEndpoints() {
         this.getURI = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_RECORD_BY_ID, HttpMethod.GET);
         this.postURI = ServiceMetadataUtils.getOperationEndpoint(

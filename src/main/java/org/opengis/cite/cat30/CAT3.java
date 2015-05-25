@@ -20,8 +20,9 @@ public class CAT3 {
     public static final String GET_RECORD_BY_ID = "GetRecordById";
     public static final String GET_RECORDS = "GetRecords";
     public static final String GET_RECORDS_RSP = "GetRecordsResponse";
+    public static final String SEARCH_RESULTS = "SearchResults";
 
-    // query parameters
+    // request parameters
     public static final String REQUEST = "request";
     public static final String SERVICE = "service";
     public static final String VERSION = "version";
@@ -31,6 +32,7 @@ public class CAT3 {
     public static final String ID = "id";
     public static final String MAX_RECORDS = "maxRecords";
     public static final String ELEMENT_SET = "elementSetName";
+    public static final String ELEMENT_NAME = "elementName";
     public static final String TYPE_NAMES = "typeNames";
     public static final String NAMESPACE = "namespace";
     public static final String OUTPUT_FORMAT = "outputFormat";
@@ -51,6 +53,9 @@ public class CAT3 {
     public static final String INVALID_UPDATE_SEQ = "InvalidUpdateSequence";
     public static final String OPER_NOT_SUPPORTED = "OperationNotSupported";
     public static final String OPT_NOT_SUPPORTED = "OptionNotSupported";
+    public static final String NO_CODE = "NoApplicableCode";
+    public static final String PROCESSING_FAILED = "OperationProcessingFailed";
+    public static final String PARSING_FAILED = "OperationParsingFailed";
 
     // media types
     public static final String APP_OPENSEARCH_XML

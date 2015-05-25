@@ -65,7 +65,7 @@ public class VerifyGetCapabilitiesTests {
         GetCapabilitiesTests iut = new GetCapabilitiesTests();
         iut.initCommonFixture(testContext);
         iut.clearMessages();
-        iut.findServiceEndpoint(testContext);
+        iut.findServiceEndpoint();
         iut.getFullCapabilitiesAcceptVersion3();
     }
 

@@ -583,4 +583,81 @@ public class GetRecordsKVPTests extends CommonFixture {
         ETSAssert.assertAllTermsOccur(recordList, searchTerms.split("\\s+"));
     }
 
+    /**
+     * [Test] Submits a GetRecords request where the 'elementName' parameter
+     * value identifies a single element from the output schema (dc:subject).
+     * The response must be augmented with additional elements so as to be
+     * schema valid. Furthermore, every record in the result set must contain
+     * one or more dc:subject elements (may be empty).
+     */
+    @Test(description = "Requirement-093")
+    public void presentSubjectProperty() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_NAME, "tns:subject");
+        qryParams.put(CAT3.NAMESPACE,
+                String.format("xmlns(tns=%s)", Namespaces.DCMES));
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        Validator validator = this.cswSchema.newValidator();
+        ETSAssert.assertSchemaValid(validator,
+                new DOMSource(entity, entity.getDocumentURI()));
+        Element results = (Element) entity.getElementsByTagNameNS(
+                Namespaces.CSW, CAT3.SEARCH_RESULTS).item(0);
+        ETSAssert.assertXPath(
+                "count(csw:SummaryRecord[dc:subject]) = ./@numberOfRecordsReturned",
+                results, null);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request that specifies an element name not
+     * declared in the output schema. An exception report is expected in
+     * response with HTTP status code 400 and exception code
+     * "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
+     */
+    @Test(description = "Requirement-091")
+    public void presentUnknownRecordProperty() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_NAME, "undefined");
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
+                CAT3.ELEMENT_NAME);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request that contains both the
+     * <code>ElementName</code> and <code>ElementSetName</code> parameters. An
+     * exception report is expected in response with HTTP status code 400 and
+     * exception code "{@value org.opengis.cite.cat30.CAT3#NO_CODE}".
+     */
+    @Test(description = "Requirement-099")
+    public void elementSetAndElementName() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
+        qryParams.put(CAT3.ELEMENT_NAME, "ns1:subject");
+        qryParams.put(CAT3.NAMESPACE, String.format("xmlns(ns1=%s)", Namespaces.DCMES));
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.NO_CODE, null);
+    }
+
 }

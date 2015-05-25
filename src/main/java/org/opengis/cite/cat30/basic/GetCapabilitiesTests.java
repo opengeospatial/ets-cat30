@@ -13,7 +13,6 @@ import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.testng.Assert;
-import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
@@ -62,11 +61,9 @@ public class GetCapabilitiesTests extends CommonFixture {
     /**
      * Finds the GET method endpoint for the GetCapabilities request in the
      * capabilities document.
-     *
-     * @param testContext The test context containing various suite attributes.
      */
     @BeforeClass
-    public void findServiceEndpoint(ITestContext testContext) {
+    public void findServiceEndpoint() {
         this.getCapabilitiesURI = ServiceMetadataUtils.getOperationEndpoint(
                 this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
     }
