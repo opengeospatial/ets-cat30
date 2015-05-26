@@ -34,7 +34,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
 import org.w3c.dom.NodeList;
 
-public class VerifyGetRecordsKVPTests {
+public class VerifyBasicSearchTests {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -52,7 +52,7 @@ public class VerifyGetRecordsKVPTests {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         docBuilder = dbf.newDocumentBuilder();
-        Document doc = docBuilder.parse(VerifyGetRecordsKVPTests.class.getResourceAsStream(
+        Document doc = docBuilder.parse(VerifyBasicSearchTests.class.getResourceAsStream(
                 "/capabilities-basic.xml"));
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         cswSchema = ValidationUtils.createCSWSchema();
@@ -75,7 +75,7 @@ public class VerifyGetRecordsKVPTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
-        GetRecordsKVPTests spy = Mockito.spy(new GetRecordsKVPTests());
+        BasicSearchTests spy = Mockito.spy(new BasicSearchTests());
         Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
                 any(ClientResponse.class), anyString());
         spy.initCommonFixture(testContext);
@@ -99,7 +99,7 @@ public class VerifyGetRecordsKVPTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
-        GetRecordsKVPTests spy = Mockito.spy(new GetRecordsKVPTests());
+        BasicSearchTests spy = Mockito.spy(new BasicSearchTests());
         Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
                 any(ClientResponse.class), anyString());
         spy.initCommonFixture(testContext);
@@ -123,7 +123,7 @@ public class VerifyGetRecordsKVPTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
-        GetRecordsKVPTests spy = Mockito.spy(new GetRecordsKVPTests());
+        BasicSearchTests spy = Mockito.spy(new BasicSearchTests());
         Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
                 any(ClientResponse.class), anyString());
         spy.initCommonFixture(testContext);

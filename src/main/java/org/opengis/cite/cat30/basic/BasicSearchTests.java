@@ -1,22 +1,17 @@
 package org.opengis.cite.cat30.basic;
 
 import com.sun.jersey.api.client.ClientResponse;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.validation.Validator;
 import org.geotoolkit.geometry.Envelopes;
 import org.geotoolkit.geometry.GeneralEnvelope;
 import org.geotoolkit.referencing.crs.DefaultGeographicCRS;
@@ -34,7 +29,6 @@ import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.URIUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
-import org.opengis.cite.validation.ValidationErrorHandler;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
 import org.testng.Assert;
@@ -45,23 +39,21 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
- * Provides tests that apply to the <code>GetRecords</code> request using the
- * KVP syntax.
+ * Includes GetRecords tests pertaining to the <code>Filter-FES-KVP</code>
+ * conformance class. The following basic search capabilities must be
+ * implemented:
+ * <ul>
+ * <li>Text search using the 'q' query parameter;</li>
+ * <li>Record search using the 'recordIds' query parameter;</li>
+ * <li>Spatial search using the 'bbox' query parameter.</li>
+ * </ul>
  *
- * <p>
- * The KVP syntax must be supported; this encoding is generally used with the
- * GET method but may also be used with the POST method; however a POST method
- * binding is very unusual and will be advertised in the capabilities document
- * as an operational constraint as indicated below. The media type of a KVP
- * request entity is "application/x-www-form-urlencoded".
- * </p>
- *
- * @see "OGC 12-176r6, 7.3: GetRecords operation"
+ * @see "OGC 12-176r6, Table 1: Conformance classes"
+ * @see "OGC 12-176r6, Table 6: KVP encoding for query constraints"
  */
-public class GetRecordsKVPTests extends CommonFixture {
+public class BasicSearchTests extends CommonFixture {
 
     /**
      * Service endpoint for GetRecords using the GET method.
@@ -139,156 +131,6 @@ public class GetRecordsKVPTests extends CommonFixture {
         this.recordTitles = datasetInfo.getRecordTitles();
         this.recordIdentifiers = datasetInfo.getRecordIdentifiers();
         this.recordTopics = datasetInfo.getRecordTopics();
-    }
-
-    /**
-     * [Test] Submits a GetRecords request with no search criteria. The
-     * <code>namespace</code> parameter declares a namespace binding for the
-     * common type name (tns:Record). The results must contain one or more
-     * csw:BriefRecord elements.
-     *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
-     * <ul>
-     * <li>OGC 12-176r6, Table 19: KVP encoding for GetRecords operation
-     * request</li>
-     * <li>OGC 12-176r6, 7.3.4.1: NAMESPACE parameter</li>
-     * </ul>
-     */
-    @Test(description = "Requirements: 063")
-    public void getBriefRecordsWithNamespaceBinding() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.NAMESPACE, String.format("xmlns(tns=%s)", Namespaces.CSW));
-        qryParams.put(CAT3.TYPE_NAMES, "tns:Record");
-        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
-        Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = getResponseEntityAsDocument(response, null);
-        String expr = "count(//csw:SearchResults/csw:BriefRecord) > 0";
-        ETSAssert.assertXPath(expr, entity, null);
-    }
-
-    /**
-     * [Test] Submits a GetRecords request with no search criteria. The default
-     * record representation is csw:SummaryRecord; the csw:SearchResults element
-     * in the response cannot be empty.
-     */
-    @Test(description = "Requirements: 101")
-    public void getSummaryRecordsInDefaultRepresentation() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.TYPE_NAMES, "Record");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
-        Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = getResponseEntityAsDocument(response, null);
-        String expr = "count(//csw:SearchResults/csw:SummaryRecord) > 0";
-        ETSAssert.assertXPath(expr, entity, null);
-    }
-
-    /**
-     * [Test] Submits a GetRecords request with no search criteria. The Accept
-     * header and the outputFormat parameter express a preference for an Atom
-     * feed in the response. The resulting atom:feed must be valid according to
-     * RFC 4287.
-     *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
-     * <ul>
-     * <li>OGC 12-176r6, 7.3.6: Atom response</li>
-     * <li>OGC 10-032r8, Table 6: Elements of Search operation response in the
-     * atom:feed element describing the search service</li>
-     * <li><a href="https://tools.ietf.org/html/rfc4287" target="_blank">RFC
-     * 4287</a>: The Atom Syndication Format</li>
-     * </ul>
-     */
-    @Test(description = "Requirements: 80,122")
-    public void getSummaryRecordsInAtomFeed() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.TYPE_NAMES, "Record");
-        qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.APPLICATION_ATOM_XML_TYPE);
-        response = this.client.handle(request);
-        Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Assert.assertEquals(ClientUtils.removeParameters(response.getType()),
-                MediaType.APPLICATION_ATOM_XML_TYPE,
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_MEDIA_TYPE));
-        Document entity = getResponseEntityAsDocument(response, null);
-        Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
-        String expr = "count(/atom:feed/atom:entry) > 0";
-        ETSAssert.assertXPath(expr, entity, nsBindings);
-        Validator atomValidator = this.atomSchema.newValidator();
-        ValidationErrorHandler err = new ValidationErrorHandler();
-        atomValidator.setErrorHandler(err);
-        try {
-            Source src = XMLUtils.toStreamSource(new DOMSource(entity));
-            atomValidator.validate(src);
-        } catch (SAXException | IOException ex) {
-            Logger.getLogger(GetRecordByIdTests.class.getName()).log(
-                    Level.WARNING, "Error attempting to validate Atom feed.", ex);
-        }
-        Assert.assertFalse(err.errorsDetected(),
-                ErrorMessage.format(ErrorMessageKeys.NOT_SCHEMA_VALID,
-                        err.getErrorCount(), err.toString()));
-    }
-
-    /**
-     * [Test] Submits a GetRecords request that specifies an unsupported output
-     * format (<code>text/example</code>) as the value of the outputFormat
-     * parameter. An exception report is expected in response with HTTP status
-     * code 400 and exception code
-     * "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
-     */
-    @Test(description = "Requirements: 035,037,042")
-    public void getRecordsInUnsupportedOutputFormat() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.TYPE_NAMES, "Record");
-        qryParams.put(CAT3.OUTPUT_FORMAT, "text/example");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.WILDCARD_TYPE);
-        response = this.client.handle(request);
-        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
-                CAT3.OUTPUT_FORMAT);
-    }
-
-    /**
-     * [Test] Submits a GetRecords request that specifies an unsupported output
-     * schema ("urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0"). An exception
-     * report is expected in response with HTTP status code 400 and exception
-     * code "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
-     */
-    @Test(description = "Requirements: 035,037,042")
-    public void getRecordsInUnsupportedSchema() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.TYPE_NAMES, "Record");
-        qryParams.put(CAT3.OUTPUT_SCHEMA, "urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
-        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
-                CAT3.OUTPUT_SCHEMA);
     }
 
     /**
@@ -452,10 +294,9 @@ public class GetRecordsKVPTests extends CommonFixture {
     }
 
     /**
-     * The <code>Filter-FES-KVP</code> conformance class requires support for
-     * text searches using the 'q' query parameter. This test submits a
-     * GetRecords request where the 'q' parameter value is a single term that
-     * occurs in at least one catalog record; case is not significant.
+     * [Test] Submits a GetRecords request where the 'q' parameter value is a
+     * single term that occurs in at least one catalog record; case is not
+     * significant.
      *
      * <p>
      * <strong>Note: </strong>According to Table 4 in <em>OGC OpenSearch Geo and
@@ -582,82 +423,4 @@ public class GetRecordsKVPTests extends CommonFixture {
                 ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
         ETSAssert.assertAllTermsOccur(recordList, searchTerms.split("\\s+"));
     }
-
-    /**
-     * [Test] Submits a GetRecords request where the 'elementName' parameter
-     * value identifies a single element from the output schema (dc:subject).
-     * The response must be augmented with additional elements so as to be
-     * schema valid. Furthermore, every record in the result set must contain
-     * one or more dc:subject elements (may be empty).
-     */
-    @Test(description = "Requirement-093")
-    public void presentSubjectProperty() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.TYPE_NAMES, "Record");
-        qryParams.put(CAT3.ELEMENT_NAME, "tns:subject");
-        qryParams.put(CAT3.NAMESPACE,
-                String.format("xmlns(tns=%s)", Namespaces.DCMES));
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
-        Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
-                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document entity = getResponseEntityAsDocument(response, null);
-        Validator validator = this.cswSchema.newValidator();
-        ETSAssert.assertSchemaValid(validator,
-                new DOMSource(entity, entity.getDocumentURI()));
-        Element results = (Element) entity.getElementsByTagNameNS(
-                Namespaces.CSW, CAT3.SEARCH_RESULTS).item(0);
-        ETSAssert.assertXPath(
-                "count(csw:SummaryRecord[dc:subject]) = ./@numberOfRecordsReturned",
-                results, null);
-    }
-
-    /**
-     * [Test] Submits a GetRecords request that specifies an element name not
-     * declared in the output schema. An exception report is expected in
-     * response with HTTP status code 400 and exception code
-     * "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
-     */
-    @Test(description = "Requirement-091")
-    public void presentUnknownRecordProperty() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.TYPE_NAMES, "Record");
-        qryParams.put(CAT3.ELEMENT_NAME, "undefined");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
-        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
-                CAT3.ELEMENT_NAME);
-    }
-
-    /**
-     * [Test] Submits a GetRecords request that contains both the
-     * <code>ElementName</code> and <code>ElementSetName</code> parameters. An
-     * exception report is expected in response with HTTP status code 400 and
-     * exception code "{@value org.opengis.cite.cat30.CAT3#NO_CODE}".
-     */
-    @Test(description = "Requirement-099")
-    public void elementSetAndElementName() {
-        Map<String, String> qryParams = new HashMap<>();
-        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
-        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
-        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        qryParams.put(CAT3.TYPE_NAMES, "Record");
-        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
-        qryParams.put(CAT3.ELEMENT_NAME, "ns1:subject");
-        qryParams.put(CAT3.NAMESPACE, String.format("xmlns(ns1=%s)", Namespaces.DCMES));
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
-                MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
-        ETSAssert.assertExceptionReport(response, CAT3.NO_CODE, null);
-    }
-
 }

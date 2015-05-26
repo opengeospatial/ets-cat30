@@ -25,7 +25,6 @@ import java.io.File;
 import java.net.URL;
 import javax.xml.validation.Schema;
 import org.mockito.Mockito;
-import org.opengis.cite.cat30.basic.VerifyGetRecordsKVPTests;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.ValidationUtils;
 
@@ -53,7 +52,7 @@ public class VerifyOpenSearchGeoTests {
         DatasetInfo dataInfo = new DatasetInfo(dataFile);
         when(suite.getAttribute(SuiteAttribute.DATASET.getName()))
                 .thenReturn(dataInfo);
-        Document doc = docBuilder.parse(VerifyGetRecordsKVPTests.class.getResourceAsStream(
+        Document doc = docBuilder.parse(VerifyOpenSearchGeoTests.class.getResourceAsStream(
                 "/capabilities-basic.xml"));
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         Schema cswSchema = ValidationUtils.createCSWSchema();
