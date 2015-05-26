@@ -127,13 +127,22 @@ public class ClientUtils {
      * @param response A representation of an HTTP response message.
      * @param targetURI The target URI from which the entity was retrieved (may
      * be null).
-     * @return A Source to read the entity from; its system identifier is set
-     * using the given targetURI value (this may be used to resolve any relative
-     * URIs found in the source).
+     * @return A Source to read the entity from, or null if the entity cannot be
+     * processed for some reason; its system identifier is set using the given
+     * targetURI value (this may be used to resolve any relative URIs found in
+     * the source).
      */
     public static Source getResponseEntityAsSource(ClientResponse response,
             String targetURI) {
-        Source source = response.getEntity(DOMSource.class);
+        Source source = null;
+        try {
+            source = response.getEntity(DOMSource.class);
+        } catch (RuntimeException rex) {
+            Logger.getLogger(ClientUtils.class.getName()).log(Level.WARNING,
+                    "Failed to process response entity ({0}). {1}",
+                    new Object[]{response.getType(), rex.getMessage()});
+            return null;
+        }
         if (null != targetURI && !targetURI.isEmpty()) {
             source.setSystemId(targetURI);
         }
@@ -156,16 +165,19 @@ public class ClientUtils {
      * @param response A representation of an HTTP response message.
      * @param targetURI The target URI from which the entity was retrieved (may
      * be null).
-     * @return A Document representing the entity; its base URI is set using the
-     * given targetURI value (this may be used to resolve any relative URIs
-     * found in the document).
+     * @return A Document representing the entity, or null if it cannot be
+     * parsed; its base URI is set using the given targetURI value (this may be
+     * used to resolve any relative URIs found in the document).
      */
     public static Document getResponseEntityAsDocument(ClientResponse response,
             String targetURI) {
-        DOMSource domSource = (DOMSource) getResponseEntityAsSource(response,
-                targetURI);
+        Source source = getResponseEntityAsSource(response, targetURI);
+        if (null == source) {
+            return null;
+        }
+        DOMSource domSource = DOMSource.class.cast(source);
         Document entityDoc = (Document) domSource.getNode();
-        entityDoc.setDocumentURI(domSource.getSystemId());
+        entityDoc.setDocumentURI(targetURI);
         return entityDoc;
     }
 }

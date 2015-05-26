@@ -83,7 +83,11 @@ public class TestFailureListener extends TestListenerAdapter {
         if (rsp.hasEntity()) {
             if (XMLUtils.isXML(rsp.getType())) {
                 Document doc = ClientUtils.getResponseEntityAsDocument(rsp, null);
-                msgInfo.append(XMLUtils.writeNodeToString(doc));
+                if (null == doc) {
+                    msgInfo.append("Failed to parse XML response entity.\n");
+                } else {
+                    msgInfo.append(XMLUtils.writeNodeToString(doc));
+                }
             } else {
                 byte[] body = rsp.getEntity(byte[].class);
                 msgInfo.append(new String(body, StandardCharsets.US_ASCII));
