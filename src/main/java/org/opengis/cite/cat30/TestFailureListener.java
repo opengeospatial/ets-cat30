@@ -2,7 +2,10 @@ package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.ITestResult;
@@ -81,10 +84,16 @@ public class TestFailureListener extends TestListenerAdapter {
         msgInfo.append("Status: ").append(rsp.getStatus()).append('\n');
         msgInfo.append("Headers: ").append(rsp.getHeaders()).append('\n');
         if (rsp.hasEntity()) {
+            try {
+                rsp.getEntityInputStream().reset();
+            } catch (IOException ex) {
+                Logger.getLogger(TestFailureListener.class.getName()).log(
+                        Level.WARNING, "Failed to reset entity InputStream", ex);
+            }
             if (XMLUtils.isXML(rsp.getType())) {
                 Document doc = ClientUtils.getResponseEntityAsDocument(rsp, null);
                 if (null == doc) {
-                    msgInfo.append("Failed to parse XML response entity.\n");
+                    msgInfo.append("Failed to parse XML response entity.");
                 } else {
                     msgInfo.append(XMLUtils.writeNodeToString(doc));
                 }

@@ -3,6 +3,7 @@ package org.opengis.cite.cat30;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -197,17 +198,26 @@ public class ETSAssert {
         Assert.assertEquals(rsp.getStatus(),
                 ClientResponse.Status.BAD_REQUEST.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Document doc = rsp.getEntity(Document.class);
+        Document doc = null;
+        try {
+            doc = rsp.getEntity(Document.class);
+        } catch (RuntimeException ex) {
+            StringBuilder msg = new StringBuilder();
+            msg.append("Failed to parse response entity. ");
+            msg.append(ex.getMessage()).append('\n');
+            byte[] body = rsp.getEntity(byte[].class);
+            msg.append(new String(body, StandardCharsets.US_ASCII));
+            throw new AssertionError(msg);
+        }
         String expr = String.format("//ows:Exception[@exceptionCode = '%s']",
                 exceptionCode);
         NodeList nodeList = null;
         try {
             nodeList = XMLUtils.evaluateXPath(doc, expr, null);
-        } catch (XPathExpressionException xpe) {
-            // won't happen
+        } catch (XPathExpressionException xpe) {// won't happen
         }
         Assert.assertTrue(nodeList.getLength() > 0,
-                "Exception not found in response: " + expr);
+                "Expected exception not found in response: " + expr);
         if (null != locator && !locator.isEmpty()) {
             Element exception = (Element) nodeList.item(0);
             String locatorValue = exception.getAttribute("locator").toLowerCase();
