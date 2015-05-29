@@ -1,17 +1,22 @@
 package org.opengis.cite.cat30.opensearch;
 
+import java.util.Collections;
+import java.util.Map;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.testng.ITestContext;
 import org.w3c.dom.Document;
 
-import javax.xml.xpath.XPathExpressionException;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
 import org.opengis.cite.cat30.ErrorMessage;
 import org.opengis.cite.cat30.ErrorMessageKeys;
+import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.annotations.BeforeTest;
-import org.w3c.dom.NodeList;
 
 /**
  * Checks that various preconditions are satisfied before the tests for
@@ -19,6 +24,16 @@ import org.w3c.dom.NodeList;
  * tests are skipped.
  */
 public class OpenSearchPreconditions {
+
+    private CSWClient cswClient;
+
+    void setClient(CSWClient client) {
+        this.cswClient = client;
+    }
+
+    public OpenSearchPreconditions() {
+        this.cswClient = new CSWClient();
+    }
 
     /**
      * Checks that the service capabilities document advertises OpenSearch
@@ -59,26 +74,27 @@ public class OpenSearchPreconditions {
         Document cswCapabilities = (Document) testContext.getSuite().getAttribute(
                 SuiteAttribute.TEST_SUBJECT.getName());
         String xpath = String.format(
-                "//ows:Constraint[contains(@name,'%s')]/ows:DefaultValue",
+                "//ows:Constraint[ends-with(@name,'%s')]/ows:DefaultValue",
                 CAT3.CC_OPEN_SEARCH);
-        NodeList result = null;
+        XdmValue xdmValue = null;
+        Map<String, String> nsMap = Collections.singletonMap(Namespaces.OWS, "ows");
+        Source source = new DOMSource(cswCapabilities, cswCapabilities.getDocumentURI());
         try {
-            result = XMLUtils.evaluateXPath(cswCapabilities, xpath, null);
-            if (result.getLength() == 0) {
+            xdmValue = XMLUtils.evaluateXPath2(source, xpath, nsMap);
+            if (xdmValue.size() == 0) {
                 xpath = String.format(
-                        "//ows:Constraint[contains(@name,'%s')]//ows:Value[1]",
+                        "//ows:Constraint[ends-with(@name,'%s')]//ows:Value[1]",
                         CAT3.CC_OPEN_SEARCH);
-                result = XMLUtils.evaluateXPath(cswCapabilities, xpath, null);
+                xdmValue = XMLUtils.evaluateXPath2(source, xpath, nsMap);
             }
-        } catch (XPathExpressionException ex) { // ignore--expressions ok
+        } catch (SaxonApiException ex) { // ignore--expressions ok
         }
-        if (result.getLength() == 0
-                || !result.item(0).getTextContent().trim().equalsIgnoreCase("TRUE")) {
+        if (xdmValue.size() == 0
+                || !xdmValue.itemAt(0).getStringValue().trim().equalsIgnoreCase("TRUE")) {
             throw new AssertionError("OpenSearch not a supported capability.");
         }
-        CSWClient cswClient = new CSWClient();
-        cswClient.setServiceDescription(cswCapabilities);
-        Document openSearchDescr = cswClient.getOpenSearchDescription(null);
+        this.cswClient.setServiceDescription(cswCapabilities);
+        Document openSearchDescr = this.cswClient.getOpenSearchDescription(null);
         if (null == openSearchDescr) {
             throw new AssertionError(ErrorMessage.get(
                     ErrorMessageKeys.OPENSEARCH_UNAVAIL));
