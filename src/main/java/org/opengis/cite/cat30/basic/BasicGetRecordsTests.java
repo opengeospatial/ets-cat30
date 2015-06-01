@@ -32,6 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -233,13 +234,37 @@ public class BasicGetRecordsTests extends CommonFixture {
     }
 
     /**
+     * [Test] Submits a GetRecords request that specifies an unknown
+     * <code>typeName</code> parameter value. Since the type does not belong to
+     * any supported information model, an exception report is expected in
+     * response with HTTP status code 400 and exception code
+     * "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
+     *
+     * @see "OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding,
+     * 7.3.4.7: typeNames parameter"
+     */
+    @Test(description = "Requirements: 088")
+    public void getRecordsWithUnknownTypeName() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "UnknownType");
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
+                CAT3.TYPE_NAMES);
+    }
+
+    /**
      * [Test] Submits a GetRecords request that specifies an unsupported output
      * schema ("urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0"). An exception
      * report is expected in response with HTTP status code 400 and exception
      * code "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
      */
     @Test(description = "Requirements: 035,037,042")
-    public void getRecordsInUnsupportedSchema() {
+    public void getRecordsWithUnsupportedSchema() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
@@ -260,7 +285,7 @@ public class BasicGetRecordsTests extends CommonFixture {
      * schema valid. Furthermore, every record in the result set must contain
      * one or more dc:subject elements (may be empty).
      */
-    @Test(description = "Requirement-093")
+    @Test(description = "Requirements: 093")
     public void presentSubjectProperty() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
@@ -293,7 +318,7 @@ public class BasicGetRecordsTests extends CommonFixture {
      * response with HTTP status code 400 and exception code
      * "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
      */
-    @Test(description = "Requirement-091")
+    @Test(description = "Requirements: 091")
     public void presentUnknownRecordProperty() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
@@ -314,7 +339,7 @@ public class BasicGetRecordsTests extends CommonFixture {
      * exception report is expected in response with HTTP status code 400 and
      * exception code "{@value org.opengis.cite.cat30.CAT3#NO_CODE}".
      */
-    @Test(description = "Requirement-099")
+    @Test(description = "Requirements: 099")
     public void elementSetAndElementName() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
@@ -328,5 +353,97 @@ public class BasicGetRecordsTests extends CommonFixture {
                 MediaType.APPLICATION_XML_TYPE);
         response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.NO_CODE, null);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request where the <code>startPosition</code>
+     * and <code>maxRecords</code> parameters have non-default values. The
+     * csw:SearchResults element in the response entity must present the correct
+     * "slice" of the result set.
+     */
+    @Test(description = "Requirements: 082,084")
+    public void getPartialResults() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.NAMESPACE, String.format("xmlns(csw3=%s)", Namespaces.CSW));
+        qryParams.put(CAT3.TYPE_NAMES, "csw3:Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
+        int startPosition = 3;
+        qryParams.put(CAT3.START_POS, Integer.toString(startPosition));
+        int maxRecords = 2;
+        qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        Element results = (Element) entity.getElementsByTagNameNS(
+                Namespaces.CSW, "SearchResults").item(0);
+        Assert.assertNotNull(results,
+                ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "csw:SearchResults"));
+        Assert.assertEquals(results.getElementsByTagNameNS(Namespaces.CSW, "SummaryRecord").getLength(),
+                maxRecords,
+                ErrorMessage.format(ErrorMessageKeys.RESULT_SET_SIZE, "csw:SummaryRecord"));
+        Assert.assertEquals(Integer.parseInt(results.getAttribute(CAT3.NUM_REC_RETURNED)),
+                maxRecords,
+                ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE, "@numberOfRecordsReturned"));
+        Assert.assertEquals(Integer.parseInt(results.getAttribute(CAT3.NEXT_REC)),
+                startPosition + maxRecords,
+                ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE, "@nextRecord"));
+    }
+
+    /**
+     * [Test] Submits a GetRecords request where the <code>startPosition</code>
+     * and <code>maxRecords</code> parameters have non-default values. The
+     * atom:feed element in the response entity must present the correct "slice"
+     * of the result set.
+     *
+     * @see "OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding,
+     * 7.3.6: Atom response"
+     * @see "OGC OpenSearch Geo and Time Extensions, Table 6"
+     */
+    @Test(description = "Requirements: 082,084,122")
+    public void getPartialResultsAsAtomFeed() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.NAMESPACE, String.format("xmlns(csw3=%s)", Namespaces.CSW));
+        qryParams.put(CAT3.TYPE_NAMES, "csw3:Record");
+        qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
+        int startPosition = 3;
+        qryParams.put(CAT3.START_POS, Integer.toString(startPosition));
+        int maxRecords = 2;
+        qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_ATOM_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        Element feed = (Element) entity.getElementsByTagNameNS(
+                Namespaces.ATOM, "feed").item(0);
+        Assert.assertNotNull(feed,
+                ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "atom:feed"));
+        Assert.assertEquals(feed.getElementsByTagNameNS(Namespaces.ATOM, "entry").getLength(),
+                maxRecords,
+                ErrorMessage.format(ErrorMessageKeys.RESULT_SET_SIZE, "atom:entry"));
+        Node startIndex = feed.getElementsByTagNameNS(Namespaces.OSD11, "startIndex").item(0);
+        Assert.assertNotNull(startIndex,
+                ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:startIndex"));
+        Assert.assertEquals(Integer.parseInt(startIndex.getTextContent()),
+                startPosition,
+                ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE, "os:startIndex"));
+        Node itemsPerPage = feed.getElementsByTagNameNS(Namespaces.OSD11, "itemsPerPage").item(0);
+        Assert.assertNotNull(itemsPerPage,
+                ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:itemsPerPage"));
+        Assert.assertEquals(Integer.parseInt(itemsPerPage.getTextContent()),
+                maxRecords,
+                ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE, "os:itemsPerPage"));
     }
 }

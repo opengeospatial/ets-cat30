@@ -37,9 +37,15 @@ public class CAT3 {
     public static final String NAMESPACE = "namespace";
     public static final String OUTPUT_FORMAT = "outputFormat";
     public static final String OUTPUT_SCHEMA = "outputSchema";
+    public static final String START_POS = "startPosition";
     public static final String BBOX = "bbox";
     public static final String Q = "q";
     public static final String REC_ID_LIST = "recordIds";
+
+    // response properties
+    public static final String NUM_REC_RETURNED = "numberOfRecordsReturned";
+    public static final String NUM_REC_MATCHED = "numberOfRecordsMatched";
+    public static final String NEXT_REC = "nextRecord";
 
     // query parameter (code list) values
     public static final String ELEMENT_SET_FULL = "full";
