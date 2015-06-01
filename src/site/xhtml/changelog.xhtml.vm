@@ -10,6 +10,8 @@
     <h2>${project.version} (2015-06-DD)</h2>
     <p>This release includes the following changes:</p>
     <ul>
+      <li style="list-style: square;">Add test for GetRecords with multiple search criteria 
+      (implicit AND)</li>
       <li style="list-style: square;">Add tests for GetRecords requests with the 
       <code>ElementName</code> parameter (mutually exclusive with <code>ElementSetName</code>)</li>
       <li style="list-style: square;">Add tests for GetRecords requests with the <code>startPosition</code>

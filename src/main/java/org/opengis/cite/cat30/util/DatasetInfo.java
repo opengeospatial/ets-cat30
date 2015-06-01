@@ -2,7 +2,9 @@ package org.opengis.cite.cat30.util;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -10,6 +12,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
+import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
@@ -104,6 +109,33 @@ public class DatasetInfo {
             this.topics = Records.findPropertyValues(dataFile, "//dc:subject");
         }
         return topics;
+    }
+
+    /**
+     * Finds the (infoset) items in the sample data that satisfy the given XPath
+     * (2.0) expression.
+     *
+     * @param xpath The XPath expression to be evaluated.
+     * @param nsBindings A collection of namespace bindings required to evaluate
+     * the XPath expression, where each entry maps a namespace URI (key) to a
+     * prefix (value); bindings for the standard namespaces are not required.
+     * @return A sequence of zero or more items, where each item is either an
+     * atomic value or a node.
+     * @throws SaxonApiException If the expression cannot be evaluated (this
+     * always wraps some other underlying exception).
+     */
+    public XdmValue findItems(String xpath, Map<String, String> nsBindings)
+            throws SaxonApiException {
+        if (null == nsBindings) {
+            nsBindings = new HashMap<>();
+            nsBindings.put(Namespaces.CSW, "csw");
+            nsBindings.put(Namespaces.OWS, "ows");
+            nsBindings.put(Namespaces.DCMES, "dc");
+            nsBindings.put(Namespaces.DCMI, "dct");
+        }
+        XdmValue results = XMLUtils.evaluateXPath2(new StreamSource(dataFile),
+                xpath, nsBindings);
+        return results;
     }
 
     /**

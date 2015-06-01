@@ -26,4 +26,5 @@ public class ErrorMessageKeys {
     public static final String OPENSEARCH_UNAVAIL = "OpenSearchUnavailable";
     public static final String NAMED_ITEM_NOT_FOUND = "NamedItemNotFound";
     public static final String INFOSET_ITEM_VALUE = "InfosetItemValue";
+    public static final String CONSTRAINT_VIOLATION = "ConstraintViolation";
 }

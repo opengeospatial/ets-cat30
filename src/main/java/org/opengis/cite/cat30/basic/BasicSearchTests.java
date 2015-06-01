@@ -12,6 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
 import org.geotoolkit.geometry.Envelopes;
 import org.geotoolkit.geometry.GeneralEnvelope;
 import org.geotoolkit.referencing.crs.DefaultGeographicCRS;
@@ -367,6 +369,49 @@ public class BasicSearchTests extends CommonFixture {
     }
 
     /**
+     * [Test] Submits a GetRecords request where the <code>q</code> parameter
+     * contains a subject word and the <code>maxRecords</code> parameter value
+     * has the value "0" (zero). The csw:SearchResults element in the response
+     * must be empty.
+     */
+    @Test(description = "Requirements: 086")
+    public void getRecordsBySubjectWithoutResults() {
+        if (this.recordTopics.isEmpty()) {
+            throw new SkipException("No dc:subject elements found in sample records.");
+        }
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.MAX_RECORDS, "0");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
+        int randomIndex = ThreadLocalRandom.current().nextInt(this.recordTopics.size());
+        String[] subjectWords = this.recordTopics.get(randomIndex).split("\\s+");
+        String subject = subjectWords[subjectWords.length - 1];
+        qryParams.put(CAT3.Q, subject);
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        Element results = (Element) entity.getElementsByTagNameNS(
+                Namespaces.CSW, "SearchResults").item(0);
+        Assert.assertNotNull(results,
+                ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "csw:SearchResults"));
+        Assert.assertEquals(results.getChildNodes().getLength(), 0,
+                ErrorMessage.format(ErrorMessageKeys.RESULT_SET_SIZE, "csw:SummaryRecord"));
+        Assert.assertEquals(Integer.parseInt(results.getAttribute(CAT3.NUM_REC_RETURNED)),
+                0,
+                ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE, "@numberOfRecordsReturned"));
+        Assert.assertTrue(Integer.parseInt(results.getAttribute(CAT3.NUM_REC_MATCHED)) > 0,
+                ErrorMessage.format(ErrorMessageKeys.CONSTRAINT_VIOLATION,
+                        "numberOfRecordsMatched > 0"));
+    }
+
+    /**
      * [Test] Submits a GetRecords request where the 'q' parameter value is
      * randomly generated text. The result set is expected to be empty.
      */
@@ -422,5 +467,74 @@ public class BasicSearchTests extends CommonFixture {
         Assert.assertTrue(recordList.getLength() > 0,
                 ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
         ETSAssert.assertAllTermsOccur(recordList, searchTerms.split("\\s+"));
+    }
+
+    /**
+     * [Test] Submits a GetRecords request containing the <code>bbox</code> and
+     * <code>q</code> parameters, where the latter matches one or more record
+     * titles. The <code>maxRecords</code> parameter has the value "unlimited".
+     * The response must include all records that satisfy both search criteria
+     * (implicit AND).
+     *
+     * @see "OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding,
+     * 6.5.5.3: KVP encoding"
+     */
+    @Test(description = "Requirements: 087")
+    public void getUnlimitedRecordsByBBOXAndTitle() {
+        if (null == this.geoExtent) {
+            throw new SkipException("Could not determine extent of sample data.");
+        }
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
+        qryParams.put(CAT3.MAX_RECORDS, "unlimited");
+        Envelope bbox = this.geoExtent;
+        try {
+            if (!bbox.getCoordinateReferenceSystem().equals(
+                    DefaultGeographicCRS.WGS84)) {
+                bbox = new GeneralEnvelope(Envelopes.transform(bbox,
+                        DefaultGeographicCRS.WGS84));
+            }
+        } catch (TransformException ex) {
+            throw new RuntimeException("Failed to create WGS84 envelope.", ex);
+        }
+        qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
+        String title = null;
+        try {  // get titles for records with bbox
+            XdmValue titles = this.datasetInfo.findItems(
+                    "//csw:Record[ows:BoundingBox or ows:WGS84BoundingBox]/dc:title", null);
+            String[] titleWords = titles.itemAt(0).getStringValue().trim().split("\\s+");
+            title = titleWords[0];
+        } catch (SaxonApiException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+        // remove any chars that may give rise to invalid XPath expression
+        title = title.replaceAll("[()]", "");
+        qryParams.put(CAT3.Q, title);
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        Element results = (Element) entity.getElementsByTagNameNS(
+                Namespaces.CSW, "SearchResults").item(0);
+        Assert.assertNotNull(results, ErrorMessage.format(
+                ErrorMessageKeys.MISSING_INFOSET_ITEM, "csw:SearchResults"));
+        Assert.assertTrue(results.getAttribute(CAT3.NUM_REC_MATCHED).equals(
+                results.getAttribute(CAT3.NUM_REC_RETURNED)),
+                ErrorMessage.format(ErrorMessageKeys.CONSTRAINT_VIOLATION,
+                        "numberOfRecordsMatched = numberOfRecordsReturned"));
+        ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, new DOMSource(results));
+        QName recordName = new QName(Namespaces.CSW, "SummaryRecord");
+        NodeList recordList = results.getElementsByTagNameNS(
+                recordName.getNamespaceURI(), recordName.getLocalPart());
+        Assert.assertTrue(recordList.getLength() > 0,
+                ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
+        ETSAssert.assertAllTermsOccur(recordList, title);
     }
 }
