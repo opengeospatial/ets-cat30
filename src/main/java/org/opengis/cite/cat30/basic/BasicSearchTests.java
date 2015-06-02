@@ -13,6 +13,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import org.geotoolkit.geometry.Envelopes;
 import org.geotoolkit.geometry.GeneralEnvelope;
@@ -502,18 +503,23 @@ public class BasicSearchTests extends CommonFixture {
             throw new RuntimeException("Failed to create WGS84 envelope.", ex);
         }
         qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
-        String title = null;
+        String titleWord = null;
         try {  // get titles for records with bbox
             XdmValue titles = this.datasetInfo.findItems(
                     "//csw:Record[ows:BoundingBox or ows:WGS84BoundingBox]/dc:title", null);
-            String[] titleWords = titles.itemAt(0).getStringValue().trim().split("\\s+");
-            title = titleWords[0];
+            for (XdmItem title : titles) {
+                if (!title.getStringValue().isEmpty()) {
+                    String[] titleWords = title.getStringValue().trim().split("\\s+");
+                    titleWord = titleWords[0];
+                    break;
+                }
+            }
         } catch (SaxonApiException ex) {
             throw new RuntimeException(ex.getMessage());
         }
         // remove any chars that may give rise to invalid XPath expression
-        title = title.replaceAll("[()]", "");
-        qryParams.put(CAT3.Q, title);
+        titleWord = titleWord.replaceAll("[()]", "");
+        qryParams.put(CAT3.Q, titleWord);
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
         response = this.client.handle(request);
@@ -535,6 +541,6 @@ public class BasicSearchTests extends CommonFixture {
                 recordName.getNamespaceURI(), recordName.getLocalPart());
         Assert.assertTrue(recordList.getLength() > 0,
                 ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
-        ETSAssert.assertAllTermsOccur(recordList, title);
+        ETSAssert.assertAllTermsOccur(recordList, titleWord);
     }
 }
