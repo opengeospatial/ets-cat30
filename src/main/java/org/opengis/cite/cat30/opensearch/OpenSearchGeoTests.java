@@ -150,10 +150,13 @@ public class OpenSearchGeoTests extends CommonFixture {
 
     /**
      * [Test] Submits an OpenSearch request that includes a resource identifier.
-     * A matching entry is expected in the response. The request URI is
-     * constructed in accord with a URL template containing the
-     * <code>{geo:uid}</code> parameter. Any other template parameters are set
-     * to their default values.
+     * A matching entry is expected in the response, along with the os:Query
+     * element that describes the search request. The request URI is constructed
+     * in accord with a URL template containing the <code>{geo:uid}</code>
+     * parameter. Any other template parameters are set to their default values.
+     *
+     * @see "OGC OpenSearch Geo and Time Extensions (OGC 10-032r8), 9.3.2:
+     * Normal response XML encoding"
      */
     @Test(description = "OGC 12-176r6, Table 6")
     public void getResourceById() {
@@ -185,6 +188,10 @@ public class OpenSearchGeoTests extends CommonFixture {
                     recordPath, id);
             ETSAssert.assertXPath(expr, entity,
                     Collections.singletonMap(Namespaces.ATOM, "atom"));
+            Node osQuery = entity.getElementsByTagNameNS(
+                    Namespaces.OSD11, "Query").item(0);
+            Assert.assertNotNull(osQuery, ErrorMessage.format(
+                    ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:Query"));
         }
     }
 
@@ -224,6 +231,15 @@ public class OpenSearchGeoTests extends CommonFixture {
      * constructed in accord with a URL template containing the
      * <code>{geo:box}</code> parameter. Any other template parameters are set
      * to their default values.
+     *
+     * <p>
+     * All matching record representations in the response entity must satisfy
+     * the bounding box constraint. If the entity is an Atom feed, it must also
+     * contain the os:Query element that describes the search request.
+     * </p>
+     *
+     * @see "OGC OpenSearch Geo and Time Extensions (OGC 10-032r8), 9.3.2:
+     * Normal response XML encoding"
      */
     @Test(description = "Requirements: 022,023; OGC 10-032r8, A.3")
     public void boundingBoxQuery() {
@@ -259,15 +275,19 @@ public class OpenSearchGeoTests extends CommonFixture {
                     ClientResponse.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
             Document entity = getResponseEntityAsDocument(response, null);
+            ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox,
+                    new DOMSource(entity));
             QName docElem;
             if (mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
                 docElem = new QName(Namespaces.ATOM, "feed");
+                Node osQuery = entity.getElementsByTagNameNS(
+                        Namespaces.OSD11, "Query").item(0);
+                Assert.assertNotNull(osQuery, ErrorMessage.format(
+                        ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:Query"));
             } else {
                 docElem = new QName(Namespaces.CSW, CAT3.GET_RECORDS_RSP);
             }
             ETSAssert.assertQualifiedName(entity.getDocumentElement(), docElem);
-            Source results = new DOMSource(entity);
-            ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, results);
         }
     }
 }

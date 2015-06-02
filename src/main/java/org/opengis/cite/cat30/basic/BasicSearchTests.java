@@ -348,8 +348,12 @@ public class BasicSearchTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
-        int randomIndex = ThreadLocalRandom.current().nextInt(this.recordTitles.size());
-        String[] titleWords = this.recordTitles.get(randomIndex).split("\\s+");
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        String title = recordTitles.get(random.nextInt(recordTitles.size()));
+        while (title.isEmpty()) { // rare but might happen
+            title = recordTitles.get(random.nextInt(recordTitles.size()));
+        }
+        String[] titleWords = title.split("\\s+");
         String keyword = titleWords[titleWords.length - 1];
         // remove any chars that may give rise to invalid XPath expression
         keyword = keyword.replaceAll("[()]", "");

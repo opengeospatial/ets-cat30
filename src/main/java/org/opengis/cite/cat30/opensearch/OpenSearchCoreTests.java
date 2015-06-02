@@ -376,8 +376,12 @@ public class OpenSearchCoreTests extends CommonFixture {
      * @return A word (the last) occurring in some title.
      */
     String randomlySelectTitleWord(List<String> titles) {
-        int randomIndex = ThreadLocalRandom.current().nextInt(titles.size());
-        String[] titleWords = titles.get(randomIndex).split("\\s+");
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        String title = titles.get(random.nextInt(titles.size()));
+        while (title.isEmpty()) {
+            title = titles.get(random.nextInt(titles.size()));
+        }
+        String[] titleWords = title.split("\\s+");
         String word = titleWords[titleWords.length - 1];
         // remove any chars that may give rise to an invalid XPath expression
         word = word.replaceAll("[()]", "");
