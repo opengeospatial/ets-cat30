@@ -252,6 +252,8 @@ public class ETSAssert {
                     nsBindings, XPathConstants.NODESET);
         } catch (XPathExpressionException xpe) { // ignore--expression is ok
         }
+        Assert.assertTrue(boxNodeList.getLength() > 0,
+                "No bounding box representations (ows:BoundingBox, ows:WGS84BoundingBox, georss:box) found in results.");
         for (int i = 0; i < boxNodeList.getLength(); i++) {
             Node bboxNode = boxNodeList.item(i);
             try {
