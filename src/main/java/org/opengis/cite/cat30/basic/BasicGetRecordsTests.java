@@ -138,9 +138,9 @@ public class BasicGetRecordsTests extends CommonFixture {
     }
 
     /**
-     * [Test] Submits a GetRecords request with no search criteria. The default
-     * record representation is csw:SummaryRecord; the csw:SearchResults element
-     * in the response cannot be empty.
+     * [Test] Submits a GetRecords request with no search criteria. The
+     * requested record representation is csw:SummaryRecord; the
+     * csw:SearchResults element in the response cannot be empty.
      */
     @Test(description = "Requirements: 101")
     public void getSummaryRecordsInDefaultRepresentation() {
@@ -149,6 +149,7 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
         response = this.client.handle(request);
@@ -182,6 +183,7 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
         qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
@@ -225,6 +227,7 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         qryParams.put(CAT3.OUTPUT_FORMAT, "text/example");
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.WILDCARD_TYPE);
@@ -258,6 +261,30 @@ public class BasicGetRecordsTests extends CommonFixture {
     }
 
     /**
+     * [Test] Submits a GetRecords request that specifies an unknown
+     * <code>elementSetName</code> parameter value. An exception report is
+     * expected in response with HTTP status code 400 and exception code
+     * "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
+     *
+     * @see "OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding,
+     * 7.3.4.8: ElementName or ElementSetName parameter"
+     */
+    @Test(description = "Requirements: 102")
+    public void unknownElementSetName() {
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, "undefined-view");
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
+                CAT3.ELEMENT_SET);
+    }
+
+    /**
      * [Test] Submits a GetRecords request that specifies an unsupported output
      * schema ("urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0"). An exception
      * report is expected in response with HTTP status code 400 and exception
@@ -270,6 +297,7 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         qryParams.put(CAT3.OUTPUT_SCHEMA, "urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0");
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
@@ -335,9 +363,10 @@ public class BasicGetRecordsTests extends CommonFixture {
 
     /**
      * [Test] Submits a GetRecords request that contains both the
-     * <code>ElementName</code> and <code>ElementSetName</code> parameters. An
-     * exception report is expected in response with HTTP status code 400 and
-     * exception code "{@value org.opengis.cite.cat30.CAT3#NO_CODE}".
+     * <code>ElementName</code> and <code>ElementSetName</code> parameters.
+     * Since these parameters are mutually exclusive, an exception report is
+     * expected in response with HTTP status code 400 and exception code
+     * "{@value org.opengis.cite.cat30.CAT3#NO_CODE}".
      */
     @Test(description = "Requirements: 099")
     public void elementSetAndElementName() {
@@ -415,6 +444,7 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.NAMESPACE, String.format("xmlns(csw3=%s)", Namespaces.CSW));
         qryParams.put(CAT3.TYPE_NAMES, "csw3:Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
         qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
         int startPosition = 3;
         qryParams.put(CAT3.START_POS, Integer.toString(startPosition));
