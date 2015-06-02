@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
+import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
 import org.opengis.cite.cat30.ErrorMessage;
@@ -19,6 +21,7 @@ import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.OpenSearchTemplateUtils;
 import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
+import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.URIUtils;
 import org.testng.Assert;
 import org.testng.ITestContext;
@@ -163,12 +166,8 @@ public class OpenSearchCoreTests extends CommonFixture {
             throw new AssertionError("No URL templates containing {searchTerms} parameter.");
         }
         if (null == searchTerm || searchTerm.isEmpty()) {
-            int randomIndex = ThreadLocalRandom.current().nextInt(this.recordTitles.size());
-            String[] titleWords = this.recordTitles.get(randomIndex).split("\\s+");
-            searchTerm = titleWords[titleWords.length - 1];
+            this.searchTerm = randomlySelectTitleWord(this.recordTitles);
         }
-        // remove any chars that may give rise to an invalid XPath expression
-        searchTerm = searchTerm.replaceAll("[()]", "");
         Map<QName, String> values = new HashMap<>();
         values.put(SEARCH_TERMS_PARAM, searchTerm);
         for (Node template : this.searchTermsTemplates) {
@@ -220,6 +219,82 @@ public class OpenSearchCoreTests extends CommonFixture {
                     ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
                             Records.getRecordName(urlElem.getAttribute("type"))));
             ETSAssert.assertAllTermsOccur(records, searchTerms.split("\\s+"));
+        }
+    }
+
+    /**
+     * [Test] Submits a query that contains the <code>count</code> and
+     * <code>startIndex</code> parameters. The response entity must contain the
+     * requested 'slice' of the result set in accord with its content model:
+     * <ul>
+     * <li>atom:feed (with OpenSearch response elements)</li>
+     * <li>csw:GetRecordsResponse/csw:SearchResults</li>
+     * </ul>
+     */
+    @Test(description = "Requirements: 022,023")
+    public void sliceResults() {
+        QName countParam = new QName(Namespaces.OSD11, "count");
+        List<Node> templatesWithCountParam = OpenSearchTemplateUtils.filterURLTemplatesByParam(
+                templates, countParam);
+        if (templatesWithCountParam.isEmpty()) {
+            throw new AssertionError("No URL templates containing {count} parameter.");
+        }
+        int count = 4;
+        Map<QName, String> params = new HashMap<>();
+        params.put(countParam, Integer.toString(count));
+        QName startIndexParam = new QName(Namespaces.OSD11, "startIndex");
+        int startIndex = 3;
+        params.put(startIndexParam, Integer.toString(startIndex));
+        for (Node template : templatesWithCountParam) {
+            Element urlTemplate = (Element) template;
+            NodeList records;
+            try {
+                records = invokeQuery(urlTemplate, params);
+            } catch (UnsupportedOperationException e) {
+                continue; // skip if query produces non-XML results
+            }
+            Assert.assertEquals(response.getStatus(),
+                    ClientResponse.Status.OK.getStatusCode(),
+                    ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+            Assert.assertTrue(records.getLength() > 0,
+                    ErrorMessage.get(ErrorMessageKeys.EMPTY_RESULT_SET));
+            Document entity = getResponseEntityAsDocument(response, null);
+            String namespaceURI = entity.getDocumentElement().getNamespaceURI();
+            switch (namespaceURI) {
+                case Namespaces.ATOM:
+                    Node itemsPerPage = entity.getElementsByTagNameNS(
+                            Namespaces.OSD11, "itemsPerPage").item(0);
+                    Assert.assertNotNull(itemsPerPage, ErrorMessage.format(
+                            ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:itemsPerPage"));
+                    Assert.assertEquals(Integer.parseInt(itemsPerPage.getTextContent()),
+                            count,
+                            ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE,
+                                    "os:itemsPerPage"));
+                    Node startIndexNode = entity.getElementsByTagNameNS(
+                            Namespaces.OSD11, "startIndex").item(0);
+                    Assert.assertNotNull(startIndexNode, ErrorMessage.format(
+                            ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:startIndex"));
+                    Assert.assertEquals(Integer.parseInt(startIndexNode.getTextContent()),
+                            startIndex,
+                            ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE,
+                                    "os:startIndex"));
+                    break;
+                case Namespaces.CSW:
+                    Node resultsNode = entity.getElementsByTagNameNS(
+                            Namespaces.CSW, "SearchResults").item(0);
+                    Assert.assertNotNull(resultsNode,
+                            ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "csw:SearchResults"));
+                    Element results = (Element) resultsNode;
+                    int nRecordsReturned = Integer.parseInt(results.getAttribute(CAT3.NUM_REC_RETURNED));
+                    Assert.assertEquals(nRecordsReturned, count,
+                            ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE, "@numberOfRecordsReturned"));
+                    int nextRecord = Integer.parseInt(results.getAttribute(CAT3.NEXT_REC));
+                    Assert.assertEquals(nextRecord, startIndex + count,
+                            ErrorMessage.format(ErrorMessageKeys.INFOSET_ITEM_VALUE, "@nextRecord"));
+                    break;
+                default:
+                    throw new SkipException("Unrecognized namespace: " + namespaceURI);
+            }
         }
     }
 
@@ -283,6 +358,7 @@ public class OpenSearchCoreTests extends CommonFixture {
                     "URL template does not produce XML results: " + mediaType);
         }
         URI targetURI = OpenSearchTemplateUtils.buildRequestURI(qryTemplate, parameters);
+        TestSuiteLogger.log(Level.FINE, "invokeQuery target URI: " + targetURI);
         request = ClientUtils.buildGetRequest(targetURI, null,
                 MediaType.valueOf(mediaType));
         response = this.client.handle(request);
@@ -291,5 +367,20 @@ public class OpenSearchCoreTests extends CommonFixture {
         NodeList records = entity.getElementsByTagNameNS(
                 recordName.getNamespaceURI(), recordName.getLocalPart());
         return records;
+    }
+
+    /**
+     * Returns a word from a randomly selected title in the given list.
+     *
+     * @param titles A list of record titles.
+     * @return A word (the last) occurring in some title.
+     */
+    String randomlySelectTitleWord(List<String> titles) {
+        int randomIndex = ThreadLocalRandom.current().nextInt(titles.size());
+        String[] titleWords = titles.get(randomIndex).split("\\s+");
+        String word = titleWords[titleWords.length - 1];
+        // remove any chars that may give rise to an invalid XPath expression
+        word = word.replaceAll("[()]", "");
+        return word;
     }
 }

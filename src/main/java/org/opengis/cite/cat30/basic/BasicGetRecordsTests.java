@@ -381,10 +381,11 @@ public class BasicGetRecordsTests extends CommonFixture {
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
-        Element results = (Element) entity.getElementsByTagNameNS(
+        Node resultsNode = entity.getElementsByTagNameNS(
                 Namespaces.CSW, "SearchResults").item(0);
-        Assert.assertNotNull(results,
+        Assert.assertNotNull(resultsNode,
                 ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "csw:SearchResults"));
+        Element results = (Element) resultsNode;
         Assert.assertEquals(results.getElementsByTagNameNS(Namespaces.CSW, "SummaryRecord").getLength(),
                 maxRecords,
                 ErrorMessage.format(ErrorMessageKeys.RESULT_SET_SIZE, "csw:SummaryRecord"));
@@ -426,10 +427,10 @@ public class BasicGetRecordsTests extends CommonFixture {
                 ClientResponse.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
-        Element feed = (Element) entity.getElementsByTagNameNS(
-                Namespaces.ATOM, "feed").item(0);
-        Assert.assertNotNull(feed,
+        Node feedNode = entity.getElementsByTagNameNS(Namespaces.ATOM, "feed").item(0);
+        Assert.assertNotNull(feedNode,
                 ErrorMessage.format(ErrorMessageKeys.MISSING_INFOSET_ITEM, "atom:feed"));
+        Element feed = (Element) feedNode;
         Assert.assertEquals(feed.getElementsByTagNameNS(Namespaces.ATOM, "entry").getLength(),
                 maxRecords,
                 ErrorMessage.format(ErrorMessageKeys.RESULT_SET_SIZE, "atom:entry"));
