@@ -4,7 +4,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -235,6 +234,7 @@ public class ETSAssert {
      * <li>ows:BoundingBox</li>
      * <li>ows:WGS84BoundingBox</li>
      * <li>georss:box (EPSG 4326)</li>
+     * <li>georss:where/{http://www.opengis.net/gml}Envelope</li>
      * </ul>
      *
      * @param bbox An envelope specifying a spatial extent in some CRS.
@@ -244,22 +244,26 @@ public class ETSAssert {
     public static void assertEnvelopeIntersectsBoundingBoxes(final Envelope bbox,
             final Source results) {
         NodeList boxNodeList = null;
-        Map<String, String> nsBindings = Collections.singletonMap(
-                Namespaces.GEORSS, "georss");
+        Map<String, String> nsBindings = new HashMap<>();
+        nsBindings.put(Namespaces.GEORSS, "georss");
+        nsBindings.put(Namespaces.GML31, "gml31");
         try {
             boxNodeList = (NodeList) XMLUtils.evaluateXPath(results,
-                    "//ows:BoundingBox | //ows:WGS84BoundingBox | //georss:box",
+                    "//ows:BoundingBox | //ows:WGS84BoundingBox | //georss:box | //gml31:Envelope",
                     nsBindings, XPathConstants.NODESET);
         } catch (XPathExpressionException xpe) { // ignore--expression is ok
         }
         Assert.assertTrue(boxNodeList.getLength() > 0,
-                "No bounding box representations (ows:BoundingBox, ows:WGS84BoundingBox, georss:box) found in results.");
+                "No bounding box representations (ows:BoundingBox, ows:WGS84BoundingBox, georss:box, gml31:Envelope) found in results.");
         for (int i = 0; i < boxNodeList.getLength(); i++) {
             Node bboxNode = boxNodeList.item(i);
+            if (bboxNode.getNamespaceURI().equals(Namespaces.GML31)) {
+                bboxNode = SpatialUtils.createGML32Envelope(bboxNode);
+            }
             try {
                 Envelope envelope;
                 if (bboxNode.getNamespaceURI().equals(Namespaces.GEORSS)) {
-                    envelope = SpatialUtils.envelopeFomGeoRSSBox(bboxNode);
+                    envelope = SpatialUtils.envelopeFromSimpleGeoRSSBox(bboxNode);
                 } else {
                     envelope = Extents.createEnvelope(bboxNode);
                 }

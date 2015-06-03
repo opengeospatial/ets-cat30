@@ -1,17 +1,13 @@
 package org.opengis.cite.cat30;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,22 +35,11 @@ public class VerifyETSAssert {
     }
 
     @Test
-    public void validateUsingSchemaHints_expect2Errors() throws SAXException {
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("2 schema validation error(s) detected");
-        URL url = this.getClass().getResource("/Gamma.xml");
-        Schema schema = factory.newSchema();
-        Validator validator = schema.newValidator();
-        ETSAssert
-                .assertSchemaValid(validator, new StreamSource(url.toString()));
-    }
-
-    @Test
     public void assertXPathWithNamespaceBindings() throws SAXException,
             IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/capabilities-basic.xml"));
-        Map<String, String> nsBindings = new HashMap<String, String>();
+        Map<String, String> nsBindings = new HashMap<>();
         nsBindings.put(WADL_NS, "ns1");
         String xpath = "//ns1:resources";
         ETSAssert.assertXPath(xpath, doc, nsBindings);

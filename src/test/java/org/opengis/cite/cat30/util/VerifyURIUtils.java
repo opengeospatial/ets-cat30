@@ -12,7 +12,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -56,21 +55,6 @@ public class VerifyURIUtils {
         assertNotNull(doc);
         assertEquals("Document element has unexpected [local name].",
                 "feed", doc.getDocumentElement().getLocalName());
-    }
-
-    @Test
-    public void resolveFileRefWithXInclude() throws SAXException, IOException,
-            URISyntaxException {
-        File file = new File("src/test/resources/Alpha-xinclude.xml");
-        Document doc = URIUtils.parseURI(file.toURI());
-        assertNotNull(doc);
-        assertEquals("Document element has unexpected [local name].",
-                "Alpha", doc.getDocumentElement().getLocalName());
-        NodeList nodes = doc.getDocumentElement().getElementsByTagNameNS(
-                "http://www.example.net/gamma", "Gamma");
-        assertEquals(
-                "Expected element {http://www.example.net/gamma}Gamma", 1,
-                nodes.getLength());
     }
 
     @Test(expected = IllegalArgumentException.class)

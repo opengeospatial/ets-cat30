@@ -30,9 +30,13 @@ public class Namespaces {
      */
     public static final String OWS11 = "http://www.opengis.net/ows/1.1";
     /**
-     * ISO 19136 (GML 3.2)
+     * GML 3.2 (ISO 19136)
      */
     public static final String GML = "http://www.opengis.net/gml/3.2";
+    /**
+     * GML 3.1 (03-105r1)
+     */
+    public static final String GML31 = "http://www.opengis.net/gml";
     /**
      * ISO 19143:2010 (FES 2.0)
      */

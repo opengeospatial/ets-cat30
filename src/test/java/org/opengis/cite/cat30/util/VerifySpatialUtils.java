@@ -8,8 +8,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.cite.cat30.Namespaces;
 import org.opengis.geometry.Envelope;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
@@ -33,7 +35,7 @@ public class VerifySpatialUtils {
     public void createEnvelopeFromGeoRSSBox() throws SAXException, IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/georss/box.xml"));
-        Envelope env = SpatialUtils.envelopeFomGeoRSSBox(doc.getDocumentElement());
+        Envelope env = SpatialUtils.envelopeFromSimpleGeoRSSBox(doc.getDocumentElement());
         assertEquals("Unexpected CRS code", "WGS 84", env.getCoordinateReferenceSystem().getName().getCode());
         assertArrayEquals("Unexpected coords for upper corner.",
                 new double[]{33.5, -116.2},
@@ -45,7 +47,7 @@ public class VerifySpatialUtils {
     public void createEnvelopeFromBoxWithMissingCorner() throws SAXException, IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/georss/box-missingCorner.xml"));
-        Envelope env = SpatialUtils.envelopeFomGeoRSSBox(doc.getDocumentElement());
+        Envelope env = SpatialUtils.envelopeFromSimpleGeoRSSBox(doc.getDocumentElement());
         System.out.println(env.toString());
         assertNull(env);
     }
@@ -54,7 +56,20 @@ public class VerifySpatialUtils {
     public void createEnvelopeFromBoxWithNonNumericValue() throws SAXException, IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/georss/box-NaN.xml"));
-        Envelope env = SpatialUtils.envelopeFomGeoRSSBox(doc.getDocumentElement());
+        Envelope env = SpatialUtils.envelopeFromSimpleGeoRSSBox(doc.getDocumentElement());
         assertNull(env);
+    }
+
+    @Test
+    public void createEnvelopeFromGML31Envelope() throws SAXException, IOException {
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/Envelope-GML31.xml"));
+        Element env = SpatialUtils.createGML32Envelope(doc.getDocumentElement());
+        assertEquals("Unexpected namespace", Namespaces.GML, env.getNamespaceURI());
+        assertEquals("Unexpected srsName",
+                "urn:ogc:def:crs:EPSG::32610", env.getAttribute("srsName"));
+        String upperCorner = env.getElementsByTagNameNS(
+                Namespaces.GML, "upperCorner").item(0).getTextContent();
+        assertTrue("Expected upperCorner ends with 5451619", upperCorner.endsWith("5451619"));
     }
 }
