@@ -7,17 +7,18 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-06-DD)</h2>
+    <h2>${project.version} (2015-06-03)</h2>
     <p>This release includes the following changes:</p>
     <ul>
-      <li style="list-style: square;">Add test for GetRecords with multiple search criteria 
+      <li style="list-style: square;">New test for GetRecords with multiple search criteria 
       (implicit AND)</li>
-      <li style="list-style: square;">Add tests for GetRecords requests with the 
+      <li style="list-style: square;">New tests for GetRecords requests with the 
       <code>ElementName</code> parameter (mutually exclusive with <code>ElementSetName</code>)</li>
+      <li style="list-style: square;">New tests for GetRecords requests with the <code>startPosition</code>
+      and <code>maxRecords</code> parameters</li>
       <li style="list-style: square;">Add <code>ElementSetName</code> parameter to GetRecords 
       requests as necessary (Requirement-101 to be expunged)</li>
-      <li style="list-style: square;">Add tests for GetRecords requests with the <code>startPosition</code>
-      and <code>maxRecords</code> parameters</li>
+      <li style="list-style: square;">Add Schematron schema for Atom feed</li>
     </ul>
 
     <h2>0.6 (2015-05-20)</h2>

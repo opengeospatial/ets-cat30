@@ -2,6 +2,7 @@ package org.opengis.cite.cat30.opensearch;
 
 import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.QName;
+import javax.xml.transform.dom.DOMSource;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -185,6 +187,9 @@ public class OpenSearchCoreTests extends CommonFixture {
                     ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
                             Records.getRecordName(urlElem.getAttribute("type"))));
             ETSAssert.assertAllTermsOccur(records, searchTerm);
+            Document entity = getResponseEntityAsDocument(response, null);
+            URL schemaUrl = getClass().getResource(SCHEMATRON_ATOM);
+            ETSAssert.assertSchematronValid(schemaUrl, new DOMSource(entity));
         }
     }
 

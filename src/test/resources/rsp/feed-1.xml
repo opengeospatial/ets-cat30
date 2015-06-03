@@ -5,13 +5,19 @@
       xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
     <title>Earthquakes</title>
     <subtitle>International earthquake observation labs</subtitle>
-    <link href="http://example.org/"/>
     <updated>2005-12-13T18:30:02Z</updated>
     <author>
         <name>Dr. Thaddeus Remor</name>
         <email>tremor@quakelab.edu</email>
     </author>
     <id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6</id>
+    <link rel="search" href="http://example.com/opensearch.xml" 
+          type="application/opensearchdescription+xml"
+          title="OpenSearch description (CSW 3.0 service)" />
+    <os:totalResults>2</os:totalResults>
+    <os:startIndex>1</os:startIndex>
+    <os:itemsPerPage>10</os:itemsPerPage>
+    <os:Query role="request" searchTerms="Mona Passage" />
     <entry>
         <title>Tremor M 3.2, Mona Passage</title>
         <link href="http://example.org/2005/09/09/atom01"/>

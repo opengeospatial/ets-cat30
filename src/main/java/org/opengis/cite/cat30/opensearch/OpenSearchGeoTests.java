@@ -2,6 +2,7 @@ package org.opengis.cite.cat30.opensearch;
 
 import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -188,10 +189,9 @@ public class OpenSearchGeoTests extends CommonFixture {
                     recordPath, id);
             ETSAssert.assertXPath(expr, entity,
                     Collections.singletonMap(Namespaces.ATOM, "atom"));
-            Node osQuery = entity.getElementsByTagNameNS(
-                    Namespaces.OSD11, "Query").item(0);
-            Assert.assertNotNull(osQuery, ErrorMessage.format(
-                    ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:Query"));
+            Source source = ClientUtils.getResponseEntityAsSource(response, null);
+            URL schemaUrl = getClass().getResource(SCHEMATRON_ATOM);
+            ETSAssert.assertSchematronValid(schemaUrl, source);
         }
     }
 
@@ -277,17 +277,14 @@ public class OpenSearchGeoTests extends CommonFixture {
             Document entity = getResponseEntityAsDocument(response, null);
             ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox,
                     new DOMSource(entity));
-            QName docElem;
             if (mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
-                docElem = new QName(Namespaces.ATOM, "feed");
-                Node osQuery = entity.getElementsByTagNameNS(
-                        Namespaces.OSD11, "Query").item(0);
-                Assert.assertNotNull(osQuery, ErrorMessage.format(
-                        ErrorMessageKeys.MISSING_INFOSET_ITEM, "os:Query"));
+                Source source = ClientUtils.getResponseEntityAsSource(response, null);
+                URL schemaUrl = getClass().getResource(SCHEMATRON_ATOM);
+                ETSAssert.assertSchematronValid(schemaUrl, source);
             } else {
-                docElem = new QName(Namespaces.CSW, CAT3.GET_RECORDS_RSP);
+                QName docElem = new QName(Namespaces.CSW, CAT3.GET_RECORDS_RSP);
+                ETSAssert.assertQualifiedName(entity.getDocumentElement(), docElem);
             }
-            ETSAssert.assertQualifiedName(entity.getDocumentElement(), docElem);
         }
     }
 }

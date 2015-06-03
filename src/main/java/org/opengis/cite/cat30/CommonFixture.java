@@ -25,6 +25,10 @@ public class CommonFixture {
      */
     public static final String ROOT_PKG_PATH = "/org/opengis/cite/cat30/";
     /**
+     * Classpath reference for Schematron schema (Atom feed).
+     */
+    public static final String SCHEMATRON_ATOM = "/org/opengis/cite/cat30/sch/atom-feed.sch";
+    /**
      * HTTP client component (JAX-RS Client API).
      */
     protected Client client;
