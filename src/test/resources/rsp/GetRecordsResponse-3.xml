@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw30:GetRecordsResponse xmlns:csw30="http://www.opengis.net/cat/csw/3.0" 
+  xmlns:fes20="http://www.opengis.net/fes/2.0" 
+  xmlns:ows11="http://www.opengis.net/ows/1.1" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/" 
+  xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" 
+  xmlns:atom="http://www.w3.org/2005/Atom" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns:dct="http://purl.org/dc/terms/" 
+  xmlns:ows20="http://www.opengis.net/ows/2.0" 
+  xmlns:ows="http://www.opengis.net/ows" 
+  xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0" 
+  xmlns:gml="http://www.opengis.net/gml" 
+  xmlns:dif="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:gco="http://www.isotc211.org/2005/gco" 
+  xmlns:gmd="http://www.isotc211.org/2005/gmd" 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:srv="http://www.isotc211.org/2005/srv" 
+  xmlns:ogc="http://www.opengis.net/ogc" 
+  xmlns:fgdc="http://www.opengis.net/cat/csw/csdgm" 
+  xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" 
+  xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
+  xmlns:os="http://a9.com/-/spec/opensearch/1.1/" 
+  xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" 
+  xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9" 
+  version="3.0.0">
+  <csw30:SearchStatus timestamp="2015-06-03T16:41:01Z"/>
+  <csw30:SearchResults expires="2015-06-03T16:41:01Z" nextRecord="0" numberOfRecordsMatched="12" numberOfRecordsReturned="12" recordSchema="http://www.opengis.net/cat/csw/3.0" status="subset" elementSet="summary" elapsedTime="266">
+    <csw30:Record>
+      <dc:identifier>urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f</dc:identifier>
+      <dc:title>Lorem ipsum</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Image</dc:type>
+      <dc:subject>Tourism--Greece</dc:subject>
+      <dc:format>image/svg+xml</dc:format>
+      <dct:abstract>Quisque lacus diam, placerat mollis, pharetra in, commodo sed, augue. Duis iaculis arcu vel arcu.</dct:abstract>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd</dc:identifier>
+      <dc:title></dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Service</dc:type>
+      <dct:abstract>Proin sit amet justo. In justo. Aenean adipiscing nulla id tellus.</dct:abstract>
+      <ows20:BoundingBox crs="http://www.opengis.net/def/crs/EPSG/0/4326" dimensions="2">
+        <ows20:LowerCorner>60.04 13.75</ows20:LowerCorner>
+        <ows20:UpperCorner>68.41 17.92</ows20:UpperCorner>
+      </ows20:BoundingBox>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:66ae76b7-54ba-489b-a582-0f0633d96493</dc:identifier>
+      <dc:title>Maecenas enim</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
+      <dc:subject>Marine sediments</dc:subject>
+      <dc:format>application/xhtml+xml</dc:format>
+      <dct:abstract>Pellentesque tempus magna non sapien fringilla blandit.</dct:abstract>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4</dc:identifier>
+      <dc:title>Ut facilisis justo ut lacus</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Service</dc:type>
+      <dc:subject>Vegetation</dc:subject>
+      <dc:relation>urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63</dc:relation>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:784e2afd-a9fd-44a6-9a92-a3848371c8ec</dc:identifier>
+      <dc:title>Aliquam fermentum purus quis arcu</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
+      <dc:subject>Hydrography--Dictionaries</dc:subject>
+      <dc:format>application/pdf</dc:format>
+      <dct:abstract>Vestibulum quis ipsum sit amet metus imperdiet vehicula. Nulla scelerisque cursus mi.</dct:abstract>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:829babb0-b2f1-49e1-8cd5-7b489fe71a1e</dc:identifier>
+      <dc:title>Vestibulum massa purus</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Image</dc:type>
+      <dc:format>image/jp2</dc:format>
+      <dc:relation>urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc</dc:relation>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:88247b56-4cbc-4df9-9860-db3f8042e357</dc:identifier>
+      <dc:title></dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Dataset</dc:type>
+      <dc:subject>Physiography-Landforms</dc:subject>
+      <dct:abstract>Donec scelerisque pede ut nisl luctus accumsan. Quisque ultrices, lorem eget feugiat fringilla, lorem dui porttitor ante, cursus ultrices magna odio eu neque.</dct:abstract>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63</dc:identifier>
+      <dc:title>Mauris sed neque</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Dataset</dc:type>
+      <dc:subject>Vegetation-Cropland</dc:subject>
+      <dct:abstract>Curabitur lacinia, ante non porta tempus, mi lorem feugiat odio, eget suscipit eros pede ac velit.</dct:abstract>
+      <ows20:BoundingBox crs="http://www.opengis.net/def/crs/EPSG/0/4326" dimensions="2">
+        <ows20:LowerCorner>47.59 -4.1</ows20:LowerCorner>
+        <ows20:UpperCorner>51.22 0.89</ows20:UpperCorner>
+      </ows20:BoundingBox>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc</dc:identifier>
+      <dc:title>Ñunç elementum</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Dataset</dc:type>
+      <dc:subject>Hydrography-Oceanographic</dc:subject>
+      <ows20:BoundingBox crs="http://www.opengis.net/def/crs/EPSG/0/4326" dimensions="2">
+        <ows20:LowerCorner>44.79 -6.17</ows20:LowerCorner>
+        <ows20:UpperCorner>51.13 -2.23</ows20:UpperCorner>
+      </ows20:BoundingBox>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2</dc:identifier>
+      <dc:title>Lorem ipsum dolor sit amet</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Image</dc:type>
+      <dc:format>image/jpeg</dc:format>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:ab42a8c4-95e8-4630-bf79-33e59241605a</dc:identifier>
+      <dc:title></dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Service</dc:type>
+      <dc:subject>Physiography</dc:subject>
+      <dc:relation>urn:uuid:88247b56-4cbc-4df9-9860-db3f8042e357</dc:relation>
+      <dct:abstract>Suspendisse accumsan molestie lorem. Nullam velit turpis, mattis ut, varius bibendum, laoreet non, quam.</dct:abstract>
+    </csw30:Record>
+    <csw30:Record>
+      <dc:identifier>urn:uuid:e9330592-0932-474b-be34-c3a3bb67c7db</dc:identifier>
+      <dc:title>Fuscé vitae ligulä</dc:title>
+      <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
+      <dc:subject>Land titles</dc:subject>
+      <dc:format>text/rtf</dc:format>
+      <dct:abstract>Morbi ultriçes, dui suscipit vestibulum prètium, velit ante pretium tortor, egët tincidunt pede odio ac nulla.</dct:abstract>
+    </csw30:Record>
+  </csw30:SearchResults>
+</csw30:GetRecordsResponse>

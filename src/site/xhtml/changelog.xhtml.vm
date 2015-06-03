@@ -19,6 +19,7 @@
       <li style="list-style: square;">Add <code>ElementSetName</code> parameter to GetRecords 
       requests as necessary (Requirement-101 to be expunged)</li>
       <li style="list-style: square;">Add Schematron schema for Atom feed</li>
+      <li style="list-style: square;">Recognize georss:where/{http://www.opengis.net/gml}Envelope in Atom feed</li>
     </ul>
 
     <h2>0.6 (2015-05-20)</h2>
