@@ -188,8 +188,10 @@ public class OpenSearchCoreTests extends CommonFixture {
                             Records.getRecordName(urlElem.getAttribute("type"))));
             ETSAssert.assertAllTermsOccur(records, searchTerm);
             Document entity = getResponseEntityAsDocument(response, null);
-            URL schemaUrl = getClass().getResource(SCHEMATRON_ATOM);
-            ETSAssert.assertSchematronValid(schemaUrl, new DOMSource(entity));
+            if (entity.getDocumentElement().getNamespaceURI().equals(Namespaces.ATOM)) {
+                URL schemaUrl = getClass().getResource(SCHEMATRON_ATOM);
+                ETSAssert.assertSchematronValid(schemaUrl, new DOMSource(entity));
+            }
         }
     }
 
