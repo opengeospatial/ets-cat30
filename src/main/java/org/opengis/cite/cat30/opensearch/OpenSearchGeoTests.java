@@ -27,6 +27,7 @@ import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.OpenSearchTemplateUtils;
 import org.opengis.cite.cat30.util.ServiceMetadataUtils;
+import org.opengis.cite.cat30.util.URIUtils;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
@@ -82,6 +83,7 @@ import org.w3c.dom.Node;
  */
 public class OpenSearchGeoTests extends CommonFixture {
 
+    static final QName UID_PARAM = new QName(Namespaces.OS_GEO, "uid");
     private Document openSearchDescr;
     private List<Node> urlTemplates;
     /**
@@ -161,15 +163,14 @@ public class OpenSearchGeoTests extends CommonFixture {
      */
     @Test(description = "OGC 12-176r6, Table 6")
     public void getResourceById() {
-        QName uidParam = new QName(Namespaces.OS_GEO, "uid");
         List<Node> uidTemplates = OpenSearchTemplateUtils.filterURLTemplatesByParam(
-                this.urlTemplates, uidParam);
+                this.urlTemplates, UID_PARAM);
         Assert.assertFalse(uidTemplates.isEmpty(),
                 "No URL templates containing {geo:uid} parameter.");
         Map<QName, String> values = new HashMap<>();
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
-        values.put(uidParam, id);
+        values.put(UID_PARAM, URIUtils.getPercentEncodedString(id));
         for (Node urlTemplate : uidTemplates) {
             Element url = (Element) urlTemplate;
             String mediaType = url.getAttribute("type");

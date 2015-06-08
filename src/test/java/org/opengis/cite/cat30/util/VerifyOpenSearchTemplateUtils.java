@@ -51,4 +51,17 @@ public class VerifyOpenSearchTemplateUtils {
         assertEquals("q=alpha&pw=1&box=-123.45,48.99,-122.45,49.49&format=atom", query);
     }
 
+    @Test
+    public void buildRequestURIWithIllegalChars() throws SAXException, IOException {
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/opensearch/OpenSearchDescription-id.xml"));
+        List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(doc);
+        Element url1 = (Element) urlTemplates.get(0);
+        Map<QName, String> values = new HashMap<>();
+        String id = "{5d0060fe-d5c4-4307-acc4-e0810c21b6aa}";
+        values.put(new QName(Namespaces.OS_GEO, "uid"), URIUtils.getPercentEncodedString(id));
+        URI uri = OpenSearchTemplateUtils.buildRequestURI(url1, values);
+        assertEquals("q=&pw=1&id={5d0060fe-d5c4-4307-acc4-e0810c21b6aa}", uri.getQuery());
+    }
+
 }
