@@ -8,8 +8,11 @@
     <h1>Release Notes</h1>
 
     <h2>${project.version} (2015-06-DD)</h2>
-    <p>This maintenance release includes the following changes:</p>
+    <p>This maintenance release includes the following fixes:</p>
     <ul>
+      <li style="list-style:square">Fix <a target="_blank" 
+      href="https://github.com/opengeospatial/ets-cat30/issues/6">issues/6</a>: Illegal 
+      chars in record id</li>
       <li style="list-style:square">Fix <a target="_blank" 
       href="https://github.com/opengeospatial/ets-cat30/issues/5">issues/5</a>: Clean up 
       temp files</li>

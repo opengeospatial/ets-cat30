@@ -16,7 +16,7 @@ against the following specifications:
 * _OpenSearch 1.1_ ([Draft 5](http://www.opensearch.org/Specifications/OpenSearch/1.1))
 * _The Atom Syndication Format_ ([RFC 4287](http://tools.ietf.org/html/rfc4287))
 
-Tests for the following conformance classes are currently under development: 
+The test suite currently covers the following conformance classes:
 
 * Basic-Catalogue (mandatory for all implementations)
 * OpenSearch
