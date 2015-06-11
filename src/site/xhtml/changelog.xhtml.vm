@@ -7,7 +7,15 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-06-03)</h2>
+    <h2>${project.version} (2015-06-DD)</h2>
+    <p>This maintenance release includes the following changes:</p>
+    <ul>
+      <li style="list-style:square">Fix <a target="_blank" 
+      href="https://github.com/opengeospatial/ets-cat30/issues/5">issues/5</a>: Clean up 
+      temp files</li>
+    </ul>
+
+    <h2>0.7 (2015-06-03)</h2>
     <p>This release includes the following changes:</p>
     <ul>
       <li style="list-style: square;">New test for GetRecords with multiple search criteria 

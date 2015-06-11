@@ -1,6 +1,7 @@
 package org.opengis.cite.cat30;
 
 import com.sun.jersey.api.client.Client;
+import java.io.File;
 import javax.xml.validation.Schema;
 import org.opengis.cite.cat30.util.DatasetInfo;
 
@@ -33,6 +34,10 @@ public enum SuiteAttribute {
      * A DOM Document representing the test subject or a description of it.
      */
     TEST_SUBJECT("testSubject", Document.class),
+    /**
+     * A File containing the test subject or a description of it.
+     */
+    TEST_SUBJ_FILE("testSubjectFile", File.class),
     /**
      * A DOM Document representing an OpenSearch 1.1 description.
      */

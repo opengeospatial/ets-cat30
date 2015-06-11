@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.validation.Schema;
 import org.opengis.cite.cat30.util.ClientUtils;
+import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.URIUtils;
@@ -39,8 +40,29 @@ public class SuiteFixtureListener implements ISuiteListener {
         registerClientComponent(suite);
     }
 
+    /**
+     * Deletes temporary files created during the test run if TestSuiteLogger is
+     * enabled at the INFO level or higher (they are left intact at the CONFIG
+     * level or lower).
+     *
+     * @param suite The test suite.
+     */
     @Override
     public void onFinish(ISuite suite) {
+        if (TestSuiteLogger.isLoggable(Level.CONFIG)) {
+            return;
+        }
+        File testSubjFile = (File) suite.getAttribute(
+                SuiteAttribute.TEST_SUBJ_FILE.getName());
+        if (testSubjFile.exists()) {
+            testSubjFile.delete();
+        }
+        DatasetInfo dataset = (DatasetInfo) suite.getAttribute(
+                SuiteAttribute.DATASET.getName());
+        if (null != dataset) {
+            File dataFile = dataset.getDataFile();
+            dataFile.delete();
+        }
     }
 
     /**
@@ -70,6 +92,7 @@ public class SuiteFixtureListener implements ISuiteListener {
             throw new RuntimeException("Failed to dereference resource located at "
                     + iutRef, iox);
         }
+        suite.setAttribute(SuiteAttribute.TEST_SUBJ_FILE.getName(), entityFile);
         Document iutDoc = null;
         try {
             iutDoc = URIUtils.parseURI(entityFile.toURI());
