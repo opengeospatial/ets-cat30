@@ -61,7 +61,7 @@ import org.xml.sax.SAXException;
  *}
  * </pre>
  *
- * <h6 style="margin-bottom: 0.5em">Sources</h6>
+ * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
  * <ul>
  * <li>OGC 12-176r6, 7.4: GetRecordById operation</li>
  * <li>OGC 12-176r6, Table 16: Operation constraints</li>
@@ -259,7 +259,7 @@ public class GetRecordByIdTests extends CommonFixture {
      *}
      * </pre>
      *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
      * <ul>
      * <li>OGC 12-176r6, 7.4.4.4: outputSchema parameter</li>
      * <li>OGC 10-032r8, 9.3.2: Normal response XML encoding</li>

@@ -117,8 +117,8 @@ public class SuiteFixtureListener implements ISuiteListener {
      * suite fixture as the value of the attributes identified in the following
      * table.
      *
-     * <p>
      * <table border="1" style="border-collapse: collapse;">
+     * <caption>Application schemas</caption>
      * <thead>
      * <tr>
      * <th>SuiteAttribute</th>
@@ -136,7 +136,6 @@ public class SuiteFixtureListener implements ISuiteListener {
      * </tr>
      * </tbody>
      * </table>
-     * </p>
      *
      * @param suite The test suite to be run.
      */

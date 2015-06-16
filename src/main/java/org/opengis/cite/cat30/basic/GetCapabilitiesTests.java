@@ -43,7 +43,7 @@ import org.opengis.cite.cat30.util.XMLUtils;
  * request entity is "application/x-www-form-urlencoded".
  * </p>
  *
- * <h6 style="margin-bottom: 0.5em">Sources</h6>
+ * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
  * <ul>
  * <li>OGC 06-121r9, 7: GetCapabilities operation</li>
  * <li>OGC 12-176r6, 7.1: GetCapabilities operation</li>

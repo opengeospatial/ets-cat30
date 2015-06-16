@@ -51,7 +51,7 @@ import org.xml.sax.SAXException;
  * vendor tree.
  * </p>
  *
- * <h5 style="margin-bottom: 0.5em">Sources</h5>
+ * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
  * <ul>
  * <li>OGC 12-176r5, 6.4: Obtaining service metadata</li>
  * <li>OGC 12-176r5, 6.5.6: Enabling OpenSearch</li>

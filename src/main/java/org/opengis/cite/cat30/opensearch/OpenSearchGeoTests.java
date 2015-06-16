@@ -73,7 +73,7 @@ import org.w3c.dom.Node;
  * <code>Filter-FES-KVP</code> conformance class to OpenSearch queries (see
  * Table 1).</p>
  *
- * <h6 style="margin-bottom: 0.5em">Sources</h6>
+ * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
  * <ul>
  * <li><a href="https://portal.opengeospatial.org/files/?artifact_id=56866&version=2"
  * target="_blank">OGC 10-032r8</a>: OGC OpenSearch Geo and Time Extensions,

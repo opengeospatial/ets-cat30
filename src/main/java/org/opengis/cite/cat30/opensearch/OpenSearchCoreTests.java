@@ -70,7 +70,7 @@ import org.w3c.dom.NodeList;
  * </tbody>
  * </table>
  *
- * <h6 style="margin-bottom: 0.5em">Sources</h6>
+ * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
  * <ul>
  * <li>[OGC-12-176r5] OGC Catalogue Services 3.0 Specification &#x2013; HTTP
  * Protocol Binding, Table 6: KVP encoding for query constraints</li>

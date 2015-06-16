@@ -110,7 +110,7 @@ public class BasicGetRecordsTests extends CommonFixture {
      * common type name (tns:Record). The results must contain one or more
      * csw:BriefRecord elements.
      *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
      * <ul>
      * <li>OGC 12-176r6, Table 19: KVP encoding for GetRecords operation
      * request</li>
@@ -167,7 +167,7 @@ public class BasicGetRecordsTests extends CommonFixture {
      * feed in the response. The resulting atom:feed must be valid according to
      * RFC 4287.
      *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
      * <ul>
      * <li>OGC 12-176r6, 7.3.6: Atom response</li>
      * <li>OGC 10-032r8, Table 6: Elements of Search operation response in the

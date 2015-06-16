@@ -19,7 +19,7 @@
  *   <li>ATOM syndication format (RFC 4287).</li>
  * </ul>
  *
- * <h6 style="margin-bottom: 0.5em">Sources</h6>
+ * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
  * <ul>
  * <li>[OGC-12-176r5] OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
  * Binding, Table 2: Requirement classes and abstract tests</li>

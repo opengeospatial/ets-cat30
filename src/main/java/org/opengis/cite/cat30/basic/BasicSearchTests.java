@@ -142,7 +142,7 @@ public class BasicSearchTests extends CommonFixture {
      * report is expected in response with HTTP status code 400 and exception
      * code "{@value org.opengis.cite.cat30.CAT3#INVALID_PARAM_VAL}".
      *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
      * <ul>
      * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
      * <li>OGC 06-121r9, 10.2.3: Bounding box KVP encoding</li>
@@ -170,7 +170,7 @@ public class BasicSearchTests extends CommonFixture {
      * contain an ows:BoundingBox (or ows:WGS84BoundingBox) element that
      * intersects the specified bounding box.
      *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
      * <ul>
      * <li>OGC 12-176r6, Table 1: Conformance classes [Filter-FES-KVP]</li>
      * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
@@ -209,7 +209,7 @@ public class BasicSearchTests extends CommonFixture {
      * response must all contain an ows:BoundingBox (or ows:WGS84BoundingBox)
      * element that intersects the specified bounding box.
      *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
      * <ul>
      * <li>OGC 12-176r6, Table 1: Conformance classes [Filter-FES-KVP]</li>
      * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
@@ -307,6 +307,7 @@ public class BasicSearchTests extends CommonFixture {
      * should include the record elements indicated below.</p>
      *
      * <table border="1" style="border-collapse: collapse;">
+     * <caption>Recommended scope of keyword matching</caption>
      * <thead>
      * <tr>
      * <th>csw:Record</th>
@@ -333,7 +334,7 @@ public class BasicSearchTests extends CommonFixture {
      * </tbody>
      * </table>
      *
-     * <h6 style="margin-bottom: 0.5em">Sources</h6>
+     * <p style="margin-bottom: 0.5em"><strong>Sources</strong></p>
      * <ul>
      * <li>OGC 12-176r6, Table 1: Conformance classes [Filter-FES-KVP]</li>
      * <li>OGC 12-176r6, Table 6: KVP encoding for query constraints</li>
