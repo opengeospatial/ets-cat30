@@ -51,8 +51,8 @@ public class VerifyTestNGController {
     }
 
     @Test
-    public void doTestRun_sutIsUnavailable() throws Exception {
-        URL testSubject = getClass().getResource("/capabilities/basic.xml");
+    public void skipAllTests_sutIsUnavailable() throws Exception {
+        URL testSubject = getClass().getResource("basic-unavailable.xml");
         this.testRunProps.setProperty(TestRunArg.IUT.toString(), testSubject
                 .toURI().toString());
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(1024);
@@ -63,9 +63,10 @@ public class VerifyTestNGController {
         Source source = controller.doTestRun(testRunArgs);
         Document resultsDoc = (Document) DOMSource.class.cast(source).getNode();
         Element docElem = resultsDoc.getDocumentElement();
+        // all tests should have been skipped
         int nFailed = Integer.parseInt(docElem.getAttribute("failed"));
         assertTrue("Expected no failed verdicts.", nFailed == 0);
-        int nSkipped = Integer.parseInt(docElem.getAttribute("skipped"));
-        assertTrue("Expected one or more skip verdicts.", nSkipped > 0);
+        int nPassed = Integer.parseInt(docElem.getAttribute("passed"));
+        assertTrue("Expected no pass verdicts.", nPassed == 0);
     }
 }
