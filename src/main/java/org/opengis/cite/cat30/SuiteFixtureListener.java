@@ -41,28 +41,15 @@ public class SuiteFixtureListener implements ISuiteListener {
     }
 
     /**
-     * Deletes temporary files created during the test run if TestSuiteLogger is
-     * enabled at the INFO level or higher (they are left intact at the CONFIG
-     * level or lower).
+     * Performs various cleanup tasks when the test run is completed. Any
+     * temporary files created during the test run are deleted if
+     * TestSuiteLogger is enabled at the INFO level or higher.
      *
      * @param suite The test suite.
      */
     @Override
     public void onFinish(ISuite suite) {
-        if (TestSuiteLogger.isLoggable(Level.CONFIG)) {
-            return;
-        }
-        File testSubjFile = (File) suite.getAttribute(
-                SuiteAttribute.TEST_SUBJ_FILE.getName());
-        if (testSubjFile.exists()) {
-            testSubjFile.delete();
-        }
-        DatasetInfo dataset = (DatasetInfo) suite.getAttribute(
-                SuiteAttribute.DATASET.getName());
-        if (null != dataset) {
-            File dataFile = dataset.getDataFile();
-            dataFile.delete();
-        }
+        deleteTempFiles(suite);
     }
 
     /**
@@ -161,6 +148,30 @@ public class SuiteFixtureListener implements ISuiteListener {
         Schema atomSchema = ValidationUtils.createAtomSchema();
         if (null != atomSchema) {
             suite.setAttribute(SuiteAttribute.ATOM_SCHEMA.getName(), atomSchema);
+        }
+    }
+
+    /**
+     * Deletes temporary files created during the test run if TestSuiteLogger is
+     * enabled at the INFO level or higher (they are left intact at the CONFIG
+     * level or lower).
+     *
+     * @param suite The test suite.
+     */
+    void deleteTempFiles(ISuite suite) {
+        if (TestSuiteLogger.isLoggable(Level.CONFIG)) {
+            return;
+        }
+        File testSubjFile = (File) suite.getAttribute(
+                SuiteAttribute.TEST_SUBJ_FILE.getName());
+        if (testSubjFile.exists()) {
+            testSubjFile.delete();
+        }
+        DatasetInfo dataset = (DatasetInfo) suite.getAttribute(
+                SuiteAttribute.DATASET.getName());
+        if (null != dataset) {
+            File dataFile = dataset.getDataFile();
+            dataFile.delete();
         }
     }
 

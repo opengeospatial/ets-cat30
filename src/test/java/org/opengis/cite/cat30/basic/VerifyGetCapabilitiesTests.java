@@ -56,7 +56,7 @@ public class VerifyGetCapabilitiesTests {
         thrown.expect(ClientHandlerException.class);
         thrown.expectMessage("Connection refused");
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         when(suite.getAttribute(SUBJ)).thenReturn(doc);
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);

@@ -43,7 +43,7 @@ public class VerifyOpenSearchPreconditions {
         when(client.getOpenSearchDescription(any(URI.class))).thenReturn(
                 docBuilder.newDocument());
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         OpenSearchPreconditions iut = new OpenSearchPreconditions();
         iut.setClient(client);
@@ -56,7 +56,7 @@ public class VerifyOpenSearchPreconditions {
         when(client.getOpenSearchDescription(any(URI.class))).thenReturn(
                 docBuilder.newDocument());
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-pycsw-cite.xml"));
+                "/capabilities/pycsw-cite.xml"));
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         OpenSearchPreconditions iut = new OpenSearchPreconditions();
         iut.setClient(client);

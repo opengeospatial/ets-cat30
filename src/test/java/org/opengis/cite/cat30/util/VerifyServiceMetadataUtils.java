@@ -56,7 +56,7 @@ public class VerifyServiceMetadataUtils {
     @Test
     public void getOpenSearchDescriptionConstraint() throws SAXException, IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         Set<String> values = ServiceMetadataUtils.getConstraintValues(
                 doc, "OpenSearchDescriptionDocument");
         assertEquals("Unexpected number of values.", 1, values.size());
@@ -67,7 +67,7 @@ public class VerifyServiceMetadataUtils {
     @Test
     public void getAcceptVersionsParamValues() throws SAXException, IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         Set<String> versions = ServiceMetadataUtils.getParameterValues(
                 doc, CAT3.GET_CAPABILITIES, CAT3.ACCEPT_VERSIONS);
         assertEquals("Unexpected number of supported versions.", 2, versions.size());
@@ -79,7 +79,7 @@ public class VerifyServiceMetadataUtils {
     public void getOutputSchemaValuesForGetRecordById()
             throws SAXException, IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         Set<String> schemas = ServiceMetadataUtils.getParameterValues(
                 doc, CAT3.GET_RECORD_BY_ID, CAT3.OUTPUT_SCHEMA);
         assertEquals("Unexpected number of supported versions.", 2, schemas.size());

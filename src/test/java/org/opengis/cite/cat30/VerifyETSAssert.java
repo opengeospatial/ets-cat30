@@ -38,7 +38,7 @@ public class VerifyETSAssert {
     public void assertXPathWithNamespaceBindings() throws SAXException,
             IOException {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         Map<String, String> nsBindings = new HashMap<>();
         nsBindings.put(WADL_NS, "ns1");
         String xpath = "//ns1:resources";
@@ -50,7 +50,7 @@ public class VerifyETSAssert {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Unexpected result evaluating XPath expression");
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         // using built-in namespace bindings
         String xpath = "//ows:OperationsMetadata/ows:Constraint[@name='GetCapabilities-XML']/ows:DefaultValue = 'TRUE'";
         ETSAssert.assertXPath(xpath, doc, null);

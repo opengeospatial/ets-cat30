@@ -53,7 +53,7 @@ public class VerifyBasicSearchTests {
         dbf.setNamespaceAware(true);
         docBuilder = dbf.newDocumentBuilder();
         Document doc = docBuilder.parse(VerifyBasicSearchTests.class.getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         cswSchema = ValidationUtils.createCSWSchema();
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))

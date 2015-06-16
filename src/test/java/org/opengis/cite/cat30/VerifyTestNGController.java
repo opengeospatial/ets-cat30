@@ -52,7 +52,7 @@ public class VerifyTestNGController {
 
     @Test
     public void doTestRun_sutIsUnavailable() throws Exception {
-        URL testSubject = getClass().getResource("/capabilities-basic.xml");
+        URL testSubject = getClass().getResource("/capabilities/basic.xml");
         this.testRunProps.setProperty(TestRunArg.IUT.toString(), testSubject
                 .toURI().toString());
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(1024);

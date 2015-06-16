@@ -49,9 +49,6 @@ public class VerifyGetRecordByIdTests {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         docBuilder = dbf.newDocumentBuilder();
-        Document doc = docBuilder.parse(VerifyGetRecordByIdTests.class.getResourceAsStream(
-                "/capabilities-basic.xml"));
-        when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         cswSchema = ValidationUtils.createCSWSchema();
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
                 .thenReturn(cswSchema);
@@ -65,6 +62,8 @@ public class VerifyGetRecordByIdTests {
             IOException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("schema validation error(s) detected");
+        Document doc = docBuilder.parse(getClass().getResourceAsStream("/capabilities/basic.xml"));
+        when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         Client client = mock(Client.class);
         when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
                 .thenReturn(client);

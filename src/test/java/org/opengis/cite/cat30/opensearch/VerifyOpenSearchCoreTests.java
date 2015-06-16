@@ -53,7 +53,7 @@ public class VerifyOpenSearchCoreTests {
         when(suite.getAttribute(SuiteAttribute.DATASET.getName()))
                 .thenReturn(dataInfo);
         Document doc = docBuilder.parse(VerifyOpenSearchCoreTests.class.getResourceAsStream(
-                "/capabilities-basic.xml"));
+                "/capabilities/basic.xml"));
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
         Schema cswSchema = ValidationUtils.createCSWSchema();
         when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName()))
