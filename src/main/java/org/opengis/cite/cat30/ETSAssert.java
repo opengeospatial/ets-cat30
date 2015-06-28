@@ -314,8 +314,8 @@ public class ETSAssert {
         for (String term : searchTerms) {
             for (int i = 0; i < recordList.getLength(); i++) {
                 Element record = (Element) recordList.item(i);
-                // case-insensitive match of text content in all child elements
-                String expr = String.format("child::*[matches(., '%s', 'i')]", term);
+                // case-insensitive match of text and attribute content in all child elements
+                String expr = String.format("child::*[matches(., '%s', 'i')]|child::*/attribute::*[matches(., '%s', 'i')]", term, term);
                 try {
                     XdmValue result = XMLUtils.evaluateXPath2(
                             new DOMSource(record), expr, null);
