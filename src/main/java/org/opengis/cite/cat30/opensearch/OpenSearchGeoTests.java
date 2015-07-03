@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.ws.rs.core.MediaType;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -282,6 +283,9 @@ public class OpenSearchGeoTests extends CommonFixture {
                 Source source = ClientUtils.getResponseEntityAsSource(response, null);
                 URL schemaUrl = getClass().getResource(SCHEMATRON_ATOM);
                 ETSAssert.assertSchematronValid(schemaUrl, source);
+            } else if (mediaType.startsWith("application/rss+xml")) {
+                QName docElem = new QName(XMLConstants.NULL_NS_URI, "rss");
+                ETSAssert.assertQualifiedName(entity.getDocumentElement(), docElem);
             } else {
                 QName docElem = new QName(Namespaces.CSW, CAT3.GET_RECORDS_RSP);
                 ETSAssert.assertQualifiedName(entity.getDocumentElement(), docElem);

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMResult;
@@ -58,7 +59,10 @@ public class ETSAssert {
     public static void assertQualifiedName(Node node, QName qName) {
         Assert.assertEquals(node.getLocalName(), qName.getLocalPart(),
                 ErrorMessage.get(ErrorMessageKeys.LOCAL_NAME));
-        Assert.assertEquals(node.getNamespaceURI(), qName.getNamespaceURI(),
+        String nsName = (null != node.getNamespaceURI())
+                ? node.getNamespaceURI()
+                : XMLConstants.NULL_NS_URI;
+        Assert.assertEquals(nsName, qName.getNamespaceURI(),
                 ErrorMessage.get(ErrorMessageKeys.NAMESPACE_NAME));
     }
 
@@ -280,25 +284,28 @@ public class ETSAssert {
     /**
      * Asserts that the given response entity includes no search results.
      *
-     * @param entity A Document representing a search response (with atom:feed
-     * or csw:GetRecordsResponse as the expected document element).
+     * @param entity A Document representing a search response (atom:feed,
+     * csw:GetRecordsResponse, or rss).
      */
     public static void assertEmptyResultSet(Document entity) {
-        Map<String, String> nsBindings = new HashMap<>();
-        nsBindings.put(Namespaces.ATOM, "atom");
-        nsBindings.put(Namespaces.OSD11, "os");
         String xpath;
         Element docElem = entity.getDocumentElement();
-        switch (docElem.getNamespaceURI()) {
-            case Namespaces.ATOM:
+        switch (docElem.getLocalName()) {
+            case "feed":
                 xpath = "os:totalResults = 0 and count(atom:entry) = 0";
                 break;
-            case Namespaces.CSW:
+            case "GetRecordsResponse":
                 xpath = "csw:SearchResults/@numberOfRecordsMatched = 0 and count(csw:SearchResults/*) = 0";
+                break;
+            case "rss":
+                xpath = "channel/os:totalResults = 0 and count(channel/item) = 0";
                 break;
             default:
                 throw new AssertionError("Unknown content: " + docElem.getNodeName());
         }
+        Map<String, String> nsBindings = new HashMap<>();
+        nsBindings.put(Namespaces.ATOM, "atom");
+        nsBindings.put(Namespaces.OSD11, "os");
         assertXPath(xpath, docElem, nsBindings);
     }
 

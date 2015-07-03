@@ -44,9 +44,6 @@ public class VerifyOpenSearchGeoTests {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         docBuilder = dbf.newDocumentBuilder();
-        Document osd = docBuilder.parse(VerifyOpenSearchGeoTests.class.getResourceAsStream(
-                "/opensearch/OpenSearchDescription-valid.xml"));
-        when(suite.getAttribute(SuiteAttribute.OPENSEARCH_DESCR.getName())).thenReturn(osd);
         URL dataURL = VerifyOpenSearchGeoTests.class.getResource("/rsp/GetRecordsResponse-full.xml");
         File dataFile = new File(dataURL.toURI());
         DatasetInfo dataInfo = new DatasetInfo(dataFile);
@@ -67,6 +64,9 @@ public class VerifyOpenSearchGeoTests {
     public void boundingBoxQuery_disjoint() throws SAXException, IOException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("The envelopes do not intersect");
+        Document osd = docBuilder.parse(VerifyOpenSearchGeoTests.class.getResourceAsStream(
+                "/opensearch/OpenSearchDescription-valid.xml"));
+        when(suite.getAttribute(SuiteAttribute.OPENSEARCH_DESCR.getName())).thenReturn(osd);
         Client client = mock(Client.class);
         when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
                 .thenReturn(client);
@@ -76,6 +76,28 @@ public class VerifyOpenSearchGeoTests {
                 ClientResponse.Status.OK.getStatusCode());
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/feed-1.xml"));
+        OpenSearchGeoTests spy = Mockito.spy(new OpenSearchGeoTests());
+        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
+                any(ClientResponse.class), anyString());
+        spy.initCommonFixture(testContext);
+        spy.initOpenSearchGeoTestsFixture(testContext);
+        spy.boundingBoxQuery();
+    }
+
+    @Test
+    public void boundingBoxQuery_RSSResponse() throws SAXException, IOException {
+        Document osd = docBuilder.parse(VerifyOpenSearchGeoTests.class.getResourceAsStream(
+                "/opensearch/OpenSearchDescription-rss.xml"));
+        when(suite.getAttribute(SuiteAttribute.OPENSEARCH_DESCR.getName())).thenReturn(osd);
+        Client client = mock(Client.class);
+        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
+                .thenReturn(client);
+        ClientResponse rsp = mock(ClientResponse.class);
+        when(client.handle(any(ClientRequest.class))).thenReturn(rsp);
+        when(rsp.getStatus()).thenReturn(
+                ClientResponse.Status.OK.getStatusCode());
+        Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/rsp/rss-1.xml"));
         OpenSearchGeoTests spy = Mockito.spy(new OpenSearchGeoTests());
         Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
                 any(ClientResponse.class), anyString());

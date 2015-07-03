@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -190,6 +191,8 @@ public class Records {
         QName recordName;
         if (mediaType.startsWith(MediaType.APPLICATION_ATOM_XML)) {
             recordName = new QName(Namespaces.ATOM, "entry");
+        } else if (mediaType.startsWith("application/rss+xml")) {
+            recordName = new QName(XMLConstants.NULL_NS_URI, "item");
         } else {
             recordName = new QName(Namespaces.CSW, "Record");
         }

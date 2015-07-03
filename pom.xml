@@ -14,7 +14,7 @@
   <name>OGC Catalogue 3.0 Conformance Test Suite</name>
   <description>Checks a catalogue service implementation for conformance to 
   "OGC Catalogue Services 3.0 Specification -- HTTP Protocol Binding" (OGC 
-  12-176r5) and related specifications.</description>
+  12-176r6) and related specifications.</description>
   <url>http://opengeospatial.github.io/ets-cat30/</url>
   <licenses>
     <license>
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>org.opengis.cite</groupId>
       <artifactId>schema-utils</artifactId>
-      <version>1.6</version>
+      <version>1.7</version>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -83,7 +83,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.1</version>
+        <version>2.10.3</version>
         <configuration>
           <docfilessubdirs>true</docfilessubdirs>
           <show>package</show>
