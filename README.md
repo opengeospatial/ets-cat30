@@ -87,13 +87,13 @@ of this test suite. The current plan is as follows:
 * June - Submit for TC approval
 * Aug - Test available for OGC Certification
 
-### First Implementers and Reference Implemenations
+### First Implementers and Reference Implementations
 
 To help develop the test suite, implementations are exercised to test the test suite. 
 Implementations also get improved in the process. The following implementations are 
 participating in the development of the test suite:
 
-- pycsw
+- [pycsw](http://pycsw.org/)
 - ESRI GeoPortal
 - GMU LAITS
 - CubeWerx
