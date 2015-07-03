@@ -43,6 +43,9 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XQueryCompiler;
+import net.sf.saxon.s9api.XQueryEvaluator;
+import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
@@ -246,6 +249,33 @@ public class XMLUtils {
         }
         xpath.setContextItem(node);
         return xpath.evaluate();
+    }
+
+    /**
+     * Evaluates an XQuery 1.0 expression using the Saxon s9api interfaces.
+     *
+     * @param source The XML Source.
+     * @param query The query expression.
+     * @param nsBindings A collection of namespace bindings required to evaluate
+     * the query, where each entry maps a namespace URI (key) to a prefix
+     * (value).
+     * @return An XdmValue object representing a value in the XDM data model.
+     * @throws SaxonApiException If an error occurs while evaluating the query
+     * (this always wraps some other underlying exception).
+     */
+    public static XdmValue evaluateXQuery(Source source, String query,
+            Map<String, String> nsBindings) throws SaxonApiException {
+        Processor proc = new Processor(false);
+        XQueryCompiler xqCompiler = proc.newXQueryCompiler();
+        if (null != nsBindings) {
+            for (String nsURI : nsBindings.keySet()) {
+                xqCompiler.declareNamespace(nsBindings.get(nsURI), nsURI);
+            }
+        }
+        XQueryExecutable xqExec = xqCompiler.compile(query);
+        XQueryEvaluator xqEval = xqExec.load();
+        xqEval.setSource(source);
+        return xqEval.evaluate();
     }
 
     /**

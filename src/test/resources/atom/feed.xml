@@ -20,5 +20,6 @@
     <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
     <updated>2012-05-01T18:30:02Z</updated>
     <summary>Summary text.</summary>
+    <category term="robotics"/>
   </entry>
 </feed>

@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.xpath.XPathExpressionException;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
@@ -144,5 +145,18 @@ public class VerifyXMLUtils {
         String result = XMLUtils.expandReferencesInText(text);
         assertEquals("Expected result to contain character é (U+00E9)",
                 "Montréal", result);
+    }
+
+    @Test
+    public void evaluateXQuery() throws SAXException, IOException, SaxonApiException {
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/atom/feed.xml"));
+        String query = "for $e in //atom:entry/child::* where $e[@* = 'robotics'] return $e";
+        Map<String, String> nsBindings = new HashMap<>();
+        nsBindings.put(ATOM_NS, "atom");
+        XdmValue results = XMLUtils.evaluateXQuery(new DOMSource(doc), query, nsBindings);
+        assertTrue("Expected non-empty results.", results.size() > 0);
+        XdmNode node = (XdmNode) results.iterator().next();
+        assertEquals("Unexpected local name", "category", node.getNodeName().getLocalName());
     }
 }
