@@ -311,7 +311,9 @@ public class ETSAssert {
 
     /**
      * Asserts that the given search terms all occur in the content of each
-     * record in the given collection. The comparison is not case-sensitive.
+     * record in the given collection. The context includes the text content of
+     * all child elements and their attributes. The comparison is not
+     * case-sensitive.
      *
      * @param recordList A list of nodes representing catalog records
      * (csw:Record or atom:entry).
@@ -321,17 +323,18 @@ public class ETSAssert {
         for (String term : searchTerms) {
             for (int i = 0; i < recordList.getLength(); i++) {
                 Element record = (Element) recordList.item(i);
-                // case-insensitive match of text and attribute content in all child elements
-                String expr = String.format("child::*[matches(., '%s', 'i')]|child::*/attribute::*[matches(., '%s', 'i')]", term, term);
+                String expr = String.format(
+                        "child::*[(text() | attribute::*)[matches(., '%s', 'i')]]",
+                        term);
                 try {
                     XdmValue result = XMLUtils.evaluateXPath2(
                             new DOMSource(record), expr, null);
                     Assert.assertTrue(result.size() > 0,
                             ErrorMessage.format(ErrorMessageKeys.XPATH_RESULT,
                                     Records.getRecordId(record), expr));
-                    LOGR.log(Level.FINE, "In {0} found matching fields for ''{1}'':\n{2}",
-                            new Object[]{Records.getRecordId(record), term,
-                                XMLUtils.writeXdmValueToString(result)});
+                    LOGR.log(Level.FINE, "In {0} found {1} matching fields for ''{2}'':\n{3}",
+                            new Object[]{Records.getRecordId(record), result.size(),
+                                term, XMLUtils.writeXdmValueToString(result)});
                 } catch (SaxonApiException sae) {
                     throw new AssertionError(String.format(
                             "Failed to evaluate XPath expression: %s \nReason: %s",

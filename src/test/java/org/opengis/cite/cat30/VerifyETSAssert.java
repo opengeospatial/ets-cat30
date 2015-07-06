@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class VerifyETSAssert {
@@ -79,4 +80,12 @@ public class VerifyETSAssert {
         ETSAssert.assertEmptyResultSet(doc);
     }
 
+    @Test
+    public void searchTermOccursInAttribute()
+            throws SAXException, IOException {
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/atom/feed.xml"));
+        NodeList records = doc.getElementsByTagNameNS(Namespaces.ATOM, "entry");
+        ETSAssert.assertAllTermsOccur(records, "robotics");
+    }
 }
