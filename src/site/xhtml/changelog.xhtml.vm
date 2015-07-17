@@ -21,6 +21,8 @@
       Clean up temp files</li>
       <li style="list-style:square">In ETSAssert.assertAllTermsOccur, also 
       search attributes for matching text</li>
+      <li style="list-style:square">In BasicSearchTests, add separate test for 
+      maxRecords="unlimited" (REQ-087)</li>
     </ul>
 
     <h2>0.7 (2015-06-03)</h2>

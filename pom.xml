@@ -54,7 +54,7 @@
     <dependency>
       <groupId>org.opengis.cite</groupId>
       <artifactId>geomatics-geotk</artifactId>
-      <version>1.8</version>
+      <version>1.9</version>
     </dependency>
     <dependency>
       <groupId>org.opengis.cite.teamengine</groupId>

@@ -29,7 +29,7 @@ import org.w3c.dom.Document;
 
 /**
  * Provides various utility methods for creating and configuring HTTP client
- * components.
+ * components using the JAX-RS Client API.
  */
 public class ClientUtils {
 

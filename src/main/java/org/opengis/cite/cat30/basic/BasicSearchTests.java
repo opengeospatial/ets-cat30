@@ -478,25 +478,25 @@ public class BasicSearchTests extends CommonFixture {
     /**
      * [Test] Submits a GetRecords request containing the <code>bbox</code> and
      * <code>q</code> parameters, where the latter matches one or more record
-     * titles. The <code>maxRecords</code> parameter has the value "unlimited".
-     * The response must include all records that satisfy both search criteria
-     * (implicit AND).
+     * titles. The response must include all records that satisfy both search
+     * criteria.
      *
      * @see "OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding,
      * 6.5.5.3: KVP encoding"
      */
-    @Test(description = "Requirements: 087")
-    public void getUnlimitedRecordsByBBOXAndTitle() {
+    @Test(description = "Requirements: Table 6")
+    public void getRecordsByBBOXAndTitle() {
         if (null == this.geoExtent) {
             throw new SkipException("Could not determine extent of sample data.");
         }
+        int maxRecords = 15;
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
-        qryParams.put(CAT3.MAX_RECORDS, "unlimited");
+        qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
         Envelope bbox = this.geoExtent;
         try {
             if (!bbox.getCoordinateReferenceSystem().equals(
@@ -536,10 +536,10 @@ public class BasicSearchTests extends CommonFixture {
                 Namespaces.CSW, "SearchResults").item(0);
         Assert.assertNotNull(results, ErrorMessage.format(
                 ErrorMessageKeys.MISSING_INFOSET_ITEM, "csw:SearchResults"));
-        Assert.assertTrue(results.getAttribute(CAT3.NUM_REC_MATCHED).equals(
-                results.getAttribute(CAT3.NUM_REC_RETURNED)),
+        String numReturned = results.getAttribute(CAT3.NUM_REC_RETURNED);
+        Assert.assertTrue(Integer.parseInt(numReturned) <= maxRecords,
                 ErrorMessage.format(ErrorMessageKeys.CONSTRAINT_VIOLATION,
-                        "numberOfRecordsMatched = numberOfRecordsReturned"));
+                        "numberOfRecordsReturned <= maxRecords"));
         ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, new DOMSource(results));
         QName recordName = new QName(Namespaces.CSW, "SummaryRecord");
         NodeList recordList = results.getElementsByTagNameNS(
@@ -547,5 +547,65 @@ public class BasicSearchTests extends CommonFixture {
         Assert.assertTrue(recordList.getLength() > 0,
                 ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
         ETSAssert.assertAllTermsOccur(recordList, titleWord);
+    }
+
+    /**
+     * [Test] Submits a GetRecords request containing the <code>bbox</code>
+     * parameter. The <code>maxRecords</code> parameter has the value
+     * "unlimited". The response must include all records that satisfy the
+     * search criteria, such that:
+     * <pre>
+     * {@literal
+     * numberOfRecordsMatched = numberOfRecordsReturned
+     * }
+     * </pre>
+     *
+     * @see "OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding,
+     * 7.3.4.6: maxRecords attribute"
+     */
+    @Test(description = "Requirements: 087")
+    public void getUnlimitedBriefRecordsByBBOX() {
+        if (null == this.geoExtent) {
+            throw new SkipException("Could not determine extent of sample data.");
+        }
+        Map<String, String> qryParams = new HashMap<>();
+        qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
+        qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
+        qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
+        qryParams.put(CAT3.TYPE_NAMES, "Record");
+        qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
+        qryParams.put(CAT3.MAX_RECORDS, "unlimited");
+        Envelope bbox = this.geoExtent;
+        try {
+            if (!bbox.getCoordinateReferenceSystem().equals(
+                    DefaultGeographicCRS.WGS84)) {
+                bbox = new GeneralEnvelope(Envelopes.transform(bbox,
+                        DefaultGeographicCRS.WGS84));
+            }
+        } catch (TransformException ex) {
+            throw new RuntimeException("Failed to create WGS84 envelope.", ex);
+        }
+        qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
+        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+                MediaType.APPLICATION_XML_TYPE);
+        response = this.client.handle(request);
+        Assert.assertEquals(response.getStatus(),
+                ClientResponse.Status.OK.getStatusCode(),
+                ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
+        Document entity = getResponseEntityAsDocument(response, null);
+        Element results = (Element) entity.getElementsByTagNameNS(
+                Namespaces.CSW, "SearchResults").item(0);
+        Assert.assertNotNull(results, ErrorMessage.format(
+                ErrorMessageKeys.MISSING_INFOSET_ITEM, "csw:SearchResults"));
+        Assert.assertTrue(results.getAttribute(CAT3.NUM_REC_MATCHED).equals(
+                results.getAttribute(CAT3.NUM_REC_RETURNED)),
+                ErrorMessage.format(ErrorMessageKeys.CONSTRAINT_VIOLATION,
+                        "numberOfRecordsMatched = numberOfRecordsReturned"));
+        QName recordName = new QName(Namespaces.CSW, "BriefRecord");
+        NodeList recordList = results.getElementsByTagNameNS(
+                recordName.getNamespaceURI(), recordName.getLocalPart());
+        Assert.assertTrue(recordList.getLength() > 0,
+                ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
+        ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox, new DOMSource(results));
     }
 }
