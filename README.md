@@ -29,7 +29,7 @@ There are several options for executing the test suite.
 
 #### 1. OGC test harness
 
-Use [TEAMengine](https://github.com/opengeospatial/teamengine), the official OGC test harness. 
+Use [TEAM Engine](https://github.com/opengeospatial/teamengine), the official OGC test harness.
 The latest test suite release should be available at the [beta testing facility](http://cite.opengeospatial.org/te2/). 
 You can also [build and deploy](https://github.com/opengeospatial/teamengine) the test 
 harness yourself and use a local installation.
@@ -45,7 +45,7 @@ required test run argument (a reference to a CSW 3.0 capabilities document). If
 not specified, the default location at `${user.home}/test-run-props.xml` will be 
 used.
    
-You can modify the sample file in src/main/config/test-run-props.xml
+You can modify the sample file in `src/main/config/test-run-props.xml`
 
 ```xml   
 <?xml version="1.0" encoding="UTF-8"?>
@@ -56,8 +56,8 @@ You can modify the sample file in src/main/config/test-run-props.xml
 </properties>
 ```
 
-The TestNG results file (testng-results.xml) will be written to a subdirectory 
-in ${user.home}/testng/ having a UUID value as its name.
+The TestNG results file (`testng-results.xml`) will be written to a subdirectory
+in `${user.home}/testng/` having a UUID value as its name.
 
 #### 3. Command shell (console)
 
