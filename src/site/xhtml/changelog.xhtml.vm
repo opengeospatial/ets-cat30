@@ -19,6 +19,8 @@
       <li style="list-style:square">Fix <a target="_blank" 
       href="https://github.com/opengeospatial/ets-cat30/issues/5">issues/5</a>: 
       Clean up temp files</li>
+      <li style="list-style:square">In BasicGetRecordsTests, change presentSubjectProperty 
+      test to presentTitleProperty (verify that no optional elements appear)</li>
       <li style="list-style:square">In ETSAssert.assertAllTermsOccur, also 
       search attributes for matching text</li>
       <li style="list-style:square">In BasicSearchTests, add separate test for 

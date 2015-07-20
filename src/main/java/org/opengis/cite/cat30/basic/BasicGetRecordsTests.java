@@ -308,19 +308,19 @@ public class BasicGetRecordsTests extends CommonFixture {
 
     /**
      * [Test] Submits a GetRecords request where the 'elementName' parameter
-     * value identifies a single element from the output schema (dc:subject).
-     * The response must be augmented with additional elements so as to be
-     * schema valid. Furthermore, every record in the result set must contain
-     * one or more dc:subject elements (may be empty).
+     * value identifies a single element from the output schema (dc:title). The
+     * response must be augmented with additional elements so as to be schema
+     * valid. Furthermore, every record in the result set must contain one or
+     * more (required) dc:title elements; no other optional elements must appear.
      */
     @Test(description = "Requirements: 093")
-    public void presentSubjectProperty() {
+    public void presentTitleProperty() {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORDS);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
-        qryParams.put(CAT3.ELEMENT_NAME, "tns:subject");
+        qryParams.put(CAT3.ELEMENT_NAME, "tns:title");
         qryParams.put(CAT3.NAMESPACE,
                 String.format("xmlns(tns=%s)", Namespaces.DCMES));
         request = ClientUtils.buildGetRequest(this.getURI, qryParams,
@@ -336,7 +336,7 @@ public class BasicGetRecordsTests extends CommonFixture {
         Element results = (Element) entity.getElementsByTagNameNS(
                 Namespaces.CSW, CAT3.SEARCH_RESULTS).item(0);
         ETSAssert.assertXPath(
-                "count(csw:SummaryRecord[dc:subject]) = ./@numberOfRecordsReturned",
+                "not(exists(csw:SummaryRecord[dc:type or dc:subject or dc:format or ows:BoundingBox]))",
                 results, null);
     }
 
