@@ -10,7 +10,7 @@ start = osDocument
 osDocument = element os:OpenSearchDescription {
     element os:ShortName { xsd:string {maxLength = "16"} }
     & element os:Description { xsd:string {maxLength = "1024"} }
-    & element os:Url { osdUrlAttr, foreignAttribute* }+
+    & element os:Url { osdUrlAttr, foreignAttribute*, foreignElement* }+
     & element os:Contact { xsd:string {pattern = ".+@.+"} }?  # addr-spec (RFC 5322)
     & element os:Tags { list { xsd:NCName+ } }?  # value has maxLength=256
     & element os:LongName { xsd:string {maxLength = "48"} }?

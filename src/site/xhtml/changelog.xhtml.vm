@@ -11,6 +11,9 @@
     <p>This maintenance release includes the following fixes:</p>
     <ul>
       <li style="list-style:square">Fix <a target="_blank" 
+      href="https://github.com/opengeospatial/ets-cat30/issues/15">issues/15</a>: 
+      Allow foreign elements in os:Url</li>
+      <li style="list-style:square">Fix <a target="_blank" 
       href="https://github.com/opengeospatial/ets-cat30/issues/7">issues/7</a>: 
       Recognize RSS content in OpenSearch response</li>
       <li style="list-style:square">Fix <a target="_blank" 

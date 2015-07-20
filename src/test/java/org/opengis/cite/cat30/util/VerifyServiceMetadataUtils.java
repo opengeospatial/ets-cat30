@@ -41,7 +41,7 @@ public class VerifyServiceMetadataUtils {
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/opensearch/OpenSearchDescription-valid.xml"));
         List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(doc);
-        assertEquals("Unexpected number of URL templates found.", 1, urlTemplates.size());
+        assertEquals("Unexpected number of URL templates found.", 2, urlTemplates.size());
         Node url1 = urlTemplates.get(0);
         Object userData = url1.getUserData(ServiceMetadataUtils.URL_TEMPLATE_PARAMS);
         assertNotNull("No user data.", userData);

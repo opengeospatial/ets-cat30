@@ -216,4 +216,29 @@ public class ValidationUtils {
         return schema;
     }
 
+    /**
+     * Creates a Schema object representing the constraints defined for an
+     * OpenSearch description document (1.1 Draft 5).
+     *
+     * @return An immutable Schema object, or <code>null</code> if it cannot be
+     * constructed.
+     *
+     * @see
+     * <a target="_blank" href="http://www.opensearch.org/Specifications/OpenSearch/1.1/Draft_5">
+     * OpenSearch 1.1 Draft 5</a>
+     */
+    public static Schema createOpenSearchSchema() {
+        SchemaFactory factory = SchemaFactory.newInstance(
+                Constants.RELAXNG_COMPACT_URI, FACTORY_RELAXNG_COMPACT, null);
+        URL schemaRef = ValidationUtils.class.getResource(ROOT_PKG
+                + "rnc/osd-1.1-draft5.rnc");
+        Schema schema = null;
+        try {
+            schema = factory.newSchema(schemaRef);
+        } catch (SAXException e) {
+            TestSuiteLogger.log(Level.WARNING,
+                    "Failed to create OpenSearch Schema object from RELAX NG (compact) grammar", e);
+        }
+        return schema;
+    }
 }
