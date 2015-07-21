@@ -336,7 +336,7 @@ public class BasicGetRecordsTests extends CommonFixture {
         Element results = (Element) entity.getElementsByTagNameNS(
                 Namespaces.CSW, CAT3.SEARCH_RESULTS).item(0);
         ETSAssert.assertXPath(
-                "not(exists(csw:SummaryRecord[dc:type or dc:subject or dc:format or ows:BoundingBox]))",
+                "not(csw:SummaryRecord[dc:type or dc:subject or dc:format or ows:BoundingBox])",
                 results, null);
     }
 

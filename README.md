@@ -81,11 +81,9 @@ and create a pull request (don't forget to periodically rebase long-duration bra
 -----
 ### Plan 2015
 
-The OGC [Testbed 11](http://www.opengeospatial.org/projects/initiatives/testbed11) is funding the development 
-of this test suite. The current plan is as follows:
-
-* June - Submit for TC approval
-* Aug - Test available for OGC Certification
+The OGC [Testbed 11](http://www.opengeospatial.org/projects/initiatives/testbed11) funded 
+the development of this test suite. The goal is to make it available for OGC certification 
+in late summer.
 
 ### First Implementers and Reference Implementations
 
