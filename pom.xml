@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
   <artifactId>ets-cat30</artifactId>
-  <version>0.8</version>
+  <version>0.9-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>OGC Catalogue 3.0 Conformance Test Suite</name>
@@ -31,7 +31,7 @@
     <connection>scm:git:https://github.com/opengeospatial/ets-cat30.git</connection>
     <developerConnection>scm:git:git@github.com:opengeospatial/ets-cat30.git</developerConnection>
     <url>https://github.com/opengeospatial/ets-cat30</url>
-    <tag>0.8</tag>
+    <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>GitHub Issue Tracker</system>
