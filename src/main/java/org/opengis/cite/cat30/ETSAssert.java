@@ -24,6 +24,7 @@ import net.sf.saxon.s9api.XdmValue;
 import org.opengis.cite.cat30.util.NamespaceBindings;
 import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.SpatialUtils;
+import org.opengis.cite.cat30.util.URIUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.cite.geomatics.SpatialAssert;
@@ -331,7 +332,9 @@ public class ETSAssert {
                             new DOMSource(record), expr, null);
                     Assert.assertTrue(result.size() > 0,
                             ErrorMessage.format(ErrorMessageKeys.XPATH_RESULT,
-                                    Records.getRecordId(record), expr));
+                                    Records.getRecordId(record),
+                                    // search term may contain non-ASCII char
+                                    expr.replace(term, URIUtils.getPercentEncodedString(term))));
                     LOGR.log(Level.FINE, "In {0} found {1} matching fields for ''{2}'':\n{3}",
                             new Object[]{Records.getRecordId(record), result.size(),
                                 term, XMLUtils.writeXdmValueToString(result)});

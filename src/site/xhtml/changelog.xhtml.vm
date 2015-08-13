@@ -7,7 +7,15 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-07-21)</h2>
+    <h2>${project.version} (2015-MM-DD)</h2>
+    <p>This maintenance release includes the following fixes:</p>
+    <ul>
+      <li style="list-style:square">In ETSAssert.assertAllTermsOccur, percent 
+      encode search term in assertion error message (it may contain non-ASCII 
+      chars).</li>
+    </ul>
+
+    <h2>0.8 (2015-07-21)</h2>
     <p>This maintenance release includes the following fixes:</p>
     <ul>
       <li style="list-style:square">Fix <a target="_blank" 

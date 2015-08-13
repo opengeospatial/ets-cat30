@@ -88,4 +88,15 @@ public class VerifyETSAssert {
         NodeList records = doc.getElementsByTagNameNS(Namespaces.ATOM, "entry");
         ETSAssert.assertAllTermsOccur(records, "robotics");
     }
+
+    @Test
+    public void searchTermWithNonASCIICharDoesNotOccur()
+            throws SAXException, IOException {
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Unexpected result evaluating XPath expression");
+        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
+                "/atom/feed.xml"));
+        NodeList records = doc.getElementsByTagNameNS(Namespaces.ATOM, "entry");
+        ETSAssert.assertAllTermsOccur(records, "données");
+    }
 }
