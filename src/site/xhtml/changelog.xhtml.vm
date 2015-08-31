@@ -7,12 +7,13 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>${project.version} (2015-MM-DD)</h2>
+    <h2>${project.version} (2015-09-01)</h2>
     <p>This maintenance release includes the following fixes:</p>
     <ul>
       <li style="list-style:square">Fix <a target="_blank" 
       href="https://github.com/opengeospatial/ets-cat30/issues/12">issue #12</a>: 
       Write results to user-specified directory</li>
+      <li>Remove test for maxRecords="unlimited" (pending specification CR)</li>
       <li style="list-style:square">In ETSAssert.assertAllTermsOccur, percent 
       encode search term in assertion error message (it may contain non-ASCII 
       chars).</li>
