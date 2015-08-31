@@ -160,7 +160,8 @@ public class OpenSearchCoreTests extends CommonFixture {
 
     /**
      * [Test] Submits a keyword search where the {searchTerms} value is a title
-     * word that occurs in at least one catalog record.
+     * word that occurs in at least one catalog record. The result set must not
+     * be empty.
      */
     @Test(description = "OGC 12-176, Table 6: Text search")
     public void singleKeywordSearch() {
@@ -186,7 +187,8 @@ public class OpenSearchCoreTests extends CommonFixture {
             Assert.assertTrue(records.getLength() > 0,
                     ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
                             Records.getRecordName(urlElem.getAttribute("type"))));
-            ETSAssert.assertAllTermsOccur(records, searchTerm);
+            // NOTE: Spec does not indicate how records are matched 
+            //ETSAssert.assertAllTermsOccur(records, searchTerm);
             Document entity = getResponseEntityAsDocument(response, null);
             if (entity.getDocumentElement().getNamespaceURI().equals(Namespaces.ATOM)) {
                 URL schemaUrl = getClass().getResource(SCHEMATRON_ATOM);
@@ -197,8 +199,7 @@ public class OpenSearchCoreTests extends CommonFixture {
 
     /**
      * [Test] Submits a keyword search request where the {searchTerms} value
-     * contains two terms. Both terms must occur in each matching record
-     * (implicit AND), but case is not significant.
+     * contains two terms. The result set must not be empty.
      */
     @Test(description = "OGC 12-176, Table 6: Text search")
     public void multipleKeywordSearch() {
@@ -225,7 +226,10 @@ public class OpenSearchCoreTests extends CommonFixture {
             Assert.assertTrue(records.getLength() > 0,
                     ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
                             Records.getRecordName(urlElem.getAttribute("type"))));
-            ETSAssert.assertAllTermsOccur(records, searchTerms.split("\\s+"));
+            //ETSAssert.assertQualifiedName(template, titleName);
+            // NOTE: Spec does not indicate how multiple terms are interpreted 
+            // or how records are matched 
+            //ETSAssert.assertAllTermsOccur(records, searchTerms.split("\\s+"));
         }
     }
 

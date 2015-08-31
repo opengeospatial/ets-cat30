@@ -24,6 +24,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.io.File;
 import java.net.URL;
 import javax.xml.validation.Schema;
+import org.junit.Ignore;
 import org.mockito.Mockito;
 import org.opengis.cite.cat30.util.DatasetInfo;
 import org.opengis.cite.cat30.util.ValidationUtils;
@@ -84,6 +85,7 @@ public class VerifyOpenSearchCoreTests {
     }
 
     @Test
+    @Ignore("Call to ETSAssert.assertAllTermsOccur is disabled")
     public void verifyKeywordSearchFails() throws SAXException, IOException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("rec-1001");

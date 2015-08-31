@@ -298,8 +298,8 @@ public class BasicSearchTests extends CommonFixture {
 
     /**
      * [Test] Submits a GetRecords request where the 'q' parameter value is a
-     * single term that occurs in at least one catalog record; case is not
-     * significant.
+     * single term that occurs in at least one catalog record. The result set
+     * must not be empty.
      *
      * <p>
      * <strong>Note: </strong>According to Table 4 in <em>OGC OpenSearch Geo and
@@ -371,7 +371,8 @@ public class BasicSearchTests extends CommonFixture {
                 recordName.getNamespaceURI(), recordName.getLocalPart());
         Assert.assertTrue(recordList.getLength() > 0,
                 ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
-        ETSAssert.assertAllTermsOccur(recordList, keyword);
+        // NOTE: Spec does not indicate how records are matched 
+        //ETSAssert.assertAllTermsOccur(recordList, keyword);
     }
 
     /**
@@ -443,9 +444,8 @@ public class BasicSearchTests extends CommonFixture {
     /**
      * [Test] This test submits a GetRecords request where the 'q' parameter
      * value contains two terms. The terms are separated by a space character,
-     * and the parameter value as a whole is percent-encoded; both terms must
-     * occur in each matching record (implicit AND), but case is not
-     * significant.
+     * and the parameter value as a whole is percent-encoded. The result set
+     * must not be empty.
      */
     @Test(description = "OGC 12-176, Table 6 - Text search")
     public void multipleTermTextSearch() {
@@ -472,7 +472,9 @@ public class BasicSearchTests extends CommonFixture {
                 recordName.getNamespaceURI(), recordName.getLocalPart());
         Assert.assertTrue(recordList.getLength() > 0,
                 ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET, recordName));
-        ETSAssert.assertAllTermsOccur(recordList, searchTerms.split("\\s+"));
+        // NOTE: Spec does not indicate how multiple terms are interpreted or 
+        // how records are matched 
+        //ETSAssert.assertAllTermsOccur(recordList, searchTerms.split("\\s+"));
     }
 
     /**
