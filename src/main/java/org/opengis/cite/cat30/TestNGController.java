@@ -1,9 +1,10 @@
 package org.opengis.cite.cat30;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,33 +33,38 @@ public class TestNGController implements TestSuiteController {
     private Properties etsProperties = new Properties();
 
     /**
-     * A convenience method to facilitate test development.
+     * A convenience method for running the test suite using a command-line
+     * interface. The default values of the test run arguments are as follows:
+     * <ul>
+     * <li>XML properties file: ${user.home}/test-run-props.xml</li>
+     * <li>outputDir: ${user.home}</li>
+     * </ul>
+     * <p>
+     * <strong>Synopsis</strong>
+     * </p>
+     * <pre>
+     * ets-cat30-${version}-aio.jar [-o|--outputDir $TMPDIR] [test-run-props.xml]
+     * </pre>
      *
-     * @param args Test run arguments (optional). The first argument must refer
-     * to an XML properties file containing the expected set of test run
-     * arguments. If no argument is supplied, the file located at
-     * ${user.home}/test-run-props.xml will be used.
+     * @param args Test run arguments (optional).
      * @throws Exception If the test run cannot be executed (usually due to
      * unsatisfied pre-conditions).
      */
     public static void main(String[] args) throws Exception {
+        TestRunArguments testRunArgs = new TestRunArguments();
+        JCommander cmd = new JCommander(testRunArgs);
+        try {
+            cmd.parse(args);
+        } catch (ParameterException px) {
+            System.out.println(px.getMessage());
+            cmd.usage();
+        }
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        File xmlArgs = null;
-        if (args.length > 0) {
-            xmlArgs = (args[0].startsWith("file:")) ? new File(
-                    URI.create(args[0])) : new File(args[0]);
-        } else {
-            String homeDir = System.getProperty("user.home");
-            xmlArgs = new File(homeDir, "test-run-props.xml");
-        }
-        if (!xmlArgs.exists()) {
-            throw new IllegalArgumentException(
-                    "Test run arguments not found at " + xmlArgs);
-        }
-        Document testRunArgs = db.parse(xmlArgs);
-        TestNGController controller = new TestNGController();
-        Source testResults = controller.doTestRun(testRunArgs);
+        File xmlArgs = testRunArgs.getPropertiesFile();
+        Document testRunProps = db.parse(xmlArgs);
+        TestNGController controller = new TestNGController(testRunArgs.getOutputDir());
+        Source testResults = controller.doTestRun(testRunProps);
         System.out.println("Test results: " + testResults.getSystemId());
     }
 
@@ -67,17 +73,16 @@ public class TestNGController implements TestSuiteController {
      * property as the root output directory.
      */
     public TestNGController() {
-        this(new File(System.getProperty("user.home")).toURI().toString());
+        this(System.getProperty("user.home"));
     }
 
     /**
      * Construct a controller that writes results to the given output directory.
      *
-     * @param outputDirUri A file URI that specifies the location of the
-     * directory in which test results will be written. It will be created if it
-     * does not exist.
+     * @param outputDir The location of the directory in which test results will
+     * be written. It will be created if it does not exist.
      */
-    public TestNGController(String outputDirUri) {
+    public TestNGController(String outputDir) {
         InputStream is = getClass().getResourceAsStream("ets.properties");
         try {
             this.etsProperties.load(is);
@@ -86,7 +91,7 @@ public class TestNGController implements TestSuiteController {
                     "Unable to load ets.properties. " + ex.getMessage());
         }
         URL tngSuite = TestNGController.class.getResource("testng.xml");
-        File resultsDir = new File(URI.create(outputDirUri));
+        File resultsDir = new File(outputDir);
         TestSuiteLogger.log(Level.CONFIG, "Using TestNG config: " + tngSuite);
         TestSuiteLogger.log(Level.CONFIG,
                 "Using outputDirPath: " + resultsDir.getAbsolutePath());
