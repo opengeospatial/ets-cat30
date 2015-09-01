@@ -65,7 +65,7 @@ One of the build artifacts is an "all-in-one" JAR file that includes the test
 suite and all of its dependencies; this makes it very easy to execute the test 
 suite in a command shell:
 
-`java -jar ets-cat30-${version}-aio.jar  [test-run-props.xml]`
+`java -jar ets-cat30-${version}-aio.jar [-o|--outputDir $TMPDIR] [test-run-props.xml]`
 
 ### How to contribute
 
