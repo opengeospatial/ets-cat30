@@ -7,8 +7,8 @@
   <body>
     <h1>Release Notes</h1>
 
-    <h2>0.10 (2015-10-27)</h2>
-    <p>This maintenance release includes the following fixes:</p>
+    <h2>0.10 (2015-10-30)</h2>
+    <p>This maintenance release includes the following fix:</p>
     <ul>
       <li style="list-style:square">Fix <a target="_blank" 
       href="https://github.com/opengeospatial/ets-cat30/issues/17">issue #17</a>: 
