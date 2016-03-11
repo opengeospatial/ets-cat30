@@ -25,6 +25,7 @@
         <exclude>org.opengis.cite.teamengine:teamengine-spi</exclude>
         <exclude>com.sun.jersey:jersey-client</exclude>
         <exclude>org.opengis.cite:schema-utils</exclude>
+        <exclude>org.apache.derby:derby</exclude>
       </excludes>
       <outputDirectory>/</outputDirectory>
       <unpack>false</unpack>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
-    <title>Conformance Test Suite - GML in JPEG 2000</title>
+    <title>OGC Catalogue 3.0 Conformance Test Suite</title>
     <meta charset="UTF-8" />
     <style type="text/css">
 body {
@@ -54,46 +54,96 @@ dt {
     </style>
   </head>
   <body>
-  <h1>Conformance Test Suite - GML in JPEG 2000</h1>
-	<p>This executable test suite (ETS) verifies the conformance of JPEG 2000 codestreams
-  against <em>OGC GML in JPEG 2000 (GMLJP2) Encoding Standard Part 1</em> (OGC 08-085r4) 
-  and related specifications. The JPEG 2000 standard (ISO 15444 series) is a wavelet-based 
-  encoding for imagery that provides the ability to include XML data for description of 
-  the image within the JPEG 2000 data file.</p>
+    <h1>OGC Catalogue 3.0 Conformance Test Suite</h1>
+    <p>This executable test suite (ETS) verifies the conformance of catalog implementations 
+	with respect to all relevant specifications. Conformance testing is a kind of "black box" 
+  testing that examines externally visible characteristics or behaviors of the IUT and is 
+  independent of any implementation details.</p>
 
-	<p>The test run arguments are summarized in the following table. The <em>Obligation</em> 
+    <p>Conformance classes are defined to encapsulate coherent sets of functional 
+    requirements. Five conformance classes are covered by this test suite:</p>
+    <dl>
+      <dt>http://www.opengis.net/spec/csw/3.0/conf/Basic-Catalogue</dt>
+      <dd>Basic search and retrieval functionality that is required of all 
+      implementations; several subsidiary conformance classes impose some 
+      additional requirements:
+        <ul>
+          <li style="list-style: square;">http://www.opengis.net/spec/csw/3.0/conf/Filter-FES-KVP</li>
+          <li style="list-style: square;">http://www.opengis.net/spec/csw/3.0/conf/CSW-response</li>
+          <li style="list-style: square;">http://www.opengis.net/spec/csw/3.0/conf/ATOM-response</li>
+        </ul>
+      </dd>
+      <dt>http://www.opengis.net/spec/csw/3.0/conf/OpenSearch</dt>
+      <dd>Support for OpenSearch 1.1 parameters, including extensions for simple 
+    spatial (bounding box) queries.</dd>
+    </dl>
+    
+    <p>Several namespace bindings are assumed in this documentation (see below). 
+    However, in an instance document (such as a request or response entity) the 
+    actual prefix bound to a given namespace is not significant; any legal 
+    <a target="_blank" href="http://www.w3.org/TR/xml-names/#NT-NCName">NCName</a> 
+    may be used.</p>
+
+    <table border="1" style="border-collapse: collapse;">
+      <caption>Table 1 - Namespace bindings</caption>
+      <thead>
+        <tr>
+          <th>Prefix</th>
+          <th>Namespace name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>atom</td>
+          <td>http://www.w3.org/2005/Atom</td>
+        </tr>
+        <tr>
+          <td>csw</td>
+          <td>http://www.opengis.net/cat/csw/3.0</td>
+        </tr>
+        <tr>
+          <td>dc</td>
+          <td>http://purl.org/dc/elements/1.1/</td>
+        </tr>
+        <tr>
+          <td>dct</td>
+          <td>http://purl.org/dc/terms/</td>
+        </tr>
+        <tr>
+          <td>georss</td>
+          <td>http://www.georss.org/georss/10</td>
+        </tr>
+        <tr>
+          <td>os</td>
+          <td>http://a9.com/-/spec/opensearch/1.1/</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>The test run arguments are summarized in the following table. The <em>Obligation</em> 
 	descriptor can have the following values: M (mandatory), O (optional), or C 
 	(conditional).</p>
 
-	<table border="1" style="border-collapse: collapse;">
-	  <caption>Test run arguments</caption>
-	  <thead>
-      <tr>
-        <th>Name</th>
-        <th>Value domain</th>
-		    <th>Obligation</th>
-		    <th>Description</th>
-      </tr>
-    </thead>
-	  <tbody>
-    <tr>
-      <td>iut</td>
-      <td>URI</td>
-      <td>M</td>
-      <td>A URI that refers to the test subject or metadata about it. Ampersand ('&amp;') 
-      characters must be percent-encoded as '%26'.</td>
-    </tr>
-    <!--  NOT APPLICABLE
-	  <tr>
-      <td>ics</td>
-      <td>A comma-separated list of string values.</td>
-      <td>O</td>
-      <td>An implementation conformance statement that indicates which conformance 
-      classes or options are supported.</td>
-    </tr>
-    -->
-	  </tbody>
-  </table>
+    <table border="1" style="border-collapse: collapse;">
+      <caption>Table 2 - Test run arguments</caption>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Value domain</th>
+          <th>Obligation</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>iut</td>
+          <td>URI</td>
+          <td>M</td>
+          <td>A URI that refers to the implementation under test or metadata about it.
+    Ampersand ('&amp;') characters must be percent-encoded as '%26'.</td>
+        </tr>
+      </tbody>
+    </table>
 
   </body>
 </html>

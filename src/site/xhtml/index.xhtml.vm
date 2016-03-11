@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
-    <title>Conformance Test Suite - GML in JPEG 2000</title>
+    <title>OGC Catalogue 3.0 Conformance Test Suite</title>
     <meta charset="UTF-8" />
     <style type="text/css">
 body {
@@ -54,35 +54,42 @@ dt {
     </style>
   </head>
   <body>
-  <h1>Conformance Test Suite - GML in JPEG 2000</h1>
+  <h1>OGC Catalogue 3.0 Conformance Test Suite</h1>
 	<h2>Scope</h2>
-  <p>This executable test suite (ETS) verifies the conformance of JPEG 2000 codestreams
-  against <em>OGC GML in JPEG 2000 (GMLJP2) Encoding Standard Part 1</em> (OGC 08-085r4) 
-  and related specifications (see Figure 1). The JPEG 2000 standard (ISO 15444 series) 
-  is a wavelet-based encoding for imagery that provides the ability to include XML data 
-  for description of the image within the JPEG 2000 data file.</p>
+	<p>This executable test suite (ETS) verifies the conformance of the implementation 
+	under test (IUT) with respect to the set of specifications depicted in Figure 1. 
+  Conformance testing is a kind of "black box" testing that examines only the 
+  externally visible characteristics or behaviors of the IUT and is independent 
+	of any implementation details.</p>
 
-	<figure>
-	  <img src="./img/specifications.png" alt="Set of relevant specifications"/>
-	  <figcaption><p><strong>Figure 1</strong> - Relevant specifications</p></figcaption>
+  <figure>
+    <img src="./img/specifications.png" alt="Set of relevant specifications"/>
+    <figcaption><p><strong>Figure 1</strong> - Relevant specifications</p></figcaption>
   </figure>
 
-	<p>The relevant conformance classes are defined in the principal specification:</p>
+	<p>There are 24 conformance classes defined in the principal specification 
+  (OGC 12-176r5); only a subset of these are covered by this test suite:</p>
 	<dl>
-    <dt>Core (<code>http://www.opengis.net/spec/GMLJP2/2.0/conf/core</code>)</dt>
-    <dd>See <a href="http://docs.opengeospatial.org/is/08-085r4/08-085r4.html" 
-    target="_blank">OGC 08-085r4</a>: A.1</dd>
-    <!-- NOT APPLICABLE
-    <dt>Class B</dt>
-    <dd>Capabilities of conformance class B</dd>
-    -->
+    <dt>Basic-Catalogue</dt>
+    <dd>Basic search and retrieval functionality required of all implementations; 
+    there are several subsidiary conformance classes that introduce additional 
+    requirements:
+    <ul>
+	    <li>Filter-FES-KVP</li>
+      <li>CSW-response</li>
+      <li>ATOM-response</li>
+    </ul>
+    </dd>
+    <dt>OpenSearch</dt>
+    <dd>Supports OpenSearch 1.1 parameters, including extensions for simple 
+    spatial (bounding box) queries.</dd>
   </dl>
 
   <h2>Test suite structure</h2>
 
   <p>The test suite definition file (testng.xml) is located in the root package, 
-  <code>org.opengis.cite.gmljpx20</code>. A conformance class corresponds to a &lt;test&gt;
-  element; each test element includes a set of test classes that contain the actual 
+  <code>org.opengis.cite.cat30</code>. A conformance class corresponds to a &lt;test&gt;
+  element; each test element includes a set of test classes that define the actual 
   test methods. The general structure of the test suite is shown in Table 1.</p>
 
   <table border="1" style="border-collapse: collapse;">
@@ -95,23 +102,21 @@ dt {
     </thead>
     <tbody>
       <tr style="vertical-align: top;">
-        <td><strong>Core</strong></td>
+        <td>Basic-Catalogue</td>
         <td>
           <ul style="list-style: none;">
-            <li>org.opengis.cite.gmljpx20.core.*Tests</li>
+            <li>org.opengis.cite.cat30.basic.*</li>
           </ul>
         </td>
       </tr>
-      <!-- NOT APPLICABLE
       <tr style="vertical-align: top;">
-        <td>Conformance Level 2</td>
+        <td>OpenSearch</td>
         <td>
           <ul style="list-style: none;">
-            <li>org.opengis.cite.gmljpx20.level2.*Tests</li>
+            <li>org.opengis.cite.cat30.opensearch.*</li>
           </ul>
         </td>
       </tr>
-      -->
     </tbody>
   </table>
 
@@ -121,26 +126,52 @@ dt {
 	<h2>Test requirements</h2>
 	<p>The documents listed below stipulate requirements that must be satisfied 
 	by a conforming implementation.</p>
-  <ul>
-    <li style="list-style: square;"><a href="http://docs.opengeospatial.org/is/08-085r4/08-085r4.html">OGC 08-085r4</a>: 
-    OGC GML in JPEG 2000 (GMLJP2) Encoding Standard Part 1: Core, Version 2.0</li>
-    <li style="list-style: square;"><a href="http://docs.opengeospatial.org/is/12-108/12-108.html">OGC 12-108</a>: 
-    OGC GML Application Schema - Coverages - JPEG2000 Coverage Encoding Extension, Version 1.0</li>
-    <li style="list-style: square;"><a href="https://portal.opengeospatial.org/files/?artifact_id=48553">OGC 09-146r2</a>: 
-    OGC GML Application Schema - Coverages, Version 1.0.1</li>
-    <li style="list-style: square;"><a href="http://www.iso.org/iso/catalogue_detail.htm?csnumber=33160">ISO/IEC 15444-2:2004</a>: 
-    Information technology -- JPEG 2000 image coding system: Extensions</li>
-    <li style="list-style: square;"><a href="http://www.iso.org/iso/catalogue_detail.htm?csnumber=37674">ISO/IEC 15444-1:2004</a>: 
-    Information technology -- JPEG 2000 image coding system: Core coding system</li>
-  </ul>
+	<ul>
+	  <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=61521&amp;version=1">
+    OGC 12-176r5</a> OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
+    Binding</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=61522&amp;version=1">
+    OGC 12-168r5</a> Catalog Services Specification 3.0 &#x2013; General Model</li>
+	  <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=61520&amp;version=1">
+    OGC 14-014r3</a> OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
+    Binding &#x2013; Abstract Test Suite</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="https://portal.opengeospatial.org/files/?artifact_id=56866&amp;version=2">
+    OGC 10-032r8</a> OGC OpenSearch Geo and Time Extensions, Version 1.0</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="http://www.opensearch.org/Specifications/OpenSearch/1.1">OpenSearch</a> 
+    OpenSearch 1.1, Draft 5</li>
+    <li style="list-style: square;"><a target="_blank" 
+    href="http://tools.ietf.org/html/rfc4287">RFC 4287</a> The Atom Syndication Format</li>
+	</ul>
+  
+  <p>If any of the following preconditions are not satisfied then all tests in 
+  the suite will be marked as skipped.</p>
+  <ol>
+    <li>the 'iut' test run argument refers to a CSW 3.0 capabilities document;</li>
+    <li>the service it describes is available.</li>
+  </ol>
 
 	<h2>How to run the tests</h2>
 	<p>The test suite may be run in any of the following environments:</p>
 	<ul>
-	  <li style="list-style: square;">Integrated development environment (IDE): The main Java class is <code>
-	  TestNGController</code>.</li>
-	  <li style="list-style: square;">RESTful API: Submit a request that includes the necessary arguments 
-    to the test run controller (/rest/suites/gmljpx20/${project.version}/run).</li>
+	  <li style="list-style: square;">Integrated development environment (IDE): 
+    The main Java class is <code>org.opengis.cite.cat30.TestNGController</code>.
+    The first argument must refer to an XML properties file containing the 
+    required test run argument (a reference to a CSW 3.0 capabilities document). 
+    If not specified, the default location at ${user.home}/test-run-props.xml 
+    will be used. You can modify the sample file in src/main/config/test-run-props.xml.
+    The TestNG results file (testng-results.xml) will be written to a 
+    subdirectory in ${user.home}/testng/ having a UUID value as its name.
+    </li>
+	  <li style="list-style: square;">RESTful API: Submit a request that includes 
+    the required arguments to the test run controller (/rest/suites/cat30/${project.version}/run).</li>
+    <li style="list-style: square;">Command shell (console): Execute the "all-in-one" 
+    JAR file:
+    <pre>java -jar ets-cat30-${project.version}-aio.jar [test-run-props.xml]</pre>.</li>
     <li style="list-style: square;">TEAM-Engine: Run the CTL script located in the <code>/src/main/ctl/</code> 
 	  directory.</li>
 	</ul>
@@ -154,27 +185,19 @@ dt {
       <tr>
         <th>Name</th>
         <th>Value domain</th>
-		    <th>Obligation</th>
-        <th>Description</th>
+		<th>Obligation</th>
+		<th>Description</th>
       </tr>
-    </thead>
+      </thead>
 	  <tbody>
-    <tr>
-      <td>iut</td>
-      <td>URI</td>
-      <td>M</td>
-      <td>A URI that refers to the test subject or metadata about it. Ampersand ('&amp;') 
-      characters must be percent-encoded as '%26'.</td>
-    </tr>
-    <!-- NOT APPLICABLE
-	  <tr>
-      <td>ics</td>
-      <td>A comma-separated list of string values.</td>
-      <td>O</td>
-      <td>An implementation conformance statement that indicates which conformance 
-      classes or options are supported.</td>
-    </tr>
-    -->
+      <tr>
+        <td>iut</td>
+        <td>URI</td>
+		<td>M</td>
+		<td>A URI that refers to a service capabilities document (csw:Capabilities) 
+    that describes the implementation under test. Ampersand ('&amp;') characters 
+    must be percent-encoded as '%26'.</td>
+      </tr>
 	  </tbody>
     </table>
 
