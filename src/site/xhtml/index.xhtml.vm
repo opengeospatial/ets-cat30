@@ -56,11 +56,11 @@ dt {
   <body>
   <h1>OGC Catalogue 3.0 Conformance Test Suite</h1>
 	<h2>Scope</h2>
-	<p>This executable test suite (ETS) verifies the conformance of the implementation 
-	under test (IUT) with respect to the set of specifications depicted in Figure 1. 
-  Conformance testing is a kind of "black box" testing that examines only the 
-  externally visible characteristics or behaviors of the IUT and is independent 
-	of any implementation details.</p>
+	<p>Conformance testing is a kind of "black box" testing that examines only the 
+  externally visible characteristics or behaviors of the implementation under test 
+  (IUT) and is independent of any implementation details. This executable test suite 
+  (ETS) verifies the behavior of the IUT with respect to the set of specifications 
+  listed under "Test requirements"; these are shown in Figure 1 with their dependencies.</p>
 
   <figure>
     <img src="./img/specifications.png" alt="Set of relevant specifications"/>
