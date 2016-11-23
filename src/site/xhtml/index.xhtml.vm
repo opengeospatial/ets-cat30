@@ -60,7 +60,8 @@ dt {
   externally visible characteristics or behaviors of the implementation under test 
   (IUT) and is independent of any implementation details. This executable test suite 
   (ETS) verifies the behavior of the IUT with respect to the set of specifications 
-  listed under "Test requirements"; these are shown in Figure 1 with their dependencies.</p>
+  listed under "Test requirements"; the specification dependencies are shown in 
+  Figure 1.</p>
 
   <figure>
     <img src="./img/specifications.png" alt="Set of relevant specifications"/>
