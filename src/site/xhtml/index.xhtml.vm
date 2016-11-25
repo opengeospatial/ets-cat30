@@ -129,12 +129,12 @@ dt {
 	by a conforming implementation.</p>
 	<ul>
 	  <li style="list-style: square;"><a target="_blank" 
-    href="https://portal.opengeospatial.org/files/?artifact_id=61521&amp;version=1">
-    OGC 12-176r5</a> OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
+    href="http://docs.opengeospatial.org/is/12-176r7/12-176r7.html">
+    OGC 12-176r7</a> OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
     Binding</li>
     <li style="list-style: square;"><a target="_blank" 
-    href="https://portal.opengeospatial.org/files/?artifact_id=61522&amp;version=1">
-    OGC 12-168r5</a> Catalog Services Specification 3.0 &#x2013; General Model</li>
+    href="http://docs.opengeospatial.org/is/12-168r6/12-168r6.html">
+    OGC 12-168r6</a> Catalog Services Specification 3.0 &#x2013; General Model</li>
 	  <li style="list-style: square;"><a target="_blank" 
     href="https://portal.opengeospatial.org/files/?artifact_id=61520&amp;version=1">
     OGC 14-014r3</a> OGC Catalogue Services 3.0 Specification &#x2013; HTTP Protocol 
@@ -148,7 +148,7 @@ dt {
     <li style="list-style: square;"><a target="_blank" 
     href="http://tools.ietf.org/html/rfc4287">RFC 4287</a> The Atom Syndication Format</li>
 	</ul>
-  
+
   <p>If any of the following preconditions are not satisfied then all tests in 
   the suite will be marked as skipped.</p>
   <ol>
