@@ -6,9 +6,9 @@ The OGC Catalogue 3.0 test suite verifies catalog implementations for conformanc
 against the following specifications:
 
 * _OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding_ 
-([OGC 12-176r5](https://portal.opengeospatial.org/files/?artifact_id=61521&version=1))
+([OGC 12-176r7](http://docs.opengeospatial.org/is/12-176r7/12-176r7.html))
 * Catalog Services Specification 3.0 - General Model 
-([OGC 12-168r5](https://portal.opengeospatial.org/files/?artifact_id=61522&version=1))
+([OGC 12-168r6](https://portal.opengeospatial.org/files/?artifact_id=61522&version=1))
 * _OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding - Abstract Test Suite_ 
 ([OGC 14-014r3](https://portal.opengeospatial.org/files/?artifact_id=61520&version=1))
 * _OGC OpenSearch Geo and Time Extensions_ 
