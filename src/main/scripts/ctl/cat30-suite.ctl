@@ -29,28 +29,10 @@
       <xsl:variable name="form-data">
         <ctl:form method="POST" width="800" height="600" xmlns="http://www.w3.org/1999/xhtml">
           <h2>OGC Catalogue 3.0 Conformance Test Suite</h2>
-          <div style="background:#F0F8FF" bgcolor="#F0F8FF">
-            <p>The behavior of the implementation under test is checked 
-               against the following specifications:</p>
-            <ul>
-              <li><a target="_blank" href="https://portal.opengeospatial.org/files/?artifact_id=61521&amp;version=1">
-                 OGC 12-176r5</a> OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding</li>
-              <li><a target="_blank" href="https://portal.opengeospatial.org/files/?artifact_id=61520&amp;version=1">
-                 OGC 14-014r3</a> OGC Catalogue Services 3.0 Specification - HTTP Protocol 
-                 Binding - Abstract Test Suite</li>
-              <li><a target="_blank" href="https://portal.opengeospatial.org/files/?artifact_id=56866&amp;version=2">
-                 OGC 10-032r8</a> OGC OpenSearch Geo and Time Extensions, Version 1.0</li>
-              <li><a target="_blank" href="http://www.opensearch.org/Specifications/OpenSearch/1.1">OpenSearch</a>
-                 OpenSearch 1.1, Draft 5</li>
-              <li><a target="_blank" href="http://tools.ietf.org/html/rfc4287">RFC 4287</a>
-                 The Atom Syndication Format</li>
-            </ul>
-            <p>The test suite currently covers the following conformance classes:</p>
-            <ul>
-              <li>Basic-Catalogue (mandatory)</li>
-              <li>OpenSearch</li>
-            </ul>
-          </div>
+            <p>
+              Information about this test suite can be found <a href="index.html" target="_blank">here</a>.
+            </p>
+        
           <fieldset style="background:#ccffff">
             <legend style="font-family: sans-serif; color: #000099; 
 			                 background-color:#F0F8FF; border-style: solid; 
