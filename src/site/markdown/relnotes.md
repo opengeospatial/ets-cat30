@@ -1,5 +1,8 @@
 # Release Notes
 
+## 1.1 (2017-01)
+* Fix [issue #23](https://github.com/opengeospatial/ets-cat30/issues/23) -  Test shows status Beta when it needs to show status Final.
+
 ## 1.0 (2016-12)
 
 * Fix [issue #22](https://github.com/opengeospatial/ets-cat30/issues/22) - Tag 1.0 - Test got approved by OGC
