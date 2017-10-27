@@ -1,7 +1,8 @@
 # Release Notes
 
-## 1.1 (2017-01)
-* Fix [issue #23](https://github.com/opengeospatial/ets-cat30/issues/23) -  Test shows status Beta when it needs to show status Final.
+## 1.1 (2017-10)
+* Fix [issue #24](https://github.com/opengeospatial/ets-cat30/issues/24) - Update CTL with better information about conformance classes
+* Fix [issue #23](https://github.com/opengeospatial/ets-cat30/issues/23) - Test shows status Beta when it needs to show status Final.
 
 ## 1.0 (2016-12)
 
