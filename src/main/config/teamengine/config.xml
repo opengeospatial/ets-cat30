@@ -14,6 +14,9 @@
         <title>Test suite ets-cat30</title>
         <description>Assesses conformance with respect to  
         the OGC Catalogue Services 3.0 Specification .</description>
+        <BasicConformanceClasses>
+          <conformanceClass>Basic-Catalogue</conformanceClass>
+        </BasicConformanceClasses>
       </suite>
       <revision>
         <name>${version}</name>
