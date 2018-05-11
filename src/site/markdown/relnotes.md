@@ -1,5 +1,8 @@
 # Release Notes
 
+## 1.2 (2018-05)
+* Fix [#27](https://github.com/opengeospatial/ets-cat30/issues/27) - HTML report is not created with TEAM Engine 5.0 when using Web Browser Interface
+
 ## 1.1 (2017-10)
 * Fix [issue #24](https://github.com/opengeospatial/ets-cat30/issues/24) - Update CTL with better information about conformance classes
 * Fix [issue #23](https://github.com/opengeospatial/ets-cat30/issues/23) - Test shows status Beta when it needs to show status Final.
