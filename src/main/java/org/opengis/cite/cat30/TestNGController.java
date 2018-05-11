@@ -2,9 +2,11 @@ package org.opengis.cite.cat30;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +75,7 @@ public class TestNGController implements TestSuiteController {
      * property as the root output directory.
      */
     public TestNGController() {
-        this(System.getProperty("user.home"));
+        this(new File(System.getProperty("user.home")).toURI().toString());
     }
 
     /**
@@ -91,7 +93,7 @@ public class TestNGController implements TestSuiteController {
                     "Unable to load ets.properties. " + ex.getMessage());
         }
         URL tngSuite = TestNGController.class.getResource("testng.xml");
-        File resultsDir = new File(outputDir);
+        File resultsDir = new File(URI.create(outputDir));
         TestSuiteLogger.log(Level.CONFIG, "Using TestNG config: " + tngSuite);
         TestSuiteLogger.log(Level.CONFIG,
                 "Using outputDirPath: " + resultsDir.getAbsolutePath());
