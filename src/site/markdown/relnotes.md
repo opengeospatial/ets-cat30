@@ -1,6 +1,7 @@
 # Release Notes
 
 ## 1.2 (2018-05)
+* Fix [#25](https://github.com/opengeospatial/ets-cat30/issues/25) - Tests of online TEAM Engine fail due to dependency issues
 * Fix [#27](https://github.com/opengeospatial/ets-cat30/issues/27) - HTML report is not created with TEAM Engine 5.0 when using Web Browser Interface
 
 ## 1.1 (2017-10)
