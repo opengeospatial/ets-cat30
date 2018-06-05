@@ -1,0 +1,40 @@
+<GetRecordsResponse xmlns="http://www.opengis.net/cat/csw/3.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <SearchStatus timestamp="2018-04-19T15:17:35.351+02:00" />
+  <SearchResults numberOfRecordsMatched="7" numberOfRecordsReturned="7" nextRecord="1000">
+    <SummaryRecord>
+      <dc:identifier />
+      <dc:title>catalog2</dc:title>
+      <dc:subject>test</dc:subject>
+    </SummaryRecord>
+    <SummaryRecord>
+      <dc:identifier />
+      <dc:title>catalog</dc:title>
+      <dc:subject>test</dc:subject>
+    </SummaryRecord>
+    <SummaryRecord>
+      <dc:identifier />
+      <dc:title>catalog3</dc:title>
+      <dc:subject>test</dc:subject>
+    </SummaryRecord>
+    <SummaryRecord>
+      <dc:identifier />
+      <dc:title>catalog12</dc:title>
+      <dc:subject>test</dc:subject>
+    </SummaryRecord>
+    <SummaryRecord>
+      <dc:identifier />
+      <dc:title>catalog4</dc:title>
+      <dc:subject>test</dc:subject>
+    </SummaryRecord>
+    <SummaryRecord>
+      <dc:identifier />
+      <dc:title>catalog11</dc:title>
+      <dc:subject>test</dc:subject>
+    </SummaryRecord>
+    <SummaryRecord>
+      <dc:identifier />
+      <dc:title>catalog13</dc:title>
+      <dc:subject>test</dc:subject>
+    </SummaryRecord>
+  </SearchResults>
+</GetRecordsResponse>
