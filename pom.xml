@@ -51,12 +51,13 @@
     <ets-code>cat30</ets-code>
     <spec-version>3.0.0</spec-version>
     <teamengine.version>4.10</teamengine.version>
-    <soapui.teamengine.endpoint>http://cite.opengeospatial.org/te2</soapui.teamengine.endpoint>
-    <soapui.ets.version>1.2</soapui.ets.version>
+    <soapui.teamengine.endpoint>http://localhost:8081/teamengine</soapui.teamengine.endpoint>
+    <soapui.ets.version>${project.version}</soapui.ets.version>
     <soapui.iut>http://demo.pycsw.org/cite/csw?service=CSW&amp;version=3.0.0&amp;request=GetCapabilities</soapui.iut>
     <soapui.tests.passed>52</soapui.tests.passed>
     <soapui.tests.skipped>0</soapui.tests.skipped>
     <soapui.tests.failed>0</soapui.tests.failed>
+    <soapui.test.fail.ignore>false</soapui.test.fail.ignore>
     <docker.teamengine.version>5.3</docker.teamengine.version>
   </properties>
 
@@ -188,9 +189,10 @@
           </dependencies>
           <configuration>
             <projectFile>src/test/resources/soapui/ets-cat30-soapui-project.xml</projectFile>
+            <settingsFile>src/test/resources/soapui/ets-cat30-soapui-settings.xml</settingsFile>
             <outputFolder>${project.build.directory}/soapui</outputFolder>
             <junitReport>true</junitReport>
-            <testFailIgnore>true</testFailIgnore>
+            <testFailIgnore>${soapui.test.fail.ignore}</testFailIgnore>
             <projectProperties>
               <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
               <value>ets.version=${soapui.ets.version}</value>
@@ -324,6 +326,57 @@
                 <id>push</id>
                 <goals>
                   <goal>push</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>integration-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.smartbear.soapui</groupId>
+            <artifactId>soapui-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>start</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                  <goal>remove</goal>
                 </goals>
               </execution>
             </executions>
