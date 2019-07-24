@@ -51,13 +51,13 @@
     <ets-code>cat30</ets-code>
     <spec-version>3.0.0</spec-version>
     <teamengine.version>4.10</teamengine.version>
-    <soapui.teamengine.endpoint>http://cite.opengeospatial.org/te2</soapui.teamengine.endpoint>
+    <soapui.teamengine.endpoint>http://localhost:8081/teamengine</soapui.teamengine.endpoint>
     <soapui.iut>http://demo.pycsw.org/cite/csw?service=CSW&amp;version=3.0.0&amp;request=GetCapabilities</soapui.iut>
     <soapui.tests.passed>52</soapui.tests.passed>
     <soapui.tests.skipped>0</soapui.tests.skipped>
     <soapui.tests.failed>0</soapui.tests.failed>
     <soapui.test.fail.ignore>false</soapui.test.fail.ignore>
-    <docker.teamengine.version>5.3</docker.teamengine.version>
+    <docker.teamengine.version>5.4</docker.teamengine.version>
   </properties>
 
   <pluginRepositories>
