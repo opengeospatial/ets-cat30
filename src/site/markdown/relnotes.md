@@ -1,5 +1,15 @@
 # Release Notes
 
+## 1.3 (2020-10)
+* Fix [#43](https://github.com/opengeospatial/ets-cat30/issues/43) - Update dependency of geomatics-geotk to version 1.15
+* Fix [#46](https://github.com/opengeospatial/ets-cat30/pull/46) - Bump xercesImpl from 2.11.0 to 2.12.0
+* Fix [#44](https://github.com/opengeospatial/ets-cat30/issues/44) - Cleanup dependencies
+* Fix [#41](https://github.com/opengeospatial/ets-cat30/issues/41) - Update tests to use TEAM Engine 5.4
+* Fix [#39](https://github.com/opengeospatial/ets-cat30/issues/39) - Create integration tests
+* Fix [#35](https://github.com/opengeospatial/ets-cat30/issues/35) - Maven dependencies could not be resolved
+* Fix [#34](https://github.com/opengeospatial/ets-cat30/issues/34) - Introduce Dockerfile and Maven Docker plugin
+* Fix [#32](https://github.com/opengeospatial/ets-cat30/issues/32) - Create SoapUI tests and integrate them into Maven and Jenkinsfile
+
 ## 1.2 (2018-05)
 * Fix [#25](https://github.com/opengeospatial/ets-cat30/issues/25) - Tests of online TEAM Engine fail due to dependency issues
 * Fix [#27](https://github.com/opengeospatial/ets-cat30/issues/27) - HTML report is not created with TEAM Engine 5.0 when using Web Browser Interface
