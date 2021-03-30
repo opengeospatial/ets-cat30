@@ -56,7 +56,7 @@
     <soapui.tests.skipped>0</soapui.tests.skipped>
     <soapui.tests.failed>0</soapui.tests.failed>
     <soapui.test.fail.ignore>false</soapui.test.fail.ignore>
-    <docker.teamengine.version>5.4</docker.teamengine.version>
+    <docker.teamengine.version>5.4.1</docker.teamengine.version>
   </properties>
 
   <pluginRepositories>
