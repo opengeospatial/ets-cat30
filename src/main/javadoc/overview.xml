@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite>
+	<title>OGC Catalogue 3.0 Conformance Test Suite</title>
+	<description>
+		The OGC Catalogue 3.0 test suite verifies catalog implementations for
+		conformance against the following specifications:
+		1. OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding [OGC 12-176r7]
+		2. Catalog Services Specification 3.0 - General Model [>OGC 12-168r6]
+		3. OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding - Abstract Test Suite [OGC 14-014r3]
+		4. OGC OpenSearch Geo and Time Extensions [OGC 10-032r8]
+		5. OpenSearch 1.1 [Draft 5]
+		6. The Atom Syndication Format [RFC 4287]
+
+		The test suite currently covers the following conformance classes:
+		1. Basic-Catalogue
+		2. OpenSearch
+
+		The test run arguments are summarized in the following table. The obligation
+		descriptor can have the following values: M (mandatory), O (optional), or C (conditional).
+	</description>
+	<testrunarguments>
+		<testrunargument>
+			<name>iut</name>
+			<valuedomain>URI</valuedomain>
+			<obligation>M</obligation>
+			<description>A URI that refers to a service capabilities document (csw:Capabilities) that describes 
+			the implementation under test. Ampersand (%26) characters must be percent-encoded as ‘%26’.
+			</description>
+		</testrunargument>
+	</testrunarguments>
+</testsuite>
