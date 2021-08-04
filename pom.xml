@@ -52,9 +52,9 @@
     <teamengine.version>4.10</teamengine.version>
     <soapui.teamengine.endpoint>http://localhost:8081/teamengine</soapui.teamengine.endpoint>
     <soapui.iut>http://demo.pycsw.org/cite/csw?service=CSW&amp;version=3.0.0&amp;request=GetCapabilities</soapui.iut>
-    <soapui.tests.passed>43</soapui.tests.passed>
+    <soapui.tests.passed>44</soapui.tests.passed>
     <soapui.tests.skipped>0</soapui.tests.skipped>
-    <soapui.tests.failed>9</soapui.tests.failed>
+    <soapui.tests.failed>8</soapui.tests.failed>
     <soapui.test.fail.ignore>false</soapui.test.fail.ignore>
     <docker.teamengine.version>5.4.1</docker.teamengine.version>
   </properties>
