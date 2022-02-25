@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.4 (2022-02)
+* [#47](https://github.com/opengeospatial/ets-cat30/issues/47) - Add template to get an XML/JSON response via rest endpoint
+* [#53](https://github.com/opengeospatial/ets-cat30/pull/53) - Bump xercesImpl from 2.12.0 to 2.12.2
+* [#52](https://github.com/opengeospatial/ets-cat30/pull/52) - Set Docker TEAM Engine version to 5.4.1
+* [#51](https://github.com/opengeospatial/ets-cat30/pull/51) - Added header for soapui test.
+
 ## 1.3 (2020-10)
 * Fix [#43](https://github.com/opengeospatial/ets-cat30/issues/43) - Update dependency of geomatics-geotk to version 1.15
 * Fix [#46](https://github.com/opengeospatial/ets-cat30/pull/46) - Bump xercesImpl from 2.11.0 to 2.12.0
