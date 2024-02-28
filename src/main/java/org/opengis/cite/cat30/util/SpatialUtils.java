@@ -5,12 +5,11 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.geotoolkit.geometry.GeneralEnvelope;
-import org.geotoolkit.referencing.CRS;
+import org.apache.sis.geometry.GeneralEnvelope;
+import org.apache.sis.referencing.CommonCRS;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.FactoryException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,12 +35,7 @@ public class SpatialUtils {
         if (!boxNode.getNamespaceURI().equals(Namespaces.GEORSS)) {
             throw new IllegalArgumentException("Not a GeoRSS element.");
         }
-        CoordinateReferenceSystem crs = null;
-        try {
-            crs = CRS.decode("EPSG:4326");
-        } catch (FactoryException ex) {
-            TestSuiteLogger.log(Level.WARNING, "Failed to create CRS: EPSG 4326", ex);
-        }
+        CoordinateReferenceSystem crs = CommonCRS.WGS84.geographic();
         GeneralEnvelope env = new GeneralEnvelope(crs);
         String[] coords = boxNode.getTextContent().trim().split("\\s+");
         if (coords.length != 4) {

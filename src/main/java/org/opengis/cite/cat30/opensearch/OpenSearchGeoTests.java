@@ -14,9 +14,9 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import org.geotoolkit.geometry.Envelopes;
-import org.geotoolkit.geometry.GeneralEnvelope;
-import org.geotoolkit.referencing.crs.DefaultGeographicCRS;
+import org.apache.sis.geometry.Envelopes;
+import org.apache.sis.geometry.GeneralEnvelope;
+import org.apache.sis.referencing.CommonCRS;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -254,9 +254,9 @@ public class OpenSearchGeoTests extends CommonFixture {
         Envelope bbox = this.geoExtent;
         try {
             if (!bbox.getCoordinateReferenceSystem().equals(
-                    DefaultGeographicCRS.WGS84)) {
+                    CommonCRS.WGS84.normalizedGeographic())) {
                 bbox = new GeneralEnvelope(Envelopes.transform(bbox,
-                        DefaultGeographicCRS.WGS84));
+                        CommonCRS.WGS84.normalizedGeographic()));
             }
         } catch (TransformException ex) {
             throw new AssertionError("Failed to create CRS84 box from envelope in source CRS: "
