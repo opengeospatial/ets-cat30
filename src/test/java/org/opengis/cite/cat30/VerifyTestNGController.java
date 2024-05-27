@@ -13,13 +13,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 
+import net.sf.saxon.s9api.XdmValue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.cite.cat30.util.XMLUtils;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Verifies the results of executing a test run using the main controller
@@ -61,12 +61,10 @@ public class VerifyTestNGController {
                 outStream.toByteArray()));
         TestNGController controller = new TestNGController();
         Source source = controller.doTestRun(testRunArgs);
-        Document resultsDoc = (Document) DOMSource.class.cast(source).getNode();
-        Element docElem = resultsDoc.getDocumentElement();
+        String xpathSkipped = "/testng-results/@skipped";
+        XdmValue skipped = XMLUtils.evaluateXPath2(source, xpathSkipped, null);
         // all tests should have been skipped
-        int nFailed = Integer.parseInt(docElem.getAttribute("failed"));
-        assertTrue("Expected no failed verdicts.", nFailed == 0);
-        int nPassed = Integer.parseInt(docElem.getAttribute("passed"));
-        assertTrue("Expected no pass verdicts.", nPassed == 0);
+        int numSkipped = Integer.parseInt(skipped.getUnderlyingValue().getStringValue());
+        assertEquals("Unexpected number of fail verdicts.", 52, numSkipped);
     }
 }
