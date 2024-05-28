@@ -1,5 +1,9 @@
 # Release Notes
 
+## 1.5 (2024-05)
+* [#57](https://github.com/opengeospatial/ets-cat30/issues/57) - Upgrade dependencies to current versions
+* [#54](https://github.com/opengeospatial/ets-cat30/pull/54) - Add credentials to SoapUI project
+
 ## 1.4 (2022-02)
 * [#47](https://github.com/opengeospatial/ets-cat30/issues/47) - Add template to get an XML/JSON response via rest endpoint
 * [#53](https://github.com/opengeospatial/ets-cat30/pull/53) - Bump xercesImpl from 2.12.0 to 2.12.2
