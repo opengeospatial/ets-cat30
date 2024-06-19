@@ -1,31 +1,32 @@
 package org.opengis.cite.cat30.basic;
 
-import java.net.URI;
-
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
-
-import org.opengis.cite.cat30.CAT3;
-import org.opengis.cite.cat30.SuiteAttribute;
-import org.opengis.cite.cat30.util.ServiceMetadataUtils;
-import org.testng.Assert;
-import org.testng.ITestContext;
-import org.w3c.dom.Document;
-
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
+
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+
+import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.Namespaces;
+import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.CSWClient;
 import org.opengis.cite.cat30.util.DatasetInfo;
+import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
+import org.testng.Assert;
+import org.testng.ITestContext;
+import org.testng.Reporter;
 import org.testng.annotations.BeforeSuite;
+import org.w3c.dom.Document;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * Checks that various preconditions are satisfied before the test suite is run.
@@ -40,7 +41,8 @@ public class SuitePreconditions {
      * @param testContext Information about the test run.
      */
     @BeforeSuite
-    public void verifyTestSubject(ITestContext testContext) {
+    public void verifyTestSubject() {
+        ITestContext testContext = Reporter.getCurrentTestResult().getTestContext();
         Object sutObj = testContext.getSuite().getAttribute(
                 SuiteAttribute.TEST_SUBJECT.getName());
         if (null != sutObj && Document.class.isInstance(sutObj)) {
@@ -82,7 +84,8 @@ public class SuitePreconditions {
      * @param testContext Information about the test run.
      */
     @BeforeSuite
-    public void fetchSampleData(ITestContext testContext) {
+    public void fetchSampleData() {
+        ITestContext testContext = Reporter.getCurrentTestResult().getTestContext();
         Document capabilitiesDoc = (Document) testContext.getSuite().getAttribute(
                 SuiteAttribute.TEST_SUBJECT.getName());
         CSWClient cswClient = new CSWClient();

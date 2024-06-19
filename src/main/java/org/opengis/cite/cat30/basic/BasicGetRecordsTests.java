@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.basic;
 
-import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -8,11 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Validator;
+
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -34,6 +33,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Provides tests that apply to the <code>GetRecords</code> request using the
@@ -126,11 +129,10 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.NAMESPACE, String.format("xmlns(tns=%s)", Namespaces.CSW));
         qryParams.put(CAT3.TYPE_NAMES, "tns:Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
         String expr = "count(//csw:SearchResults/csw:BriefRecord) > 0";
@@ -150,11 +152,10 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
         String expr = "count(//csw:SearchResults/csw:SummaryRecord) > 0";
@@ -185,13 +186,12 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_SUMMARY);
         qryParams.put(CAT3.OUTPUT_FORMAT, MediaType.APPLICATION_ATOM_XML);
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Assert.assertEquals(ClientUtils.removeParameters(response.getType()),
+        Assert.assertEquals(ClientUtils.removeParameters(response.getMediaType()),
                 MediaType.APPLICATION_ATOM_XML_TYPE,
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_MEDIA_TYPE));
         Document entity = getResponseEntityAsDocument(response, null);
@@ -229,9 +229,8 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
         qryParams.put(CAT3.OUTPUT_FORMAT, "text/example");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.WILDCARD_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.OUTPUT_FORMAT);
     }
@@ -253,9 +252,8 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "UnknownType");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.TYPE_NAMES);
     }
@@ -277,9 +275,8 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, "undefined-view");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.ELEMENT_SET);
     }
@@ -299,9 +296,8 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         qryParams.put(CAT3.OUTPUT_SCHEMA, "urn:uuid:6a29d2a8-9651-47a6-9b14-f05d2b5644f0");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.OUTPUT_SCHEMA);
     }
@@ -323,11 +319,10 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.ELEMENT_NAME, "tns:title");
         qryParams.put(CAT3.NAMESPACE,
                 String.format("xmlns(tns=%s)", Namespaces.DCMES));
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
         Validator validator = this.cswSchema.newValidator();
@@ -354,9 +349,8 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.TYPE_NAMES, "Record");
         qryParams.put(CAT3.ELEMENT_NAME, "undefined");
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.ELEMENT_NAME);
     }
@@ -378,9 +372,8 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
         qryParams.put(CAT3.ELEMENT_NAME, "ns1:subject");
         qryParams.put(CAT3.NAMESPACE, String.format("xmlns(ns1=%s)", Namespaces.DCMES));
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.NO_CODE, null);
     }
 
@@ -403,11 +396,10 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.START_POS, Integer.toString(startPosition));
         int maxRecords = 2;
         qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
         Node resultsNode = entity.getElementsByTagNameNS(
@@ -450,11 +442,10 @@ public class BasicGetRecordsTests extends CommonFixture {
         qryParams.put(CAT3.START_POS, Integer.toString(startPosition));
         int maxRecords = 2;
         qryParams.put(CAT3.MAX_RECORDS, Integer.toString(maxRecords));
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
         Node feedNode = entity.getElementsByTagNameNS(Namespaces.ATOM, "feed").item(0);

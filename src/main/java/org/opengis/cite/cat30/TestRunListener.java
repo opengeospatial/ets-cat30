@@ -9,8 +9,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.sis.referencing.factory.sql.EPSGFactory;
 import org.geotoolkit.factory.Hints;
-import org.geotoolkit.referencing.factory.epsg.EpsgInstaller;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.util.FactoryException;
 import org.testng.IExecutionListener;
@@ -64,18 +64,13 @@ public class TestRunListener implements IExecutionListener {
                     dsName, nx.getMessage()));
         }
         if (null != epsgDataSource) {
-            try (Connection conn = epsgDataSource.getConnection()) {
-                EpsgInstaller dbInstaller = new EpsgInstaller();
-                dbInstaller.setDatabase(conn);
-                if (!dbInstaller.exists()) {
-                    dbInstaller.call();
-                }
+            try (Connection conn = epsgDataSource.getConnection();EPSGFactory dbInstaller = new EPSGFactory(null)) {
+                dbInstaller.install(conn);
             } catch (SQLException | FactoryException e) {
                 TestSuiteLogger.log(Level.CONFIG, String.format(
                         "Failed to access DataSource %s .\n %s",
                         dsName, e.getMessage()));
             }
-            Hints.putSystemDefault(Hints.EPSG_DATA_SOURCE, epsgDataSource);
         }
     }
 }

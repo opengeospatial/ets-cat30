@@ -1,23 +1,19 @@
 package org.opengis.cite.cat30.basic;
 
-import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmValue;
-import org.geotoolkit.geometry.Envelopes;
-import org.geotoolkit.geometry.GeneralEnvelope;
-import org.geotoolkit.referencing.crs.DefaultGeographicCRS;
+
+import org.apache.sis.geometry.Envelopes;
+import org.apache.sis.geometry.GeneralEnvelope;
+import org.apache.sis.referencing.CommonCRS;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -42,6 +38,13 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
  * Includes GetRecords tests pertaining to the <code>Filter-FES-KVP</code>
@@ -157,9 +160,8 @@ public class BasicSearchTests extends CommonFixture {
 		qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
 		qryParams.put(CAT3.BBOX,
 				"472944,5363287,492722,5455253,urn:ogc:def:crs:EPSG::0000");
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
 				CAT3.BBOX);
 	}
@@ -194,11 +196,10 @@ public class BasicSearchTests extends CommonFixture {
 		qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_BRIEF);
 		Envelope bbox = this.geoExtent;
 		qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		Source results = new DOMSource(entity);
@@ -236,19 +237,18 @@ public class BasicSearchTests extends CommonFixture {
 		Envelope bbox = this.geoExtent;
 		try {
 			if (!bbox.getCoordinateReferenceSystem().equals(
-					DefaultGeographicCRS.WGS84)) {
+			        CommonCRS.defaultGeographic())) {
 				bbox = new GeneralEnvelope(Envelopes.transform(bbox,
-						DefaultGeographicCRS.WGS84));
+				        CommonCRS.defaultGeographic()));
 			}
 		} catch (TransformException ex) {
 			throw new RuntimeException("Failed to create WGS84 envelope.", ex);
 		}
 		qryParams.put(CAT3.BBOX, Extents.envelopeToString(bbox));
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		Source results = new DOMSource(entity);
@@ -276,11 +276,10 @@ public class BasicSearchTests extends CommonFixture {
 		idList.add(this.recordIdentifiers.get(this.recordIdentifiers.size() - 1));
 		paramValue.append(idList.get(1));
 		qryParams.put(CAT3.REC_ID_LIST, paramValue.toString());
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		QName recordName = new QName(Namespaces.CSW, "SummaryRecord");
@@ -366,11 +365,10 @@ public class BasicSearchTests extends CommonFixture {
 		// remove any chars that may give rise to invalid XPath expression
 		keyword = keyword.replaceAll("[()]", "");
 		qryParams.put(CAT3.Q, URIUtils.getPercentEncodedString(keyword));
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		QName recordName = new QName(Namespaces.CSW, "Record");
@@ -407,11 +405,10 @@ public class BasicSearchTests extends CommonFixture {
 				.split("\\s+");
 		String subject = subjectWords[subjectWords.length - 1];
 		qryParams.put(CAT3.Q, subject);
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		Element results = (Element) entity.getElementsByTagNameNS(
@@ -444,11 +441,10 @@ public class BasicSearchTests extends CommonFixture {
 		qryParams.put(CAT3.TYPE_NAMES, "Record");
 		qryParams.put(CAT3.ELEMENT_SET, CAT3.ELEMENT_SET_FULL);
 		qryParams.put(CAT3.Q, Records.generateRandomText());
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		ETSAssert.assertEmptyResultSet(entity);
@@ -473,11 +469,10 @@ public class BasicSearchTests extends CommonFixture {
 		String searchTerms = Records.findMatchingSearchTerms(
 				this.datasetInfo.getDataFile(), titleName, subjectName);
 		qryParams.put(CAT3.Q, URIUtils.getPercentEncodedString(searchTerms));
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		QName recordName = new QName(Namespaces.CSW, "SummaryRecord");
@@ -516,9 +511,9 @@ public class BasicSearchTests extends CommonFixture {
 		Envelope bbox = this.geoExtent;
 		try {
 			if (!bbox.getCoordinateReferenceSystem().equals(
-					DefaultGeographicCRS.WGS84)) {
+			        CommonCRS.defaultGeographic())) {
 				bbox = new GeneralEnvelope(Envelopes.transform(bbox,
-						DefaultGeographicCRS.WGS84));
+				        CommonCRS.defaultGeographic()));
 			}
 		} catch (TransformException ex) {
 			throw new RuntimeException("Failed to create WGS84 envelope.", ex);
@@ -544,11 +539,10 @@ public class BasicSearchTests extends CommonFixture {
 		// remove any chars that may give rise to invalid XPath expression
 		titleWord = titleWord.replaceAll("[()]", "");
 		qryParams.put(CAT3.Q, titleWord);
-		request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+		response = ClientUtils.buildGetRequest(this.getURI, qryParams,
 				MediaType.APPLICATION_XML_TYPE);
-		response = this.client.handle(request);
 		Assert.assertEquals(response.getStatus(),
-				ClientResponse.Status.OK.getStatusCode(),
+				Response.Status.OK.getStatusCode(),
 				ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 		Document entity = getResponseEntityAsDocument(response, null);
 		Element results = (Element) entity.getElementsByTagNameNS(

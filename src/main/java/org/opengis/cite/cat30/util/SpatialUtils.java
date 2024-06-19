@@ -2,11 +2,13 @@ package org.opengis.cite.cat30.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.geotoolkit.geometry.GeneralEnvelope;
-import org.geotoolkit.referencing.CRS;
+
+import org.apache.sis.geometry.GeneralEnvelope;
+import org.apache.sis.referencing.CRS;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -38,7 +40,7 @@ public class SpatialUtils {
         }
         CoordinateReferenceSystem crs = null;
         try {
-            crs = CRS.decode("EPSG:4326");
+            crs = CRS.forCode("EPSG:4326");
         } catch (FactoryException ex) {
             TestSuiteLogger.log(Level.WARNING, "Failed to create CRS: EPSG 4326", ex);
         }

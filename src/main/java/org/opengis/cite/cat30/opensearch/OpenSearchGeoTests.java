@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.opensearch;
 
-import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
@@ -9,14 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import org.geotoolkit.geometry.Envelopes;
-import org.geotoolkit.geometry.GeneralEnvelope;
-import org.geotoolkit.referencing.crs.DefaultGeographicCRS;
+
+import org.apache.sis.geometry.Envelopes;
+import org.apache.sis.geometry.GeneralEnvelope;
+import org.apache.sis.referencing.CommonCRS;
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -40,6 +40,9 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Verifies behavior of the SUT when processing OpenSearch requests that contain
@@ -143,11 +146,10 @@ public class OpenSearchGeoTests extends CommonFixture {
                 continue; // ignore non-XML media types
             }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(urlElem, values);
-            request = ClientUtils.buildGetRequest(uri, null,
+            response = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            response = this.client.handle(request);
             Assert.assertEquals(response.getStatus(),
-                    ClientResponse.Status.NOT_FOUND.getStatusCode(),
+                    Response.Status.NOT_FOUND.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         }
     }
@@ -179,11 +181,10 @@ public class OpenSearchGeoTests extends CommonFixture {
                 continue;
             }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            request = ClientUtils.buildGetRequest(uri, null,
+            response = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            response = this.client.handle(request);
             Assert.assertEquals(response.getStatus(),
-                    ClientResponse.Status.OK.getStatusCode(),
+                    Response.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
             Document entity = getResponseEntityAsDocument(response, null);
             String recordPath = "atom:feed/atom:entry";
@@ -218,11 +219,10 @@ public class OpenSearchGeoTests extends CommonFixture {
                 continue; // ignore non-XML media types
             }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            request = ClientUtils.buildGetRequest(uri, null,
+            response = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            response = this.client.handle(request);
             Assert.assertEquals(response.getStatus(),
-                    ClientResponse.Status.BAD_REQUEST.getStatusCode(),
+                    Response.Status.BAD_REQUEST.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         }
     }
@@ -254,9 +254,9 @@ public class OpenSearchGeoTests extends CommonFixture {
         Envelope bbox = this.geoExtent;
         try {
             if (!bbox.getCoordinateReferenceSystem().equals(
-                    DefaultGeographicCRS.WGS84)) {
+                    CommonCRS.defaultGeographic())) {
                 bbox = new GeneralEnvelope(Envelopes.transform(bbox,
-                        DefaultGeographicCRS.WGS84));
+                        CommonCRS.defaultGeographic()));
             }
         } catch (TransformException ex) {
             throw new AssertionError("Failed to create CRS84 box from envelope in source CRS: "
@@ -270,11 +270,10 @@ public class OpenSearchGeoTests extends CommonFixture {
                 continue; // ignore non-XML media types
             }
             URI uri = OpenSearchTemplateUtils.buildRequestURI(url, values);
-            request = ClientUtils.buildGetRequest(uri, null,
+            response = ClientUtils.buildGetRequest(uri, null,
                     MediaType.valueOf(mediaType));
-            response = this.client.handle(request);
             Assert.assertEquals(response.getStatus(),
-                    ClientResponse.Status.OK.getStatusCode(),
+                    Response.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
             Document entity = getResponseEntityAsDocument(response, null);
             ETSAssert.assertEnvelopeIntersectsBoundingBoxes(bbox,

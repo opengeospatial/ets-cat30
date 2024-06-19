@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.basic;
 
-import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -10,11 +9,12 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Validator;
+
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -34,6 +34,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Provides tests that apply to the <code>GetRecordById</code> request. This
@@ -136,11 +139,10 @@ public class GetRecordByIdTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.ID, "urn:example:" + System.currentTimeMillis());
-        request = ClientUtils.buildGetRequest(this.getURI,
+        response = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.NOT_FOUND.getStatusCode(),
+                Response.Status.NOT_FOUND.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
     }
 
@@ -162,11 +164,10 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        request = ClientUtils.buildGetRequest(this.getURI,
+        response = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         String expr = String.format("/csw:SummaryRecord/dc:identifier = '%s'",
@@ -191,11 +192,10 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        request = ClientUtils.buildGetRequest(this.getURI,
+        response = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         String expr = String.format("/csw:BriefRecord/dc:identifier = '%s'",
@@ -222,11 +222,10 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        request = ClientUtils.buildGetRequest(this.getURI,
+        response = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         String expr = String.format("/csw:Record/dc:identifier = '%s'",
@@ -276,11 +275,10 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        request = buildGetRequest(this.getURI, qryParams,
+        response = buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = getResponseEntityAsDocument(response, null);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
@@ -319,11 +317,10 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        request = ClientUtils.buildGetRequest(this.getURI, qryParams,
+        response = ClientUtils.buildGetRequest(this.getURI, qryParams,
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         Map<String, String> nsBindings = Collections.singletonMap(Namespaces.ATOM, "atom");
@@ -351,9 +348,8 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        request = ClientUtils.buildGetRequest(this.getURI,
+        response = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.OUTPUT_FORMAT);
     }
@@ -377,9 +373,8 @@ public class GetRecordByIdTests extends CommonFixture {
         int randomIndex = ThreadLocalRandom.current().nextInt(this.idList.size());
         String id = this.idList.get(randomIndex);
         qryParams.put(CAT3.ID, id);
-        request = ClientUtils.buildGetRequest(this.getURI,
+        response = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.OUTPUT_SCHEMA);
     }
@@ -398,9 +393,8 @@ public class GetRecordByIdTests extends CommonFixture {
         qryParams.put(CAT3.REQUEST, CAT3.GET_RECORD_BY_ID);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.VERSION, CAT3.VERSION_3_0_0);
-        request = ClientUtils.buildGetRequest(this.getURI,
+        response = ClientUtils.buildGetRequest(this.getURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.MISSING_PARAM_VAL, CAT3.ID);
     }
 }

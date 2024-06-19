@@ -1,6 +1,7 @@
 package org.opengis.cite.cat30.opensearch;
 
 import java.util.Objects;
+
 import javax.xml.namespace.QName;
 
 /**

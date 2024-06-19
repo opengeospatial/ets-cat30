@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.opensearch;
 
-import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -8,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
+
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -34,6 +34,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Verifies behavior of the SUT when processing queries that contain one or more
@@ -152,11 +155,10 @@ public class OpenSearchCoreTests extends CommonFixture {
 			}
 			URI targetURI = OpenSearchTemplateUtils.buildRequestURI(urlElem,
 					values);
-			request = ClientUtils.buildGetRequest(targetURI, null,
+			response = ClientUtils.buildGetRequest(targetURI, null,
 					MediaType.valueOf(mediaType));
-			response = this.client.handle(request);
 			Assert.assertEquals(response.getStatus(),
-					ClientResponse.Status.OK.getStatusCode(),
+					Response.Status.OK.getStatusCode(),
 					ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 			Document entity = getResponseEntityAsDocument(response, null);
 			ETSAssert.assertEmptyResultSet(entity);
@@ -189,7 +191,7 @@ public class OpenSearchCoreTests extends CommonFixture {
 				continue; // skip query if it produces non-XML results
 			}
 			Assert.assertEquals(response.getStatus(),
-					ClientResponse.Status.OK.getStatusCode(),
+					Response.Status.OK.getStatusCode(),
 					ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 			Assert.assertTrue(records.getLength() > 0, ErrorMessage.format(
 					ErrorMessageKeys.EMPTY_RESULT_SET,
@@ -232,7 +234,7 @@ public class OpenSearchCoreTests extends CommonFixture {
 				continue; // skip query if it produces non-XML results
 			}
 			Assert.assertEquals(response.getStatus(),
-					ClientResponse.Status.OK.getStatusCode(),
+					Response.Status.OK.getStatusCode(),
 					ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 			Assert.assertTrue(records.getLength() > 0, ErrorMessage.format(
 					ErrorMessageKeys.EMPTY_RESULT_SET,
@@ -278,7 +280,7 @@ public class OpenSearchCoreTests extends CommonFixture {
 				continue; // skip if query produces non-XML results
 			}
 			Assert.assertEquals(response.getStatus(),
-					ClientResponse.Status.OK.getStatusCode(),
+					Response.Status.OK.getStatusCode(),
 					ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 			Assert.assertTrue(records.getLength() > 0,
 					ErrorMessage.get(ErrorMessageKeys.EMPTY_RESULT_SET));
@@ -366,7 +368,7 @@ public class OpenSearchCoreTests extends CommonFixture {
 					continue; // skip query if it produces non-XML results
 				}
 				Assert.assertEquals(response.getStatus(),
-						ClientResponse.Status.OK.getStatusCode(),
+						Response.Status.OK.getStatusCode(),
 						ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
 				Assert.assertTrue(records.getLength() > 0,
 						ErrorMessage.format(ErrorMessageKeys.EMPTY_RESULT_SET,
@@ -397,9 +399,8 @@ public class OpenSearchCoreTests extends CommonFixture {
 		URI targetURI = OpenSearchTemplateUtils.buildRequestURI(qryTemplate,
 				parameters);
 		TestSuiteLogger.log(Level.FINE, "invokeQuery target URI: " + targetURI);
-		request = ClientUtils.buildGetRequest(targetURI, null,
+		response = ClientUtils.buildGetRequest(targetURI, null,
 				MediaType.valueOf(mediaType));
-		response = this.client.handle(request);
 		Document entity = getResponseEntityAsDocument(response, null);
 		QName recordName = Records.getRecordName(mediaType);
 		NodeList records = entity.getElementsByTagNameNS(

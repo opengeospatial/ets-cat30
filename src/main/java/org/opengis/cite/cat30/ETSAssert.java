@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30;
 
-import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -19,8 +19,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmValue;
+
 import org.opengis.cite.cat30.util.NamespaceBindings;
 import org.opengis.cite.cat30.util.Records;
 import org.opengis.cite.cat30.util.SpatialUtils;
@@ -38,6 +37,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import jakarta.ws.rs.core.Response;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
  * Provides a set of custom assertion methods.
@@ -197,19 +200,19 @@ public class ETSAssert {
      * locator attribute (e.g. a parameter name); the attribute value will be
      * ignored if the argument is null or empty.
      */
-    public static void assertExceptionReport(ClientResponse rsp,
+    public static void assertExceptionReport(Response rsp,
             String exceptionCode, String locator) {
         Assert.assertEquals(rsp.getStatus(),
-                ClientResponse.Status.BAD_REQUEST.getStatusCode(),
+                Response.Status.BAD_REQUEST.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Document doc = null;
         try {
-            doc = rsp.getEntity(Document.class);
+            doc = rsp.readEntity(Document.class);
         } catch (RuntimeException ex) {
             StringBuilder msg = new StringBuilder();
             msg.append("Failed to parse response entity. ");
             msg.append(ex.getMessage()).append('\n');
-            byte[] body = rsp.getEntity(byte[].class);
+            byte[] body = rsp.readEntity(byte[].class);
             msg.append(new String(body, StandardCharsets.US_ASCII));
             throw new AssertionError(msg);
         }

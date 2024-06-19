@@ -1,35 +1,32 @@
 package org.opengis.cite.cat30.util;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
-import java.net.URL;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
-import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.net.URI;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.opengis.cite.cat30.ReusableEntityFilter;
 import org.w3c.dom.Document;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+
 /**
  * Provides various utility methods for creating and configuring HTTP client
- * components using the JAX-RS Client API.
+ * components.
  */
 public class ClientUtils {
 
@@ -42,14 +39,12 @@ public class ClientUtils {
      * @return A Client component.
      */
     public static Client buildClient() {
-        ClientConfig config = new DefaultClientConfig();
-        config.getProperties().put(
-                ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
-        config.getProperties().put(
-                ClientConfig.PROPERTY_CONNECT_TIMEOUT, 10000);
-        Client client = Client.create(config);
-        client.addFilter(new ReusableEntityFilter());
-        client.addFilter(new LoggingFilter());
+        ClientConfig config = new ClientConfig();
+        config.property(ClientProperties.FOLLOW_REDIRECTS, true);
+        config.property(ClientProperties.CONNECT_TIMEOUT, 10000);
+        Client client = ClientBuilder.newClient(config);
+        client.register(new LoggingFilter());
+        client.register(new ReusableEntityFilter());
         return client;
     }
 
@@ -65,20 +60,15 @@ public class ClientUtils {
      */
     public static Client buildClientWithProxy(final String proxyHost,
             final int proxyPort) {
-        ClientConfig config = new DefaultClientConfig();
-        config.getProperties().put(
-                ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
-        Client client = new Client(new URLConnectionClientHandler(
-                new HttpURLConnectionFactory() {
-                    SocketAddress addr = new InetSocketAddress(proxyHost, proxyPort);
-                    Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
-
-                    @Override
-                    public HttpURLConnection getHttpURLConnection(URL url) throws IOException {
-                        return (HttpURLConnection) url.openConnection(proxy);
-                    }
-                }), config);
-        client.addFilter(new LoggingFilter());
+        ClientConfig config = new ClientConfig();
+        config.connectorProvider(new ApacheConnectorProvider());
+        SocketAddress addr = new InetSocketAddress(proxyHost, proxyPort);
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+        config.property(ClientProperties.PROXY_URI, proxy);
+        config.property(ClientProperties.FOLLOW_REDIRECTS, true);
+        Client client = ClientBuilder.newClient(config);
+        client.register(new LoggingFilter());
+        client.register(new ReusableEntityFilter());
         return client;
     }
 
@@ -92,7 +82,7 @@ public class ClientUtils {
      *
      * @return A ClientRequest object.
      */
-    public static ClientRequest buildGetRequest(URI endpoint,
+    public static Response buildGetRequest(URI endpoint,
             Map<String, String> qryParams, MediaType... mediaTypes) {
         UriBuilder uriBuilder = UriBuilder.fromUri(endpoint);
         if (null != qryParams) {
@@ -101,12 +91,13 @@ public class ClientUtils {
             }
         }
         URI uri = uriBuilder.build();
-        ClientRequest.Builder reqBuilder = ClientRequest.create();
+        WebTarget target = buildClient().target(uri);
+        Builder reqBuilder = target.request();
         if (null != mediaTypes && mediaTypes.length > 0) {
             reqBuilder = reqBuilder.accept(mediaTypes);
         }
-        ClientRequest req = reqBuilder.build(uri, HttpMethod.GET);
-        return req;
+        Invocation req = reqBuilder.buildGet();
+        return req.invoke();
     }
 
     /**
@@ -127,33 +118,15 @@ public class ClientUtils {
      * @param response A representation of an HTTP response message.
      * @param targetURI The target URI from which the entity was retrieved (may
      * be null).
-     * @return A Source to read the entity from, or null if the entity cannot be
-     * processed for some reason; its system identifier is set using the given
-     * targetURI value (this may be used to resolve any relative URIs found in
-     * the source).
+     * @return A Source to read the entity from; its system identifier is set
+     * using the given targetURI value (this may be used to resolve any relative
+     * URIs found in the source).
      */
-    public static Source getResponseEntityAsSource(ClientResponse response,
+    public static Source getResponseEntityAsSource(Response response,
             String targetURI) {
-        Source source = null;
-        try {
-            source = response.getEntity(DOMSource.class);
-        } catch (RuntimeException rex) {
-            Logger.getLogger(ClientUtils.class.getName()).log(Level.WARNING,
-                    "Failed to process response entity ({0}). {1}",
-                    new Object[]{response.getType(), rex.getMessage()});
-            return null;
-        }
+        Source source = response.readEntity(DOMSource.class);
         if (null != targetURI && !targetURI.isEmpty()) {
             source.setSystemId(targetURI);
-        }
-        if (response.getEntityInputStream().markSupported()) {
-            try {
-                // NOTE: entity was buffered by client filter
-                response.getEntityInputStream().reset();
-            } catch (IOException ex) {
-                Logger.getLogger(ClientUtils.class.getName()).log(Level.WARNING,
-                        "Failed to reset response entity.", ex);
-            }
         }
         return source;
     }
@@ -165,19 +138,16 @@ public class ClientUtils {
      * @param response A representation of an HTTP response message.
      * @param targetURI The target URI from which the entity was retrieved (may
      * be null).
-     * @return A Document representing the entity, or null if it cannot be
-     * parsed; its base URI is set using the given targetURI value (this may be
-     * used to resolve any relative URIs found in the document).
+     * @return A Document representing the entity; its base URI is set using the
+     * given targetURI value (this may be used to resolve any relative URIs
+     * found in the document).
      */
-    public static Document getResponseEntityAsDocument(ClientResponse response,
+    public static Document getResponseEntityAsDocument(Response response,
             String targetURI) {
-        Source source = getResponseEntityAsSource(response, targetURI);
-        if (null == source) {
-            return null;
-        }
-        DOMSource domSource = DOMSource.class.cast(source);
+        DOMSource domSource = (DOMSource) getResponseEntityAsSource(response,
+                targetURI);
         Document entityDoc = (Document) domSource.getNode();
-        entityDoc.setDocumentURI(targetURI);
+        entityDoc.setDocumentURI(domSource.getSystemId());
         return entityDoc;
     }
 }

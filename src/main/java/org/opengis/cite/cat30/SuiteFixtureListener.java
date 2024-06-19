@@ -1,22 +1,25 @@
 package org.opengis.cite.cat30;
 
-import com.sun.jersey.api.client.Client;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.logging.Level;
+
 import javax.xml.validation.Schema;
+
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.DatasetInfo;
-import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.URIUtils;
 import org.opengis.cite.cat30.util.ValidationUtils;
+import org.opengis.cite.cat30.util.XMLUtils;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import jakarta.ws.rs.client.Client;
 
 /**
  * A listener that performs various tasks before and after a test suite is run,

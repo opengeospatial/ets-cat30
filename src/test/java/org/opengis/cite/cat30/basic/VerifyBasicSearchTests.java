@@ -1,38 +1,38 @@
 package org.opengis.cite.cat30.basic;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.*;
 
 import java.io.IOException;
+import java.net.URI;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
+import javax.xml.xpath.XPathExpressionException;
 
+import org.glassfish.jersey.client.ClientRequest;
+import org.glassfish.jersey.client.ClientResponse;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.util.ValidationUtils;
-import org.testng.ISuite;
-import org.testng.ITestContext;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
-import java.net.URI;
-import javax.xml.xpath.XPathExpressionException;
-import org.mockito.Mockito;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
+import org.testng.ISuite;
+import org.testng.ITestContext;
+import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import jakarta.ws.rs.client.Client;
 
 public class VerifyBasicSearchTests {
 
