@@ -10,7 +10,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.sis.referencing.factory.sql.EPSGFactory;
-import org.geotoolkit.factory.Hints;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.util.FactoryException;
 import org.testng.IExecutionListener;
