@@ -5,6 +5,8 @@ import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -12,6 +14,7 @@ import javax.xml.transform.dom.DOMSource;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.opengis.cite.cat30.ReusableEntityFilter;
 import org.w3c.dom.Document;
 
@@ -30,6 +33,8 @@ import jakarta.ws.rs.core.UriBuilder;
  */
 public class ClientUtils {
 
+    private static final Logger LOGGER = Logger.getLogger(ClientUtils.class.getName());
+    
     /**
      * Builds a client component for interacting with HTTP endpoints. The client
      * will automatically redirect to the URI declared in 3xx responses. The
@@ -42,8 +47,8 @@ public class ClientUtils {
         ClientConfig config = new ClientConfig();
         config.property(ClientProperties.FOLLOW_REDIRECTS, true);
         config.property(ClientProperties.CONNECT_TIMEOUT, 10000);
+        config.register(new LoggingFeature(LOGGER, Level.ALL, LoggingFeature.Verbosity.PAYLOAD_ANY, 5000));
         Client client = ClientBuilder.newClient(config);
-        client.register(new LoggingFilter());
         client.register(new ReusableEntityFilter());
         return client;
     }
@@ -62,12 +67,14 @@ public class ClientUtils {
             final int proxyPort) {
         ClientConfig config = new ClientConfig();
         config.connectorProvider(new ApacheConnectorProvider());
+        config.register(new LoggingFeature(LOGGER, Level.ALL, LoggingFeature.Verbosity.PAYLOAD_ANY, 5000));
         SocketAddress addr = new InetSocketAddress(proxyHost, proxyPort);
         Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
         config.property(ClientProperties.PROXY_URI, proxy);
         config.property(ClientProperties.FOLLOW_REDIRECTS, true);
+        config.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY);
+        config.property(LoggingFeature.LOGGING_FEATURE_LOGGER_LEVEL_CLIENT, Level.ALL);
         Client client = ClientBuilder.newClient(config);
-        client.register(new LoggingFilter());
         client.register(new ReusableEntityFilter());
         return client;
     }
