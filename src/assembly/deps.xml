@@ -12,7 +12,6 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>com.sun.jersey:jersey-client</include>
         <include>org.opengis.cite:schema-utils</include>
       </includes>
       <outputDirectory>/</outputDirectory>
@@ -30,7 +29,6 @@
         <exclude>jakarta.ws.rs:jakarta.ws.rs-api</exclude>
         <exclude>org.testng:testng</exclude>
         <exclude>com.beust:jcommander</exclude>
-        <exclude>com.sun.jersey:jersey-client</exclude>
         <exclude>org.glassfish.jersey.*:*</exclude>
       </excludes>
       <outputDirectory>/</outputDirectory>

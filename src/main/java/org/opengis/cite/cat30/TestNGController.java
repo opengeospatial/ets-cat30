@@ -3,6 +3,7 @@ package org.opengis.cite.cat30;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 
+import org.apache.commons.io.FilenameUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -91,7 +93,14 @@ public class TestNGController implements TestSuiteController {
                     "Unable to load ets.properties. " + ex.getMessage());
         }
         URL tngSuite = TestNGController.class.getResource("testng.xml");
-        File resultsDir = new File(outputDir);
+        File resultsDir;
+        if (null == outputDir || outputDir.isEmpty()) {
+            resultsDir = new File(FilenameUtils.normalize(System.getProperty("user.home")));
+        } else if (outputDir.startsWith("file:")) {
+            resultsDir = new File(URI.create(outputDir));
+        } else {
+            resultsDir = new File(outputDir);
+        }
         TestSuiteLogger.log(Level.CONFIG, "Using TestNG config: " + tngSuite);
         TestSuiteLogger.log(Level.CONFIG,
                 "Using outputDirPath: " + resultsDir.getAbsolutePath());
