@@ -40,7 +40,7 @@ public class VerifyOpenSearchPreconditions {
     @Test
     public void declareOpenSearchUsingDefaultValue() throws SAXException, IOException {
         CSWClient client = mock(CSWClient.class);
-        when(client.getOpenSearchDescription(any(URI.class))).thenReturn(
+        when(client.getOpenSearchDescription(nullable(URI.class))).thenReturn(
                 docBuilder.newDocument());
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/capabilities/basic.xml"));
@@ -53,7 +53,7 @@ public class VerifyOpenSearchPreconditions {
     @Test
     public void declareOpenSearchUsingAllowedValue() throws SAXException, IOException {
         CSWClient client = mock(CSWClient.class);
-        when(client.getOpenSearchDescription(any(URI.class))).thenReturn(
+        when(client.getOpenSearchDescription(nullable(URI.class))).thenReturn(
                 docBuilder.newDocument());
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/capabilities/pycsw-cite.xml"));

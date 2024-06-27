@@ -1,6 +1,5 @@
 package org.opengis.cite.cat30.basic;
 
-import com.sun.jersey.api.client.Client;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,46 +14,42 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.opengis.cite.cat30.SuiteAttribute;
+import org.opengis.cite.cat30.TestCommon;
 import org.opengis.cite.cat30.util.ValidationUtils;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.sun.jersey.api.client.ClientHandlerException;
+import jakarta.ws.rs.client.Client;
 
-public class VerifyGetCapabilitiesTests {
+public class VerifyGetCapabilitiesTests extends TestCommon {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     private static final String SUBJ = SuiteAttribute.TEST_SUBJECT.getName();
     private static DocumentBuilder docBuilder;
     private static ITestContext testContext;
-    private static ISuite suite;
     private static Schema cswSchema;
     private static Schema atomSchema;
-    private static Client client;
 
     @BeforeClass
     public static void initCommonFixture() throws Exception {
         testContext = mock(ITestContext.class);
-        suite = mock(ISuite.class);
         when(testContext.getSuite()).thenReturn(suite);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         docBuilder = dbf.newDocumentBuilder();
         cswSchema = ValidationUtils.createCSWSchema();
         atomSchema = ValidationUtils.createAtomSchema();
-        client = Client.create();
-        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
-                .thenReturn(client);
     }
 
     @Test
     public void getFullCapabilities_noService() throws SAXException,
             IOException {
-        thrown.expect(ClientHandlerException.class);
         thrown.expectMessage("Connection refused");
+        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
+        .thenReturn(client);
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/capabilities/basic.xml"));
         when(suite.getAttribute(SUBJ)).thenReturn(doc);

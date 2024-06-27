@@ -1,25 +1,29 @@
 package org.opengis.cite.cat30.basic;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.glassfish.jersey.client.ClientRequest;
-import org.glassfish.jersey.client.ClientResponse;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.opengis.cite.cat30.SuiteAttribute;
+import org.opengis.cite.cat30.TestCommon;
+import org.opengis.cite.cat30.util.ClientUtils;
 import org.opengis.cite.cat30.util.ValidationUtils;
 import org.opengis.cite.cat30.util.XMLUtils;
 import org.opengis.cite.geomatics.Extents;
@@ -32,22 +36,21 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-public class VerifyBasicSearchTests {
+public class VerifyBasicSearchTests extends TestCommon {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     private static DocumentBuilder docBuilder;
     private static ITestContext testContext;
-    private static ISuite suite;
     private static Schema cswSchema;
     private static Schema atomSchema;
 
     @BeforeClass
     public static void initTestFixture() throws Exception {
-        testContext = mock(ITestContext.class);
-        suite = mock(ISuite.class);
+        testContext = mock(ITestContext.class);        
         when(testContext.getSuite()).thenReturn(suite);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
@@ -66,23 +69,20 @@ public class VerifyBasicSearchTests {
     @Test
     public void getBriefRecordsByBBOX_allIntersect()
             throws SAXException, IOException, FactoryException, TransformException {
-        Client client = mock(Client.class);
-        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
-                .thenReturn(client);
-        ClientResponse rsp = mock(ClientResponse.class);
-        when(client.handle(any(ClientRequest.class))).thenReturn(rsp);
-        when(rsp.getStatus()).thenReturn(
-                ClientResponse.Status.OK.getStatusCode());
+        mockResponse();
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
         BasicSearchTests spy = Mockito.spy(new BasicSearchTests());
-        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
-                any(ClientResponse.class), anyString());
-        spy.initCommonFixture(testContext);
-        // BOX2D(32.5 -117.6, 34 -115) with CRS EPSG:4326
-        spy.setExtent(buildEnvelope(1));
-        spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
-        spy.getBriefRecordsByBBOX();
+        try (MockedStatic<ClientUtils> clientUtils = Mockito.mockStatic(ClientUtils.class)) {
+            clientUtils.when(() -> ClientUtils.buildGetRequest(any(URI.class), any(Map.class), any(MediaType.class)))
+                    .thenReturn(rsp);
+            Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(any(Response.class), nullable(String.class));
+            spy.initCommonFixture(testContext);
+            // BOX2D(32.5 -117.6, 34 -115) with CRS EPSG:4326
+            spy.setExtent(buildEnvelope(1));
+            spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
+            spy.getBriefRecordsByBBOX();
+        }
     }
 
     @Test
@@ -90,23 +90,20 @@ public class VerifyBasicSearchTests {
             throws SAXException, IOException, FactoryException, TransformException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("The envelopes do not intersect");
-        Client client = mock(Client.class);
-        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
-                .thenReturn(client);
-        ClientResponse rsp = mock(ClientResponse.class);
-        when(client.handle(any(ClientRequest.class))).thenReturn(rsp);
-        when(rsp.getStatus()).thenReturn(
-                ClientResponse.Status.OK.getStatusCode());
+        mockResponse();
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
         BasicSearchTests spy = Mockito.spy(new BasicSearchTests());
-        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
-                any(ClientResponse.class), anyString());
-        spy.initCommonFixture(testContext);
-        // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
-        spy.setExtent(buildEnvelope(2));
-        spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
-        spy.getBriefRecordsByBBOX();
+        try (MockedStatic<ClientUtils> clientUtils = Mockito.mockStatic(ClientUtils.class)) {
+            clientUtils.when(() -> ClientUtils.buildGetRequest(any(URI.class), any(Map.class), any(MediaType.class)))
+                    .thenReturn(rsp);
+            Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(any(Response.class), nullable(String.class));
+            spy.initCommonFixture(testContext);
+            // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
+            spy.setExtent(buildEnvelope(2));
+            spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
+            spy.getBriefRecordsByBBOX();
+        }
     }
 
     @Test
@@ -114,23 +111,20 @@ public class VerifyBasicSearchTests {
             throws SAXException, IOException, FactoryException, TransformException {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("The envelopes do not intersect");
-        Client client = mock(Client.class);
-        when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
-                .thenReturn(client);
-        ClientResponse rsp = mock(ClientResponse.class);
-        when(client.handle(any(ClientRequest.class))).thenReturn(rsp);
-        when(rsp.getStatus()).thenReturn(
-                ClientResponse.Status.OK.getStatusCode());
+        mockResponse();
         Document rspEntity = docBuilder.parse(this.getClass().getResourceAsStream(
                 "/rsp/GetRecordsResponse-full.xml"));
         BasicSearchTests spy = Mockito.spy(new BasicSearchTests());
-        Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(
-                any(ClientResponse.class), anyString());
-        spy.initCommonFixture(testContext);
-        // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
-        spy.setExtent(buildEnvelope(2));
-        spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
-        spy.getSummaryRecordsByWGS84BBOX();
+        try (MockedStatic<ClientUtils> clientUtils = Mockito.mockStatic(ClientUtils.class)) {
+            clientUtils.when(() -> ClientUtils.buildGetRequest(any(URI.class), any(Map.class), any(MediaType.class)))
+                    .thenReturn(rsp);
+            Mockito.doReturn(rspEntity).when(spy).getResponseEntityAsDocument(any(Response.class), nullable(String.class));
+            spy.initCommonFixture(testContext);
+            // BOX2D(472944 5363287, 516011 5456383) with CRS EPSG:32610
+            spy.setExtent(buildEnvelope(2));
+            spy.setGetEndpoint(URI.create("http://localhost/csw/v3"));
+            spy.getSummaryRecordsByWGS84BBOX();
+        }
     }
 
     private Envelope buildEnvelope(int id)
