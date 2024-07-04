@@ -10,7 +10,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmValue;
 import org.apache.sis.geometry.Envelopes;
 import org.apache.sis.geometry.GeneralEnvelope;
 import org.apache.sis.referencing.CommonCRS;
@@ -237,9 +239,9 @@ public class BasicSearchTests extends CommonFixture {
 		Envelope bbox = this.geoExtent;
 		try {
 			if (!bbox.getCoordinateReferenceSystem().equals(
-			        CommonCRS.defaultGeographic())) {
+					CommonCRS.WGS84.normalizedGeographic())) {
 				bbox = new GeneralEnvelope(Envelopes.transform(bbox,
-				        CommonCRS.defaultGeographic()));
+						CommonCRS.WGS84.normalizedGeographic()));
 			}
 		} catch (TransformException ex) {
 			throw new RuntimeException("Failed to create WGS84 envelope.", ex);
@@ -511,9 +513,9 @@ public class BasicSearchTests extends CommonFixture {
 		Envelope bbox = this.geoExtent;
 		try {
 			if (!bbox.getCoordinateReferenceSystem().equals(
-			        CommonCRS.defaultGeographic())) {
+					CommonCRS.WGS84.normalizedGeographic())) {
 				bbox = new GeneralEnvelope(Envelopes.transform(bbox,
-				        CommonCRS.defaultGeographic()));
+						CommonCRS.WGS84.normalizedGeographic()));
 			}
 		} catch (TransformException ex) {
 			throw new RuntimeException("Failed to create WGS84 envelope.", ex);

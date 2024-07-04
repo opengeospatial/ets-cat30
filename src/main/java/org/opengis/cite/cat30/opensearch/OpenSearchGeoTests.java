@@ -13,7 +13,6 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-
 import org.apache.sis.geometry.Envelopes;
 import org.apache.sis.geometry.GeneralEnvelope;
 import org.apache.sis.referencing.CommonCRS;
@@ -254,9 +253,9 @@ public class OpenSearchGeoTests extends CommonFixture {
         Envelope bbox = this.geoExtent;
         try {
             if (!bbox.getCoordinateReferenceSystem().equals(
-                    CommonCRS.defaultGeographic())) {
+                    CommonCRS.WGS84.normalizedGeographic())) {
                 bbox = new GeneralEnvelope(Envelopes.transform(bbox,
-                        CommonCRS.defaultGeographic()));
+                        CommonCRS.WGS84.normalizedGeographic()));
             }
         } catch (TransformException ex) {
             throw new AssertionError("Failed to create CRS84 box from envelope in source CRS: "
