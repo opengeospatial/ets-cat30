@@ -1,18 +1,21 @@
 package org.opengis.cite.cat30;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
 import java.net.URI;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.validation.Schema;
+
+import org.glassfish.jersey.client.ClientRequest;
 import org.opengis.cite.cat30.util.ClientUtils;
 import org.testng.ITestContext;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.w3c.dom.Document;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * A supporting base class that sets up a common test fixture. These
@@ -53,7 +56,7 @@ public class CommonFixture {
     /**
      * An HTTP response message.
      */
-    protected ClientResponse response;
+    protected Response response;
 
     /**
      * Initializes the common test fixture with the following objects:
@@ -117,7 +120,7 @@ public class CommonFixture {
      * ClientUtils#getResponseEntityAsDocument(com.sun.jersey.api.client.ClientResponse,
      * java.lang.String)
      */
-    public Document getResponseEntityAsDocument(ClientResponse response,
+    public Document getResponseEntityAsDocument(Response response,
             String targetURI) {
         return ClientUtils.getResponseEntityAsDocument(response, targetURI);
     }
@@ -136,7 +139,7 @@ public class CommonFixture {
      * @see ClientUtils#buildGetRequest(java.net.URI, java.util.Map,
      * javax.ws.rs.core.MediaType...)
      */
-    public ClientRequest buildGetRequest(URI endpoint,
+    public Response buildGetRequest(URI endpoint,
             Map<String, String> qryParams, MediaType... mediaTypes) {
         return ClientUtils.buildGetRequest(endpoint, qryParams, mediaTypes);
     }

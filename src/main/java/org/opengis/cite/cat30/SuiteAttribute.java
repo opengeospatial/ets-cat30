@@ -1,11 +1,13 @@
 package org.opengis.cite.cat30;
 
-import com.sun.jersey.api.client.Client;
 import java.io.File;
-import javax.xml.validation.Schema;
-import org.opengis.cite.cat30.util.DatasetInfo;
 
+import javax.xml.validation.Schema;
+
+import org.opengis.cite.cat30.util.DatasetInfo;
 import org.w3c.dom.Document;
+
+import jakarta.ws.rs.client.Client;
 
 /**
  * An enumerated type defining ISuite attributes that may be set to constitute a

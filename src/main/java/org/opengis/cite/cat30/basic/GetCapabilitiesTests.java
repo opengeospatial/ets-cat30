@@ -1,36 +1,36 @@
 package org.opengis.cite.cat30.basic;
 
 import java.net.URI;
-
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
-import javax.xml.transform.Source;
-import javax.xml.validation.Validator;
-
-import org.opengis.cite.cat30.CAT3;
-import org.opengis.cite.cat30.ETSAssert;
-import org.opengis.cite.cat30.ErrorMessage;
-import org.opengis.cite.cat30.ErrorMessageKeys;
-import org.opengis.cite.cat30.util.ServiceMetadataUtils;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-import org.w3c.dom.Document;
-
-import com.sun.jersey.api.client.ClientResponse;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.validation.Validator;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+
+import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
+import org.opengis.cite.cat30.ETSAssert;
+import org.opengis.cite.cat30.ErrorMessage;
+import org.opengis.cite.cat30.ErrorMessageKeys;
 import org.opengis.cite.cat30.Namespaces;
 import org.opengis.cite.cat30.util.ClientUtils;
+import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.opengis.cite.cat30.util.XMLUtils;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.w3c.dom.Document;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Provides tests pertaining to the <code>GetCapabilities</code> request. This
@@ -97,11 +97,10 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Source source = ClientUtils.getResponseEntityAsSource(response, null);
         Validator validator = this.cswSchema.newValidator();
@@ -121,11 +120,10 @@ public class GetCapabilitiesTests extends CommonFixture {
      */
     @Test(description = "Requirements: 006")
     public void getCapabilitiesFromBaseURL() {
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI, null,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI, null,
                 MediaType.WILDCARD_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Source source = ClientUtils.getResponseEntityAsSource(response, null);
         URL schURL = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
@@ -145,12 +143,11 @@ public class GetCapabilitiesTests extends CommonFixture {
      */
     @Test(description = "Requirements: 007")
     public void getCapabilitiesFromBaseURLAsXML() {
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI, null,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI, null,
                 MediaType.valueOf(MediaType.TEXT_HTML + "; q=0.5"),
                 MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
         Source source = ClientUtils.getResponseEntityAsSource(response, null);
         URL schURL = getClass().getResource(SCHEMATRON_CSW_CAPABILITIES);
@@ -170,9 +167,8 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.put("Request", CAT3.GET_CAPABILITIES);
         qryParams.put("SERVICE", CAT3.SERVICE_TYPE_CODE);
         qryParams.put("acceptversions", CAT3.VERSION_3_0_0);
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         Document doc = ClientUtils.getResponseEntityAsDocument(response, null);
         QName qName = new QName(Namespaces.CSW, "Capabilities");
         ETSAssert.assertQualifiedName(doc.getDocumentElement(), qName);
@@ -194,9 +190,8 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.put(CAT3.REQUEST, "getCapabilities");
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL, CAT3.REQUEST);
     }
 
@@ -213,9 +208,8 @@ public class GetCapabilitiesTests extends CommonFixture {
         Map<String, String> qryParams = new HashMap<>();
         qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.MISSING_PARAM_VAL, CAT3.SERVICE);
     }
 
@@ -236,9 +230,8 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.put(CAT3.REQUEST, CAT3.GET_CAPABILITIES);
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.ACCEPT_VERSIONS, "9999.12.31");
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.APPLICATION_XML_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.VER_NEGOTIATION_FAILED,
                 CAT3.ACCEPT_VERSIONS);
     }
@@ -262,9 +255,8 @@ public class GetCapabilitiesTests extends CommonFixture {
         qryParams.put(CAT3.SERVICE, CAT3.SERVICE_TYPE_CODE);
         qryParams.put(CAT3.ACCEPT_VERSIONS, CAT3.VERSION_3_0_0);
         qryParams.put(CAT3.ACCEPT_FORMATS, "model/x3d+xml");
-        request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+        response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                 qryParams, MediaType.WILDCARD_TYPE);
-        response = this.client.handle(request);
         ETSAssert.assertExceptionReport(response, CAT3.INVALID_PARAM_VAL,
                 CAT3.ACCEPT_FORMATS);
     }
@@ -290,15 +282,14 @@ public class GetCapabilitiesTests extends CommonFixture {
         allowedFormats.add(MediaType.TEXT_XML);
         for (String format : allowedFormats) {
             qryParams.put(CAT3.ACCEPT_FORMATS, format);
-            request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+            response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                     qryParams, MediaType.WILDCARD_TYPE);
-            response = this.client.handle(request);
             Assert.assertEquals(response.getStatus(),
-                    ClientResponse.Status.OK.getStatusCode(),
+                    Response.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
             // ignore media type parameters
-            MediaType mediaType = new MediaType(response.getType().getType(),
-                    response.getType().getSubtype());
+            MediaType mediaType = new MediaType(response.getMediaType().getType(),
+                    response.getMediaType().getSubtype());
             Assert.assertEquals(mediaType,
                     MediaType.valueOf(format),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_MEDIA_TYPE));
@@ -336,11 +327,10 @@ public class GetCapabilitiesTests extends CommonFixture {
         sections.add("All");
         for (String section : sections) {
             qryParams.put(CAT3.SECTIONS, section);
-            request = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
+            response = ClientUtils.buildGetRequest(this.getCapabilitiesURI,
                     qryParams, MediaType.APPLICATION_XML_TYPE);
-            response = this.client.handle(request);
             Assert.assertEquals(response.getStatus(),
-                    ClientResponse.Status.OK.getStatusCode(),
+                    Response.Status.OK.getStatusCode(),
                     ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
             Source source = ClientUtils.getResponseEntityAsSource(response, null);
             if (section.equals("All")) {

@@ -1,8 +1,5 @@
 package org.opengis.cite.cat30;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,11 +14,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 
+import org.apache.commons.io.FilenameUtils;
 import org.opengis.cite.cat30.util.TestSuiteLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.occamlab.te.spi.executors.TestRunExecutor;
 import com.occamlab.te.spi.executors.testng.TestNGExecutor;
 import com.occamlab.te.spi.jaxrs.TestSuiteController;
@@ -93,7 +93,14 @@ public class TestNGController implements TestSuiteController {
                     "Unable to load ets.properties. " + ex.getMessage());
         }
         URL tngSuite = TestNGController.class.getResource("testng.xml");
-        File resultsDir = new File(URI.create(outputDir));
+        File resultsDir;
+        if (null == outputDir || outputDir.isEmpty()) {
+            resultsDir = new File(FilenameUtils.normalize(System.getProperty("user.home")));
+        } else if (outputDir.startsWith("file:")) {
+            resultsDir = new File(URI.create(outputDir));
+        } else {
+            resultsDir = new File(outputDir);
+        }
         TestSuiteLogger.log(Level.CONFIG, "Using TestNG config: " + tngSuite);
         TestSuiteLogger.log(Level.CONFIG,
                 "Using outputDirPath: " + resultsDir.getAbsolutePath());

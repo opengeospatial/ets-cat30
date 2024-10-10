@@ -1,15 +1,14 @@
 package org.opengis.cite.cat30.opensearch;
 
-import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Set;
 import java.util.logging.Level;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.CommonFixture;
 import org.opengis.cite.cat30.ETSAssert;
@@ -29,6 +28,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Verifies the structure and content of the OpenSearch description document
@@ -106,15 +109,14 @@ public class OpenSearchDescriptionTests extends CommonFixture {
     @Test(description = "Requirements: 008; Tests: 008")
     public void preferOpenSearchDescription() {
         String xmlNotPreferred = MediaType.APPLICATION_XML + "; q=0.5";
-        request = ClientUtils.buildGetRequest(this.baseUri, null,
+        response = ClientUtils.buildGetRequest(this.baseUri, null,
                 MediaType.valueOf(xmlNotPreferred),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Assert.assertTrue(XMLUtils.isXML(response.getType()),
-                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getType()));
+        Assert.assertTrue(XMLUtils.isXML(response.getMediaType()),
+                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getMediaType()));
         Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         QName osdDocElemName = new QName(Namespaces.OSD11, "OpenSearchDescription");
         ETSAssert.assertQualifiedName(entity.getDocumentElement(), osdDocElemName);
@@ -133,12 +135,11 @@ public class OpenSearchDescriptionTests extends CommonFixture {
      */
     @Test(description = "Requirements: 021; Tests: 021")
     public void validOpenSearchDescription() throws SAXException, IOException {
-        request = ClientUtils.buildGetRequest(this.baseUri, null,
+        response = ClientUtils.buildGetRequest(this.baseUri, null,
                 MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
-        response = this.client.handle(request);
-        Assert.assertTrue(XMLUtils.isXML(response.getType()),
-                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getType()));
+        Assert.assertTrue(XMLUtils.isXML(response.getMediaType()),
+                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getMediaType()));
         Source entity = ClientUtils.getResponseEntityAsSource(response, null);
         this.osdValidator.validate(entity);
         ValidationErrorHandler err = osdValidator.getErrorHandler();
@@ -172,15 +173,14 @@ public class OpenSearchDescriptionTests extends CommonFixture {
                     ErrorMessageKeys.NAMED_ITEM_NOT_FOUND, OPENSEARCH_CONSTRAINT));
         }
         URI uri = URI.create(values.iterator().next());
-        request = ClientUtils.buildGetRequest(uri, null,
+        response = ClientUtils.buildGetRequest(uri, null,
                 MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
-        response = this.client.handle(request);
         Assert.assertEquals(response.getStatus(),
-                ClientResponse.Status.OK.getStatusCode(),
+                Response.Status.OK.getStatusCode(),
                 ErrorMessage.get(ErrorMessageKeys.UNEXPECTED_STATUS));
-        Assert.assertTrue(XMLUtils.isXML(response.getType()),
-                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getType()));
+        Assert.assertTrue(XMLUtils.isXML(response.getMediaType()),
+                ErrorMessage.format(ErrorMessageKeys.NOT_XML, response.getMediaType()));
         Document entity = ClientUtils.getResponseEntityAsDocument(response, null);
         QName osdDocElemName = new QName(Namespaces.OSD11, "OpenSearchDescription");
         ETSAssert.assertQualifiedName(entity.getDocumentElement(), osdDocElemName);

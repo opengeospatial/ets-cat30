@@ -1,8 +1,5 @@
 package org.opengis.cite.cat30.util;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,11 +9,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
+
 import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.Namespaces;
 import org.w3c.dom.Document;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * A CSW 3.0 client component.
@@ -25,17 +25,9 @@ public class CSWClient {
 
     private static final Logger LOGR = Logger.getLogger(CSWClient.class.getName());
     /**
-     * A JAX-RS client.
-     */
-    private final Client client;
-    /**
      * A Document that describes the service under test (csw:Capabilities).
      */
     private Document cswCapabilities;
-
-    public CSWClient() {
-        this.client = ClientUtils.buildClient();
-    }
 
     public Document getServiceDescription() {
         return cswCapabilities;
@@ -73,13 +65,12 @@ public class CSWClient {
             // default namespace is target namespace of default output schema
             qryParams.put(CAT3.TYPE_NAMES, "Record");
         }
-        ClientRequest req = ClientUtils.buildGetRequest(getRecordsURI, qryParams,
+        Response rsp = ClientUtils.buildGetRequest(getRecordsURI, qryParams,
                 mediaType);
-        ClientResponse rsp = this.client.handle(req);
-        if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
+        if (rsp.getStatus() != Response.Status.OK.getStatusCode()) {
             return null;
         }
-        Document entityDoc = rsp.getEntity(Document.class);
+        Document entityDoc = rsp.readEntity(Document.class);
         File outputFile = null;
         try {
             outputFile = File.createTempFile("records-", ".xml");
@@ -107,13 +98,12 @@ public class CSWClient {
             uri = ServiceMetadataUtils.getOperationEndpoint(
                     this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
         }
-        ClientRequest req = ClientUtils.buildGetRequest(uri, null,
+        Response rsp = ClientUtils.buildGetRequest(uri, null,
                 MediaType.APPLICATION_XML_TYPE);
-        ClientResponse rsp = this.client.handle(req);
         Document capabilitiesDoc = null;
-        if (rsp.getStatus() == ClientResponse.Status.OK.getStatusCode()
-                && XMLUtils.isXML(rsp.getType())) {
-            capabilitiesDoc = rsp.getEntity(Document.class);
+        if (rsp.getStatus() == Response.Status.OK.getStatusCode()
+                && XMLUtils.isXML(rsp.getMediaType())) {
+            capabilitiesDoc = rsp.readEntity(Document.class);
         }
         return capabilitiesDoc;
     }
@@ -146,12 +136,11 @@ public class CSWClient {
             uri = ServiceMetadataUtils.getOperationEndpoint(
                     this.cswCapabilities, CAT3.GET_CAPABILITIES, HttpMethod.GET);
         }
-        ClientRequest req = ClientUtils.buildGetRequest(uri, null,
+        Response rsp = ClientUtils.buildGetRequest(uri, null,
                 MediaType.valueOf(CAT3.APP_VND_OPENSEARCH_XML),
                 MediaType.valueOf(CAT3.APP_OPENSEARCH_XML));
-        ClientResponse rsp = this.client.handle(req);
-        if (rsp.getStatus() != ClientResponse.Status.OK.getStatusCode()
-                || !XMLUtils.isXML(rsp.getType())) {
+        if (rsp.getStatus() != Response.Status.OK.getStatusCode()
+                || !XMLUtils.isXML(rsp.getMediaType())) {
             Set<String> values = ServiceMetadataUtils.getConstraintValues(
                     cswCapabilities, "OpenSearchDescriptionDocument");
             if (null != values && !values.isEmpty()) {
@@ -163,7 +152,7 @@ public class CSWClient {
             LOGR.config(rsp.toString());
             return null;
         }
-        Document entityDoc = rsp.getEntity(Document.class);
+        Document entityDoc = rsp.readEntity(Document.class);
         if (!entityDoc.getDocumentElement().getNamespaceURI().equals(Namespaces.OSD11)) {
             LOGR.config(entityDoc.getDocumentElement().getNodeName());
             return null;
