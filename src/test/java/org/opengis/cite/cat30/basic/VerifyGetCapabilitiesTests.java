@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
 
+import jakarta.ws.rs.ProcessingException;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,12 +17,9 @@ import org.junit.rules.ExpectedException;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.TestCommon;
 import org.opengis.cite.cat30.util.ValidationUtils;
-import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import jakarta.ws.rs.client.Client;
 
 public class VerifyGetCapabilitiesTests extends TestCommon {
 
@@ -44,10 +42,9 @@ public class VerifyGetCapabilitiesTests extends TestCommon {
         atomSchema = ValidationUtils.createAtomSchema();
     }
 
-    @Test
+    @Test(expected = ProcessingException.class)
     public void getFullCapabilities_noService() throws SAXException,
             IOException {
-        thrown.expectMessage("Connection refused");
         when(suite.getAttribute(SuiteAttribute.CLIENT.getName()))
         .thenReturn(client);
         Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
