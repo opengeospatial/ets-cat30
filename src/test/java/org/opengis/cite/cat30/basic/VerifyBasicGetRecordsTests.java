@@ -36,66 +36,67 @@ import jakarta.ws.rs.core.Response;
 
 public class VerifyBasicGetRecordsTests extends TestCommon {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    private static DocumentBuilder docBuilder;
+	private static DocumentBuilder docBuilder;
 
-    private static ITestContext testContext;
+	private static ITestContext testContext;
 
-    private static Schema cswSchema;
+	private static Schema cswSchema;
 
-    private static Schema atomSchema;
-    
-    @BeforeClass
-    public static void initTestFixture()
-                            throws Exception {
-        testContext = mock( ITestContext.class );
-        when( testContext.getSuite() ).thenReturn( suite );
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware( true );
-        docBuilder = dbf.newDocumentBuilder();
-        cswSchema = ValidationUtils.createCSWSchema();
-        when( suite.getAttribute( SuiteAttribute.CSW_SCHEMA.getName() ) ).thenReturn( cswSchema );
-        atomSchema = ValidationUtils.createAtomSchema();
-        when( suite.getAttribute( SuiteAttribute.ATOM_SCHEMA.getName() ) ).thenReturn( atomSchema );
-    }
+	private static Schema atomSchema;
 
-    @Test
-    public void testPresentTitleProperty() throws Exception {
-        Document doc = docBuilder.parse(getClass().getResourceAsStream("/capabilities/basic.xml"));
-        when( suite.getAttribute( SuiteAttribute.TEST_SUBJECT.getName() ) ).thenReturn( doc );
-        mockResponse();
-        Document entity =
-                docBuilder.parse(this.getClass().getResourceAsStream("/getrecords/GetRecords-Summary-Response.xml"));
-        BasicGetRecordsTests spy = Mockito.spy(new BasicGetRecordsTests());
-        spy.setGetEndpoint(new URI("http://test"));
-        try (MockedStatic<ClientUtils> clientUtils = Mockito.mockStatic(ClientUtils.class)) {
-            clientUtils.when(() -> ClientUtils.buildGetRequest(any(URI.class), ArgumentMatchers.<String, String>anyMap(), any(MediaType.class)))
-                    .thenReturn(rsp);
-            Mockito.doReturn(entity).when(spy).getResponseEntityAsDocument(any(Response.class), nullable(String.class));
-            spy.initCommonFixture(testContext);
-            spy.presentTitleProperty();
-        }
-    }
+	@BeforeClass
+	public static void initTestFixture() throws Exception {
+		testContext = mock(ITestContext.class);
+		when(testContext.getSuite()).thenReturn(suite);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		docBuilder = dbf.newDocumentBuilder();
+		cswSchema = ValidationUtils.createCSWSchema();
+		when(suite.getAttribute(SuiteAttribute.CSW_SCHEMA.getName())).thenReturn(cswSchema);
+		atomSchema = ValidationUtils.createAtomSchema();
+		when(suite.getAttribute(SuiteAttribute.ATOM_SCHEMA.getName())).thenReturn(atomSchema);
+	}
 
-    @Test
-    public void testPresentTitleProperty_invalid()
-                            throws Exception {
-        thrown.expect(AssertionError.class);
-        Document doc = docBuilder.parse( getClass().getResourceAsStream( "/capabilities/basic.xml" ) );
-        when( suite.getAttribute( SuiteAttribute.TEST_SUBJECT.getName() ) ).thenReturn( doc );
-        mockResponse();
-        Document entity = docBuilder.parse( this.getClass().getResourceAsStream( "/getrecords/GetRecords-Summary-Response-invalid.xml" ) );
-        BasicGetRecordsTests spy = Mockito.spy( new BasicGetRecordsTests() );
-        spy.setGetEndpoint( new URI( "http://test" ) );        
-        try (MockedStatic<ClientUtils> clientUtils = Mockito.mockStatic(ClientUtils.class)) {
-            clientUtils.when(() -> ClientUtils.buildGetRequest(any(URI.class), any(Map.class), any(MediaType.class)))
-                    .thenReturn(rsp);
-            Mockito.doReturn(entity).when(spy).getResponseEntityAsDocument(any(Response.class), nullable(String.class));
-            spy.initCommonFixture(testContext);
-            spy.presentTitleProperty();
-        }
-    }
+	@Test
+	public void testPresentTitleProperty() throws Exception {
+		Document doc = docBuilder.parse(getClass().getResourceAsStream("/capabilities/basic.xml"));
+		when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
+		mockResponse();
+		Document entity = docBuilder
+			.parse(this.getClass().getResourceAsStream("/getrecords/GetRecords-Summary-Response.xml"));
+		BasicGetRecordsTests spy = Mockito.spy(new BasicGetRecordsTests());
+		spy.setGetEndpoint(new URI("http://test"));
+		try (MockedStatic<ClientUtils> clientUtils = Mockito.mockStatic(ClientUtils.class)) {
+			clientUtils
+				.when(() -> ClientUtils.buildGetRequest(any(URI.class), ArgumentMatchers.<String, String>anyMap(),
+						any(MediaType.class)))
+				.thenReturn(rsp);
+			Mockito.doReturn(entity).when(spy).getResponseEntityAsDocument(any(Response.class), nullable(String.class));
+			spy.initCommonFixture(testContext);
+			spy.presentTitleProperty();
+		}
+	}
+
+	@Test
+	public void testPresentTitleProperty_invalid() throws Exception {
+		thrown.expect(AssertionError.class);
+		Document doc = docBuilder.parse(getClass().getResourceAsStream("/capabilities/basic.xml"));
+		when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(doc);
+		mockResponse();
+		Document entity = docBuilder
+			.parse(this.getClass().getResourceAsStream("/getrecords/GetRecords-Summary-Response-invalid.xml"));
+		BasicGetRecordsTests spy = Mockito.spy(new BasicGetRecordsTests());
+		spy.setGetEndpoint(new URI("http://test"));
+		try (MockedStatic<ClientUtils> clientUtils = Mockito.mockStatic(ClientUtils.class)) {
+			clientUtils.when(() -> ClientUtils.buildGetRequest(any(URI.class), any(Map.class), any(MediaType.class)))
+				.thenReturn(rsp);
+			Mockito.doReturn(entity).when(spy).getResponseEntityAsDocument(any(Response.class), nullable(String.class));
+			spy.initCommonFixture(testContext);
+			spy.presentTitleProperty();
+		}
+	}
 
 }

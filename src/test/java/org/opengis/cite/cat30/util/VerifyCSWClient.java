@@ -22,24 +22,23 @@ import jakarta.ws.rs.core.MediaType;
  */
 public class VerifyCSWClient {
 
-    private static DocumentBuilder docBuilder;
+	private static DocumentBuilder docBuilder;
 
-    @BeforeClass
-    public static void initFixture() throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        docBuilder = dbf.newDocumentBuilder();
-    }
+	@BeforeClass
+	public static void initFixture() throws ParserConfigurationException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		docBuilder = dbf.newDocumentBuilder();
+	}
 
-    @Test
-    @Ignore
-    public void saveFullRecordsAsCsw() throws SAXException, IOException {
-        CSWClient iut = new CSWClient();
-        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/capabilities-pycsw-cite.xml"));
-        iut.setServiceDescription(doc);
-        File file = iut.saveFullRecords(10, MediaType.APPLICATION_XML_TYPE);
-        assertTrue("Response file does not exist: " + file.getAbsolutePath(),
-                file.exists());
-    }
+	@Test
+	@Ignore
+	public void saveFullRecordsAsCsw() throws SAXException, IOException {
+		CSWClient iut = new CSWClient();
+		Document doc = docBuilder.parse(this.getClass().getResourceAsStream("/capabilities-pycsw-cite.xml"));
+		iut.setServiceDescription(doc);
+		File file = iut.saveFullRecords(10, MediaType.APPLICATION_XML_TYPE);
+		assertTrue("Response file does not exist: " + file.getAbsolutePath(), file.exists());
+	}
+
 }

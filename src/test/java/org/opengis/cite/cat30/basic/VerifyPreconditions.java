@@ -29,39 +29,40 @@ import jakarta.ws.rs.core.MediaType;
 
 public class VerifyPreconditions {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-    private static final String SUBJ = SuiteAttribute.TEST_SUBJECT.getName();
-    private static DocumentBuilder docBuilder;
-    private static ITestContext testContext;
-    private static ISuite suite;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @BeforeClass
-    public static void initCommonFixture() throws Exception {
-        testContext = mock(ITestContext.class);
-        suite = mock(ISuite.class);
-        when(testContext.getSuite()).thenReturn(suite);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        docBuilder = dbf.newDocumentBuilder();
-    }
+	private static final String SUBJ = SuiteAttribute.TEST_SUBJECT.getName();
 
-    @Test
-    public void verifyTestSubjectIsNotCapabilitiesDoc() throws SAXException,
-            IOException {
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Document element in unexpected namespace");
-        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/atom/feed.xml"));
-        when(suite.getAttribute(SUBJ)).thenReturn(doc);
-        try (MockedStatic<Reporter> reporter = Mockito.mockStatic(Reporter.class)) {
-            ITestResult testResult = mock(ITestResult.class);
-            reporter.when(() -> Reporter.getCurrentTestResult())
-                    .thenReturn(testResult);
-            when(testResult.getTestContext()).thenReturn(testContext);
-            SuitePreconditions iut = new SuitePreconditions();
-            iut.verifyTestSubject();
-        }
-    }
+	private static DocumentBuilder docBuilder;
+
+	private static ITestContext testContext;
+
+	private static ISuite suite;
+
+	@BeforeClass
+	public static void initCommonFixture() throws Exception {
+		testContext = mock(ITestContext.class);
+		suite = mock(ISuite.class);
+		when(testContext.getSuite()).thenReturn(suite);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		docBuilder = dbf.newDocumentBuilder();
+	}
+
+	@Test
+	public void verifyTestSubjectIsNotCapabilitiesDoc() throws SAXException, IOException {
+		thrown.expect(AssertionError.class);
+		thrown.expectMessage("Document element in unexpected namespace");
+		Document doc = docBuilder.parse(this.getClass().getResourceAsStream("/atom/feed.xml"));
+		when(suite.getAttribute(SUBJ)).thenReturn(doc);
+		try (MockedStatic<Reporter> reporter = Mockito.mockStatic(Reporter.class)) {
+			ITestResult testResult = mock(ITestResult.class);
+			reporter.when(() -> Reporter.getCurrentTestResult()).thenReturn(testResult);
+			when(testResult.getTestContext()).thenReturn(testContext);
+			SuitePreconditions iut = new SuitePreconditions();
+			iut.verifyTestSubject();
+		}
+	}
 
 }

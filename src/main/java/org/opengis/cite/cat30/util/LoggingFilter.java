@@ -9,15 +9,16 @@ import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 
 public class LoggingFilter implements ClientRequestFilter {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(LoggingFilter.class);
 
-    @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
-        Object entity = requestContext.getEntity();
-        if(entity == null) {
-            return;
-        }
-        LOG.info(entity.toString());
-    }
+	private static final Logger LOG = LoggerFactory.getLogger(LoggingFilter.class);
+
+	@Override
+	public void filter(ClientRequestContext requestContext) throws IOException {
+		Object entity = requestContext.getEntity();
+		if (entity == null) {
+			return;
+		}
+		LOG.info(entity.toString());
+	}
+
 }
