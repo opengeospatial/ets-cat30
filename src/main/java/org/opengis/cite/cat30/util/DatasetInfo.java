@@ -37,6 +37,11 @@ public class DatasetInfo {
 
 	private List<String> topics;
 
+	/**
+	 * <p>Constructor for DatasetInfo.</p>
+	 *
+	 * @param dataFile a {@link java.io.File} object
+	 */
 	public DatasetInfo(File dataFile) {
 		if (!dataFile.isFile()) {
 			throw new IllegalArgumentException("Data file does not exist at " + dataFile.getAbsolutePath());
@@ -51,6 +56,7 @@ public class DatasetInfo {
 
 	/**
 	 * Returns the file containing the sample data.
+	 *
 	 * @return A File object representing a normal file.
 	 */
 	public File getDataFile() {
@@ -61,6 +67,7 @@ public class DatasetInfo {
 	 * Returns an Envelope representing the total geographic extent of the sample data.
 	 * The bounding boxes (ows:BoundingBox or ows:WGS84BoundingBox) for each record are
 	 * coalesced to determine the overall extent.
+	 *
 	 * @return An Envelope in some supported CRS.
 	 */
 	public Envelope getGeographicExtent() {
@@ -72,6 +79,7 @@ public class DatasetInfo {
 
 	/**
 	 * Returns a sequence of record identifiers (dc:identifier) found in the sample data.
+	 *
 	 * @return A List containing all element values.
 	 */
 	public List<String> getRecordIdentifiers() {
@@ -84,6 +92,7 @@ public class DatasetInfo {
 	/**
 	 * Returns a sequence of record titles (dc:title) found in the sample data. At least
 	 * one such element must appear in every record representation.
+	 *
 	 * @return A List containing all element values.
 	 */
 	public List<String> getRecordTitles() {
@@ -97,6 +106,7 @@ public class DatasetInfo {
 	 * Returns a sequence of topic (dc:subject) values found in the sample data. A record
 	 * may contain zero or more subject elements that convey a set of topics (e.g.
 	 * keywords, key phrases, classification codes) that apply to it.
+	 *
 	 * @return A List containing all topic values.
 	 */
 	public List<String> getRecordTopics() {
@@ -109,13 +119,14 @@ public class DatasetInfo {
 	/**
 	 * Finds the (infoset) items in the sample data that satisfy the given XPath (2.0)
 	 * expression.
+	 *
 	 * @param xpath The XPath expression to be evaluated.
 	 * @param nsBindings A collection of namespace bindings required to evaluate the XPath
 	 * expression, where each entry maps a namespace URI (key) to a prefix (value);
 	 * bindings for the standard namespaces are not required.
 	 * @return A sequence of zero or more items, where each item is either an atomic value
 	 * or a node.
-	 * @throws SaxonApiException If the expression cannot be evaluated (this always wraps
+	 * @throws net.sf.saxon.s9api.SaxonApiException If the expression cannot be evaluated (this always wraps
 	 * some other underlying exception).
 	 */
 	public XdmValue findItems(String xpath, Map<String, String> nsBindings) throws SaxonApiException {

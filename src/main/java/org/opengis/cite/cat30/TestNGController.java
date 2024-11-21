@@ -48,8 +48,9 @@ public class TestNGController implements TestSuiteController {
 	 * <pre>
 	 * ets-cat30-${version}-aio.jar [-o|--outputDir $TMPDIR] [test-run-props.xml]
 	 * </pre>
+	 *
 	 * @param args Test run arguments (optional).
-	 * @throws Exception If the test run cannot be executed (usually due to unsatisfied
+	 * @throws java.lang.Exception If the test run cannot be executed (usually due to unsatisfied
 	 * pre-conditions).
 	 */
 	public static void main(String[] args) throws Exception {
@@ -81,6 +82,7 @@ public class TestNGController implements TestSuiteController {
 
 	/**
 	 * Construct a controller that writes results to the given output directory.
+	 *
 	 * @param outputDir The location of the directory in which test results will be
 	 * written. It will be created if it does not exist.
 	 */
@@ -109,21 +111,25 @@ public class TestNGController implements TestSuiteController {
 		this.executor = new TestNGExecutor(tngSuite.toString(), resultsDir.getAbsolutePath(), false);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getCode() {
 		return etsProperties.getProperty("ets-code");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getVersion() {
 		return etsProperties.getProperty("ets-version");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getTitle() {
 		return etsProperties.getProperty("ets-title");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Source doTestRun(Document testRunArgs) throws Exception {
 		validateTestRunArgs(testRunArgs);

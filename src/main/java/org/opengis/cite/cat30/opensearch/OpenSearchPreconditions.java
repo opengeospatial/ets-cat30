@@ -30,6 +30,9 @@ public class OpenSearchPreconditions {
 		this.cswClient = client;
 	}
 
+	/**
+	 * <p>Constructor for OpenSearchPreconditions.</p>
+	 */
 	public OpenSearchPreconditions() {
 		this.cswClient = new CSWClient();
 	}
@@ -60,10 +63,10 @@ public class OpenSearchPreconditions {
 	 * IUT. A representation is expected to be obtained by dereferencing the URI
 	 * corresponding to the GetCapabilities (GET) endpoint. The resulting Document object
 	 * is stored as the value of the suite attribute
-	 * {@link SuiteAttribute#OPENSEARCH_DESCR}.
+	 * {@link org.opengis.cite.cat30.SuiteAttribute#OPENSEARCH_DESCR}.
 	 * </p>
-	 * @param testContext Information about the current test run.
 	 *
+	 * @param testContext Information about the current test run.
 	 * @see "OGC 12-176r5, Table 17: Service constraints"
 	 */
 	@BeforeTest

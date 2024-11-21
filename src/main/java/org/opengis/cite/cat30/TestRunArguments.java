@@ -28,10 +28,18 @@ public class TestRunArguments {
 	@Parameter(names = { "-o", "--outputDir" }, description = "Output directory")
 	private String outputDir;
 
+	/**
+	 * <p>Constructor for TestRunArguments.</p>
+	 */
 	public TestRunArguments() {
 		this.xmlProps = new ArrayList<>();
 	}
 
+	/**
+	 * <p>getPropertiesFile.</p>
+	 *
+	 * @return a {@link java.io.File} object
+	 */
 	public File getPropertiesFile() {
 		File fileRef;
 		if (xmlProps.isEmpty()) {
@@ -44,6 +52,11 @@ public class TestRunArguments {
 		return fileRef;
 	}
 
+	/**
+	 * <p>Getter for the field <code>outputDir</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object
+	 */
 	public String getOutputDir() {
 		return (null != outputDir) ? outputDir : System.getProperty("user.home");
 	}

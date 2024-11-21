@@ -30,10 +30,20 @@ public class CSWClient {
 	 */
 	private Document cswCapabilities;
 
+	/**
+	 * <p>getServiceDescription.</p>
+	 *
+	 * @return a {@link org.w3c.dom.Document} object
+	 */
 	public Document getServiceDescription() {
 		return cswCapabilities;
 	}
 
+	/**
+	 * <p>setServiceDescription.</p>
+	 *
+	 * @param capabilities a {@link org.w3c.dom.Document} object
+	 */
 	public void setServiceDescription(Document capabilities) {
 		if (!capabilities.getDocumentElement().getNamespaceURI().equals(Namespaces.CSW)) {
 			throw new IllegalArgumentException("Expected a CSW v3 capabilities document.");
@@ -44,6 +54,7 @@ public class CSWClient {
 	/**
 	 * Submits a GetRecords request and saves the response entity to a (temporary) file.
 	 * The {@value org.opengis.cite.cat30.CAT3#ELEMENT_SET} parameter is set to "full".
+	 *
 	 * @param maxRecords The maximum number of records to retrieve.
 	 * @param mediaType The preferred response media type; this will constitute the value
 	 * of the Accept header field (generic XML or Atom content).
@@ -83,6 +94,7 @@ public class CSWClient {
 
 	/**
 	 * Retrieves a complete capabilities document from the specified endpoint.
+	 *
 	 * @param uri An absolute URI from which the capabilities can be retrieved; if null,
 	 * the endpoint from a known capabilities document (which may differ from the one
 	 * presented by the IUT) is used.
@@ -115,11 +127,11 @@ public class CSWClient {
 	 * An alternative endpoint may be presented in the capabilities document using the
 	 * "OpenSearchDescriptionDocument" constraint.
 	 * </p>
+	 *
 	 * @param uri An absolute URI from which the OpenSearch description can be retrieved;
 	 * if null, the default endpoint is used.
 	 * @return A Document representing an OpenSearch description document, or null if one
 	 * is not available.
-	 *
 	 * @see <a href=
 	 * "http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_description_document"
 	 * target="_blank">OpenSearch description document</a>

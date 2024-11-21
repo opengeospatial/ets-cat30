@@ -112,6 +112,7 @@ public class OpenSearchCoreTests extends CommonFixture {
 	 * Initializes the test fixture. A Document representing an OpenSearch description
 	 * document is obtained from the test context and the URL templates it contains are
 	 * extracted.
+	 *
 	 * @param testContext The test context containing various suite attributes.
 	 */
 	@BeforeClass
@@ -304,6 +305,12 @@ public class OpenSearchCoreTests extends CommonFixture {
 	 * recommended that the document contains at least one query having role="example" in
 	 * order to allow testing or demonstration of the search service.
 	 *
+	 * @see <a target="_blank" href=
+	 * "http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_Query_element"
+	 * >OpenSearch Query element</a>
+	 * @see <a target="_blank" href=
+	 * "http://www.opensearch.org/Documentation/Developer_best_practices_guide" >Developer
+	 * best practices guide</a>
 	 * @see <a target="_blank" href=
 	 * "http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_Query_element"
 	 * >OpenSearch Query element</a>

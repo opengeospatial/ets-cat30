@@ -37,7 +37,6 @@ public class SuitePreconditions {
 	/**
 	 * Verifies that a service capabilities document was supplied as a test run argument
 	 * and that the implementation it describes is available.
-	 * @param testContext Information about the test run.
 	 */
 	@BeforeSuite
 	public void verifyTestSubject() {
@@ -70,14 +69,13 @@ public class SuitePreconditions {
 	 * Fetches records from the IUT using a simple GetRecords request (with no filter
 	 * criteria) and saves the response entity to a temporary file. The resulting
 	 * {@link DatasetInfo DatasetInfo} object is stored as the value of the suite
-	 * attribute {@link SuiteAttribute#DATASET dataset}.
+	 * attribute {@link org.opengis.cite.cat30.SuiteAttribute#DATASET dataset}.
 	 *
 	 * <p>
 	 * The resulting csw:Record (full) representations are inspected in order to construct
 	 * successful service requests (e.g. a GetRecordById request that produces a matching
 	 * record, GetRecords request with a spatial filter).
 	 * </p>
-	 * @param testContext Information about the test run.
 	 */
 	@BeforeSuite
 	public void fetchSampleData() {

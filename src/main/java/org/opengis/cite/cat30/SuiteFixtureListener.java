@@ -36,6 +36,7 @@ import jakarta.ws.rs.client.Client;
  */
 public class SuiteFixtureListener implements ISuiteListener {
 
+	/** {@inheritDoc} */
 	@Override
 	public void onStart(ISuite suite) {
 		processSuiteParameters(suite);
@@ -44,10 +45,11 @@ public class SuiteFixtureListener implements ISuiteListener {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Performs various cleanup tasks when the test run is completed. Any temporary files
 	 * created during the test run are deleted if TestSuiteLogger is enabled at the INFO
 	 * level or higher.
-	 * @param suite The test suite.
 	 */
 	@Override
 	public void onFinish(ISuite suite) {

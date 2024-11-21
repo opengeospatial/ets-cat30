@@ -48,6 +48,7 @@ public class ValidationUtils {
 	 * Creates a resource resolver suitable for locating schemas using an entity catalog.
 	 * In effect, local copies of standard schemas are returned instead of retrieving them
 	 * from external repositories.
+	 *
 	 * @param schemaLanguage A URI that identifies a schema language by namespace name.
 	 * @return A {@code LSResourceResolver} object that is configured to use an OASIS
 	 * entity catalog.
@@ -70,6 +71,7 @@ public class ValidationUtils {
 	 * Constructs a SchematronValidator that will check an XML resource against the rules
 	 * defined in a Schematron schema. An attempt is made to resolve the schema reference
 	 * using an entity catalog; if this fails the reference is used as given.
+	 *
 	 * @param schemaRef A reference to a Schematron schema; this is expected to be a
 	 * relative or absolute URI value, possibly matching the system identifier for some
 	 * entry in an entity catalog.
@@ -104,6 +106,7 @@ public class ValidationUtils {
 	/**
 	 * Extracts a set of XML Schema references from a source XML document. The document
 	 * element is expected to include the standard xsi:schemaLocation attribute.
+	 *
 	 * @param source The source instance to read from; its base URI (systemId) should be
 	 * set.
 	 * @param baseURI An alternative base URI to use if the source does not have a system
@@ -111,7 +114,7 @@ public class ValidationUtils {
 	 * URI used to retrieve the resource; it may be null.
 	 * @return A Set containing absolute URI references that specify the locations of XML
 	 * Schema resources.
-	 * @throws XMLStreamException If an error occurs while reading the source instance.
+	 * @throws javax.xml.stream.XMLStreamException If an error occurs while reading the source instance.
 	 */
 	public static Set<URI> extractSchemaReferences(Source source, String baseURI) throws XMLStreamException {
 		XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -150,6 +153,7 @@ public class ValidationUtils {
 	/**
 	 * Creates a Schema object representing the complete set of constraints defined in the
 	 * CSW 3.0 schema. It incorporates schema components from all relevant namespaces.
+	 *
 	 * @return An immutable Schema object, or <code>null</code> if it cannot be
 	 * constructed.
 	 */
@@ -172,9 +176,9 @@ public class ValidationUtils {
 	 * Creates a Schema object representing the constraints defined in RFC 4287 ("The Atom
 	 * Syndication Format"). Appendix B provides an informative RELAX NG grammar (compact
 	 * syntax); it can be used to validate either a feed or a stand-alone entry element.
+	 *
 	 * @return An immutable Schema object, or <code>null</code> if it cannot be
 	 * constructed.
-	 *
 	 * @see <a target="_blank" href="https://tools.ietf.org/html/rfc4287#appendix-B"> RFC
 	 * 4287, Appendix B</a>
 	 */
@@ -195,9 +199,9 @@ public class ValidationUtils {
 	/**
 	 * Creates a Schema object representing the constraints defined for an OpenSearch
 	 * description document (1.1 Draft 5).
+	 *
 	 * @return An immutable Schema object, or <code>null</code> if it cannot be
 	 * constructed.
-	 *
 	 * @see <a target="_blank" href=
 	 * "http://www.opensearch.org/Specifications/OpenSearch/1.1/Draft_5"> OpenSearch 1.1
 	 * Draft 5</a>

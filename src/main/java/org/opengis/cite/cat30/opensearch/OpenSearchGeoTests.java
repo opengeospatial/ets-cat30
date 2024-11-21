@@ -108,6 +108,7 @@ public class OpenSearchGeoTests extends CommonFixture {
 	 * Initializes the test fixture. A Document representing an OpenSearch description
 	 * document is obtained from the test context and the URL templates it contains are
 	 * extracted.
+	 *
 	 * @param testContext The test context containing various suite attributes.
 	 */
 	@BeforeClass

@@ -39,6 +39,7 @@ public class ClientUtils {
 	 * automatically redirect to the URI declared in 3xx responses. The connection timeout
 	 * is 10 s. Request and response messages may be logged to a JDK logger (in the
 	 * namespace "com.sun.jersey.api.client").
+	 *
 	 * @return A Client component.
 	 */
 	public static Client buildClient() {
@@ -55,6 +56,7 @@ public class ClientUtils {
 	 * Constructs a client component that uses a specified web proxy. Proxy authentication
 	 * is not supported. Configuring the client to use an intercepting proxy can be useful
 	 * when debugging a test.
+	 *
 	 * @param proxyHost The host name or IP address of the proxy server.
 	 * @param proxyPort The port number of the proxy listener.
 	 * @return A Client component that submits requests through a web proxy.
@@ -76,6 +78,7 @@ public class ClientUtils {
 
 	/**
 	 * Builds an HTTP request message that uses the GET method.
+	 *
 	 * @param endpoint A URI indicating the target resource.
 	 * @param qryParams A Map containing query parameters (may be null);
 	 * @param mediaTypes A list of acceptable media types; if not specified, the Accept
@@ -101,6 +104,7 @@ public class ClientUtils {
 
 	/**
 	 * Creates a copy of the given MediaType object but without any parameters.
+	 *
 	 * @param mediaType A MediaType descriptor.
 	 * @return A new (immutable) MediaType object having the same type and subtype.
 	 */
@@ -111,6 +115,7 @@ public class ClientUtils {
 	/**
 	 * Obtains the (XML) response entity as a JAXP Source object and resets the entity
 	 * input stream for subsequent reads.
+	 *
 	 * @param response A representation of an HTTP response message.
 	 * @param targetURI The target URI from which the entity was retrieved (may be null).
 	 * @return A Source to read the entity from; its system identifier is set using the
@@ -128,6 +133,7 @@ public class ClientUtils {
 	/**
 	 * Obtains the (XML) response entity as a DOM Document and resets the entity input
 	 * stream for subsequent reads.
+	 *
 	 * @param response A representation of an HTTP response message.
 	 * @param targetURI The target URI from which the entity was retrieved (may be null).
 	 * @return A Document representing the entity; its base URI is set using the given

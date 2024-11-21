@@ -25,6 +25,7 @@ public class OpenSearchTemplateUtils {
 
 	/**
 	 * Returns the qualified name of the given OpenSearch URL template parameter.
+	 *
 	 * @param param A parameter in a URL template (e.g. "searchTerms", "geo:box?").
 	 * @param contextNode The context node; this is used to perform a namespace lookup if
 	 * necessary.
@@ -47,6 +48,7 @@ public class OpenSearchTemplateUtils {
 	/**
 	 * Filters a list of OpenSearch URL templates to include only those that contain the
 	 * specified parameter.
+	 *
 	 * @param urlTemplates A list of (Element) nodes representing URL templates.
 	 * @param paramName The qualified name of a template parameter.
 	 * @return A new list containing templates with the specified parameter.
@@ -72,6 +74,7 @@ public class OpenSearchTemplateUtils {
 	 * Builds a request URI by processing a URL template according to the given parameter
 	 * substitution values. The default value is used if there is no replacement value for
 	 * a parameter.
+	 *
 	 * @param urlElem An Element node that represents a query endpoint (osd:Url).
 	 * @param values A Map containing replacement values for template parameters.
 	 * @return A URI representing the resulting request URI.
@@ -97,6 +100,7 @@ public class OpenSearchTemplateUtils {
 
 	/**
 	 * Returns the default value of the specified template parameter.
+	 *
 	 * @param paramList A list of TemplateParamInfo objects describing the declared
 	 * template parameters.
 	 * @param paramName The qualified name of a template parameter.
@@ -115,11 +119,11 @@ public class OpenSearchTemplateUtils {
 
 	/**
 	 * Updates the type and default value of a standard OpenSearch parameter.
+	 *
 	 * @param paramInfo A TemplateParamInfo object describing a standard OpenSearch
 	 * parameter.
 	 * @param urlElem An Element node (osd:Url) that defines an OpenSearch request
 	 * containing the parameter.
-	 *
 	 * @see <a target="_blank" href=
 	 * "http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_1.1_parameters">OpenSearch
 	 * 1.1 parameters</a>
@@ -158,6 +162,7 @@ public class OpenSearchTemplateUtils {
 
 	/**
 	 * Extracts the actual parameters from an OpenSearch query specification.
+	 *
 	 * @param query A Node representing an osd:Query element.
 	 * @return A Map containing the query parameters, where the key is the (qualified)
 	 * parameter name.

@@ -23,11 +23,11 @@ public class SpatialUtils {
 	/**
 	 * Creates an Envelope from a simple georss:box element. The coordinate reference
 	 * system is EPSG 4326 (lat,lon axis order).
+	 *
 	 * @param boxNode An Element node (georss:box) containing the coordinates of the lower
 	 * and upper corners.
 	 * @return An Envelope object representing the given spatial extent, or null if it
 	 * cannot be constructed (a runtime exception may have occurred).
-	 *
 	 * @see <a href="http://www.georss.org/simple.html" target="_blank">GeoRSS Simple</a>
 	 */
 	public static Envelope envelopeFromSimpleGeoRSSBox(Node boxNode) {
@@ -50,6 +50,7 @@ public class SpatialUtils {
 
 	/**
 	 * Creates a GML 3.2 envelope from a legacy GML 3.1 representation.
+	 *
 	 * @param oldEnvNode An element node representing a GML 3.1 envelope.
 	 * @return A new gml:Envelope element, or null if the source node is not a GML 3.1
 	 * envelope.

@@ -17,6 +17,7 @@ import jakarta.ws.rs.client.ClientResponseFilter;
  */
 public class ReusableEntityFilter implements ClientResponseFilter {
 
+	/** {@inheritDoc} */
 	@Override
 	public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
 		if (responseContext instanceof ClientResponse) {

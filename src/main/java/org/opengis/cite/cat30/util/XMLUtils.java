@@ -84,6 +84,7 @@ public class XMLUtils {
 	 * Writes the content of a DOM Node to a string. The XML declaration is omitted and
 	 * the character encoding is set to "US-ASCII" (any character outside of this set is
 	 * serialized as a numeric character reference).
+	 *
 	 * @param node The DOM Node to be serialized.
 	 * @return A String representing the content of the given node.
 	 */
@@ -111,6 +112,7 @@ public class XMLUtils {
 	/**
 	 * Writes the content of a DOM Node to a byte stream. An XML declaration is always
 	 * omitted.
+	 *
 	 * @param node The DOM Node to be serialized.
 	 * @param outputStream The destination OutputStream reference.
 	 */
@@ -135,14 +137,15 @@ public class XMLUtils {
 	/**
 	 * Evaluates an XPath 1.0 expression using the given context and returns the result as
 	 * a node set.
+	 *
 	 * @param context The context node.
 	 * @param expr An XPath expression.
 	 * @param namespaceBindings A collection of namespace bindings for the XPath
 	 * expression, where each entry maps a namespace URI (key) to a prefix (value).
 	 * Standard bindings do not need to be declared (see
-	 * {@link NamespaceBindings#withStandardBindings()}.
+	 * {@link org.opengis.cite.cat30.util.NamespaceBindings#withStandardBindings()}.
 	 * @return A NodeList containing nodes that satisfy the expression (it may be empty).
-	 * @throws XPathExpressionException If the expression cannot be evaluated for any
+	 * @throws javax.xml.xpath.XPathExpressionException If the expression cannot be evaluated for any
 	 * reason.
 	 */
 	public static NodeList evaluateXPath(Node context, String expr, Map<String, String> namespaceBindings)
@@ -162,15 +165,16 @@ public class XMLUtils {
 	 * <strong>Note:</strong> The Saxon implementation supports XPath 2.0 expressions when
 	 * using the JAXP XPath APIs (the default implementation will throw an exception).
 	 * </p>
+	 *
 	 * @param context The context item.
 	 * @param expr An XPath expression.
 	 * @param namespaceBindings A collection of namespace bindings for the XPath
 	 * expression, where each entry maps a namespace URI (key) to a prefix (value).
 	 * Standard bindings do not need to be declared (see
-	 * {@link NamespaceBindings#withStandardBindings()}.
-	 * @param returnType The desired return type (as declared in {@link XPathConstants} ).
+	 * {@link org.opengis.cite.cat30.util.NamespaceBindings#withStandardBindings()}.
+	 * @param returnType The desired return type (as declared in {@link javax.xml.xpath.XPathConstants} ).
 	 * @return The result converted to the desired returnType.
-	 * @throws XPathExpressionException If the expression cannot be evaluated for any
+	 * @throws javax.xml.xpath.XPathExpressionException If the expression cannot be evaluated for any
 	 * reason.
 	 */
 	public static Object evaluateXPath(Source context, String expr, Map<String, String> namespaceBindings,
@@ -200,6 +204,7 @@ public class XMLUtils {
 
 	/**
 	 * Evaluates an XPath 2.0 expression using the Saxon s9api interfaces.
+	 *
 	 * @param xmlSource The XML Source.
 	 * @param expr The XPath expression to be evaluated.
 	 * @param nsBindings A collection of namespace bindings required to evaluate the XPath
@@ -208,7 +213,7 @@ public class XMLUtils {
 	 * @return An XdmValue object representing a value in the XDM data model; this is a
 	 * sequence of zero or more items, where each item is either an atomic value or a
 	 * node.
-	 * @throws SaxonApiException If an error occurs while evaluating the expression; this
+	 * @throws net.sf.saxon.s9api.SaxonApiException If an error occurs while evaluating the expression; this
 	 * always wraps some other underlying exception.
 	 */
 	public static XdmValue evaluateXPath2(Source xmlSource, String expr, Map<String, String> nsBindings)
@@ -236,12 +241,13 @@ public class XMLUtils {
 
 	/**
 	 * Evaluates an XQuery 1.0 expression using the Saxon s9api interfaces.
+	 *
 	 * @param source The XML Source.
 	 * @param query The query expression.
 	 * @param nsBindings A collection of namespace bindings required to evaluate the
 	 * query, where each entry maps a namespace URI (key) to a prefix (value).
 	 * @return An XdmValue object representing a value in the XDM data model.
-	 * @throws SaxonApiException If an error occurs while evaluating the query (this
+	 * @throws net.sf.saxon.s9api.SaxonApiException If an error occurs while evaluating the query (this
 	 * always wraps some other underlying exception).
 	 */
 	public static XdmValue evaluateXQuery(Source source, String query, Map<String, String> nsBindings)
@@ -261,7 +267,8 @@ public class XMLUtils {
 
 	/**
 	 * Creates a new Element having the specified qualified name. The element must be
-	 * {@link Document#adoptNode(Node) adopted} when inserted into another Document.
+	 * {@link org.w3c.dom.Document#adoptNode(Node) adopted} when inserted into another Document.
+	 *
 	 * @param qName A QName object.
 	 * @return An Element node (with a Document owner but no parent).
 	 */
@@ -280,6 +287,7 @@ public class XMLUtils {
 	/**
 	 * Returns a List of all descendant Element nodes having the specified [namespace
 	 * name] property. The elements are listed in document order.
+	 *
 	 * @param node The node to search from.
 	 * @param namespaceURI An absolute URI denoting a namespace name.
 	 * @return A List containing elements in the specified namespace; the list is empty if
@@ -302,6 +310,7 @@ public class XMLUtils {
 
 	/**
 	 * Transforms the content of a DOM Node using a specified XSLT stylesheet.
+	 *
 	 * @param xslt A Source object representing a stylesheet (XSLT 1.0 or 2.0).
 	 * @param source A Node representing the XML source. If it is an Element node it will
 	 * be imported into a new DOM Document.
@@ -342,6 +351,7 @@ public class XMLUtils {
 	 * Expands character entity ({@literal  &name;}) and numeric references
 	 * ({@literal &#xhhhh;} or {@literal &dddd;}) that occur within a given string value.
 	 * It may be necessary to do this before processing an XPath expression.
+	 *
 	 * @param value A string representing text content.
 	 * @return A string with all included references expanded.
 	 */
@@ -364,6 +374,7 @@ public class XMLUtils {
 	/**
 	 * Converts a DOMSource object to a StreamSource representing an XML data source. The
 	 * system ID is preserved, allowing relative URIs to be processed.
+	 *
 	 * @param domSource A DOMSource instance.
 	 * @return A StreamSource object for reading the content represented by the original
 	 * DOM tree.
@@ -386,6 +397,7 @@ public class XMLUtils {
 
 	/**
 	 * Returns the name of the document element in the given XML resource.
+	 *
 	 * @param source The Source to read the document from.
 	 * @return The qualified name of the document element, or <code>null</code> if the
 	 * source is not an XML document or it cannot be read for some reason.
@@ -407,6 +419,7 @@ public class XMLUtils {
 
 	/**
 	 * Parses the content of the given Source and returns a DOM Document node.
+	 *
 	 * @param source The Source to read the XML content from.
 	 * @return A Document node representing the XML content.
 	 * @throws javax.xml.transform.TransformerException If the source cannot be parsed for
@@ -425,6 +438,7 @@ public class XMLUtils {
 
 	/**
 	 * Returns a List view of the specified NodeList collection.
+	 *
 	 * @param nodeList An ordered collection of DOM nodes.
 	 * @return A List containing the original sequence of Node objects.
 	 */
@@ -439,9 +453,9 @@ public class XMLUtils {
 	/**
 	 * Writes the content of an XdmValue sequence to a string. Each item in the sequence
 	 * is either an atomic value or a node.
+	 *
 	 * @param value A value in the XDM data model.
 	 * @return A String representing the content of the sequence.
-	 *
 	 * @see <a target="_blank" href=
 	 * "http://www.saxonica.com/html/documentation/javadoc/net/sf/saxon/s9api/XdmValue.html">Saxon
 	 * API: XdmValue</a>
@@ -466,9 +480,9 @@ public class XMLUtils {
 
 	/**
 	 * Determines if the given media type is an XML-based media type.
+	 *
 	 * @param mediaType A MediaType object.
 	 * @return true if the type corresponds to an XML entity; false otherwise.
-	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc7303" target="_blank">RFC 7303: XML
 	 * Media Types</a>
 	 */
@@ -478,6 +492,7 @@ public class XMLUtils {
 
 	/**
 	 * Returns the text content of the nodes in the given list.
+	 *
 	 * @param nodeList A sequence of DOM nodes.
 	 * @return A list of String values, each of which represents the content of a node
 	 * (and its descendants, if any).

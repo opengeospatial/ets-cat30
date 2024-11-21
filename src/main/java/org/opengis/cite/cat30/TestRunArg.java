@@ -11,6 +11,7 @@ public enum TestRunArg {
 	 */
 	IUT;
 
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return name().toLowerCase();
