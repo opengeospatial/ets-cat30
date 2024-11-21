@@ -35,7 +35,6 @@ public class Records {
 	/**
 	 * Generates a random sequence of 5-14 characters in the range [a-z]. Such text is
 	 * very unlikely to match the content of any record fields.
-	 *
 	 * @return A String containing lower case letters (Latin alphabet).
 	 */
 	public static String generateRandomText() {
@@ -51,7 +50,6 @@ public class Records {
 
 	/**
 	 * Gets the identifier of the given record representation.
-	 *
 	 * @param record An Element node representing an entry in a result set (csw:Record or
 	 * atom:entry).
 	 * @return The element name with a record identifier appended (the first identifier if
@@ -72,7 +70,6 @@ public class Records {
 	/**
 	 * Evaluates an XPath (2.0) expression against the sample data and returns the results
 	 * as a list of string values.
-	 *
 	 * @param file A File containing catalog data (csw:GetRecordsResponse).
 	 * @param xpath An XPath expression that is expected to denote a simple record
 	 * property; the namespace prefixes "dc" and "dct" may be used (e.g. //dc:title).
@@ -103,7 +100,6 @@ public class Records {
 	 * Finds matching search terms corresponding to the given record elements. One term is
 	 * selected for each element. If there are no records that contain values for all
 	 * elements, two randomly selected title words are returned instead.
-	 *
 	 * @param dataFile A file containing sample data (csw:Record representations).
 	 * @param elemNames A list of QName objects denoting the qualified names of record
 	 * elements.
@@ -140,7 +136,6 @@ public class Records {
 	/**
 	 * Finds records in the sample data that contain all of the specified child elements
 	 * (some of which may occur more than once).
-	 *
 	 * @param dataFile A file containing sample data (csw:Record representations).
 	 * @param properties A list of QName objects denoting the qualified names of record
 	 * elements.
@@ -180,7 +175,6 @@ public class Records {
 
 	/**
 	 * Returns the name of the catalog record corresponding to the specified media type.
-	 *
 	 * @param mediaType A string identifying a media type.
 	 * @return The qualified name of the element representing a catalog record.
 	 * @see <a href="http://www.iana.org/assignments/media-types/" target="_blank">IANA

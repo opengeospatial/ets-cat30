@@ -34,7 +34,6 @@ public class URIUtils {
 	 * Parses the content of the given URI as an XML document and returns a new DOM
 	 * Document object. Entity reference nodes will not be expanded. XML inclusions
 	 * (xi:include elements) will be processed if present.
-	 *
 	 * @param uriRef An absolute URI specifying the location of an XML resource.
 	 * @return A DOM Document node representing an XML resource.
 	 * @throws org.xml.sax.SAXException If the resource cannot be parsed.
@@ -67,7 +66,6 @@ public class URIUtils {
 	/**
 	 * Dereferences the given URI and stores the resulting resource representation in a
 	 * local file. The file will be located in the default temporary file directory.
-	 *
 	 * @param uriRef An absolute URI specifying the location of some resource.
 	 * @return A File containing the content of the resource; it may be empty if
 	 * resolution failed for any reason.
@@ -137,7 +135,6 @@ public class URIUtils {
 	 * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
 	 * unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
 	 * </pre>
-	 *
 	 * @param str The sequence of characters to be encoded.
 	 * @return A percent-encoded string.
 	 * @see <a target="_blank" href="https://tools.ietf.org/html/rfc3986#section-2.1">RFC

@@ -45,7 +45,6 @@ public class ServiceMetadataUtils {
 	/**
 	 * Extracts a request endpoint from a service capabilities document. If the request
 	 * URI contains a query component it is ignored.
-	 *
 	 * @param cswMetadata A DOM Document node containing service metadata (OGC
 	 * capabilities document).
 	 * @param opName The operation (request) name.
@@ -93,9 +92,8 @@ public class ServiceMetadataUtils {
 	 * description document. Each node in the resulting list will be associated with an
 	 * unmodifiable {@code List<TemplateParamInfo>} containing information about the
 	 * declared template parameters; it can be accessed via
-	 * {@link org.w3c.dom.Node#getUserData(java.lang.String) getUserData} using the key value
-	 * {@link #URL_TEMPLATE_PARAMS}.
-	 *
+	 * {@link org.w3c.dom.Node#getUserData(java.lang.String) getUserData} using the key
+	 * value {@link #URL_TEMPLATE_PARAMS}.
 	 * @param osDescr An OpenSearchDescription document (osd:OpenSearchDescription).
 	 * @return A sequence of Element nodes (os:Url) containing URL templates.
 	 */
@@ -128,7 +126,6 @@ public class ServiceMetadataUtils {
 	/**
 	 * Returns a list of nodes representing queries defined in an OpenSearch description
 	 * document.
-	 *
 	 * @param osDescr An OpenSearchDescription document.
 	 * @param role The (qualified) name of a query role.
 	 * @return A sequence of Element nodes (os:Query) that define specific search
@@ -151,7 +148,6 @@ public class ServiceMetadataUtils {
 	 * Searches a CSW capabilities document for the specified constraint and returns its
 	 * set of allowed values. The default value is returned if present; otherwise the
 	 * complete list of allowed values.
-	 *
 	 * @param cswMetadata A CSW capabilities document.
 	 * @param name The name of the constraint (not case-sensitive).
 	 * @return A set containing the allowed values of the constraint; it will be empty if
@@ -175,7 +171,6 @@ public class ServiceMetadataUtils {
 	 * Searches a CSW capabilities document for the specified request parameter and
 	 * returns its set of allowed values. A service-level parameter value may be
 	 * overridden or supplemented by an operation-specific parameter value.
-	 *
 	 * @param cswMetadata A CSW capabilities document.
 	 * @param reqName The name of a service request; if omitted, the search is restricted
 	 * to service-level parameters.

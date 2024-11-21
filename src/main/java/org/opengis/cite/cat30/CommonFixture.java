@@ -79,7 +79,6 @@ public class CommonFixture {
 	 * {@link org.opengis.cite.cat30.SuiteAttribute#TEST_SUBJECT}, which should evaluate
 	 * to a DOM Document node).</li>
 	 * </ul>
-	 *
 	 * @param testContext The test context that contains all the information for a test
 	 * run, including suite attributes.
 	 */
@@ -107,7 +106,9 @@ public class CommonFixture {
 	}
 
 	/**
-	 * <p>clearMessages.</p>
+	 * <p>
+	 * clearMessages.
+	 * </p>
 	 */
 	@BeforeMethod
 	public void clearMessages() {
@@ -118,7 +119,6 @@ public class CommonFixture {
 	/**
 	 * Obtains the (XML) response entity as a DOM Document. This convenience method wraps
 	 * a static method call to facilitate unit testing (Mockito workaround).
-	 *
 	 * @param response A representation of an HTTP response message.
 	 * @param targetURI The target URI from which the entity was retrieved (may be null).
 	 * @return A Document representing the entity.
@@ -132,7 +132,6 @@ public class CommonFixture {
 	/**
 	 * Builds an HTTP request message that uses the GET method. This convenience method
 	 * wraps a static method call to facilitate unit testing (Mockito workaround).
-	 *
 	 * @param endpoint A URI indicating the target resource.
 	 * @param qryParams A Map containing query parameters (may be null);
 	 * @param mediaTypes A list of acceptable media types; if not specified, generic XML

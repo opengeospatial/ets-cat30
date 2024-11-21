@@ -11,7 +11,9 @@ public class CAT3 {
 	private CAT3() {
 	}
 
-	/** Constant <code>SCHEMA_URI="http://schemas.opengis.net/cat/csw/3.0/"{trunked}</code> */
+	/**
+	 * Constant <code>SCHEMA_URI="http://schemas.opengis.net/cat/csw/3.0/"{trunked}</code>
+	 */
 	public static final String SCHEMA_URI = "http://schemas.opengis.net/cat/csw/3.0/cswAll.xsd";
 
 	/** Constant <code>SERVICE_TYPE_CODE="CSW"</code> */
@@ -139,10 +141,15 @@ public class CAT3 {
 	public static final String PARSING_FAILED = "OperationParsingFailed";
 
 	// media types
-	/** Constant <code>APP_OPENSEARCH_XML="application/opensearchdescription+xml"</code> */
+	/**
+	 * Constant <code>APP_OPENSEARCH_XML="application/opensearchdescription+xml"</code>
+	 */
 	public static final String APP_OPENSEARCH_XML = "application/opensearchdescription+xml";
 
-	/** Constant <code>APP_VND_OPENSEARCH_XML="application/vnd.a9.opensearchdescriptio"{trunked}</code> */
+	/**
+	 * Constant
+	 * <code>APP_VND_OPENSEARCH_XML="application/vnd.a9.opensearchdescriptio"{trunked}</code>
+	 */
 	public static final String APP_VND_OPENSEARCH_XML = "application/vnd.a9.opensearchdescription+xml";
 
 	// conformance classes

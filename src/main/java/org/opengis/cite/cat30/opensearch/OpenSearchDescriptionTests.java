@@ -85,7 +85,6 @@ public class OpenSearchDescriptionTests extends CommonFixture {
 	 * <li>extracting the base GetCapabilities URL (for the GET method binding) from the
 	 * capabilities document</li>
 	 * </ul>
-	 *
 	 * @param testContext The test context containing various suite attributes.
 	 */
 	@BeforeClass
@@ -126,9 +125,9 @@ public class OpenSearchDescriptionTests extends CommonFixture {
 	 * [Test] Validates the OpenSearch description document obtained from the IUT. The
 	 * document is checked against the constraints in the OpenSearch 1.1 draft 5
 	 * specification.
-	 *
 	 * @throws org.xml.sax.SAXException If the document cannot be read.
-	 * @throws java.io.IOException If an I/O error occurs while trying to access the document.
+	 * @throws java.io.IOException If an I/O error occurs while trying to access the
+	 * document.
 	 * @see "[CAT-HTTP], 6.5.6.5: Requirements for an OpenSearch enabled CSW"
 	 */
 	@Test(description = "Requirements: 021; Tests: 021")

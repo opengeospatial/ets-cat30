@@ -108,7 +108,6 @@ public class GetRecordByIdTests extends CommonFixture {
 	/**
 	 * Gets the record identifiers that occur in the sample data obtained from the SUT.
 	 * Each csw:Record element must contain at least one dc:identifier element.
-	 *
 	 * @param testContext The test context containing various suite attributes.
 	 */
 	@BeforeClass

@@ -73,7 +73,6 @@ public class GetCapabilitiesTests extends CommonFixture {
 	/**
 	 * Sets the service capabilities document. This method is intended to facilitate unit
 	 * testing.
-	 *
 	 * @param cswCapabilities A Document node representing a service description
 	 * (csw:Capabilities).
 	 */

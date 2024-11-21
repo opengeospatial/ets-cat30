@@ -9,7 +9,9 @@ import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 
 /**
- * <p>LoggingFilter class.</p>
+ * <p>
+ * LoggingFilter class.
+ * </p>
  *
  */
 public class LoggingFilter implements ClientRequestFilter {

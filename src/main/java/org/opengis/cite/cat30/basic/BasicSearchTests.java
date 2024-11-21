@@ -103,7 +103,6 @@ public class BasicSearchTests extends CommonFixture {
 	/**
 	 * Finds the GET method endpoint for the GetRecords request in the capabilities
 	 * document.
-	 *
 	 * @param testContext The test context containing various suite attributes.
 	 */
 	@BeforeClass
@@ -120,7 +119,6 @@ public class BasicSearchTests extends CommonFixture {
 	 * Each csw:Record element may contain at least one ows:BoundingBox (or
 	 * ows:WGS84BoundingBox) element that describes the spatial coverage of a catalogued
 	 * resource.
-	 *
 	 * @param testContext The test context containing various suite attributes.
 	 */
 	@BeforeClass

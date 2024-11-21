@@ -29,15 +29,18 @@ public class TestRunArguments {
 	private String outputDir;
 
 	/**
-	 * <p>Constructor for TestRunArguments.</p>
+	 * <p>
+	 * Constructor for TestRunArguments.
+	 * </p>
 	 */
 	public TestRunArguments() {
 		this.xmlProps = new ArrayList<>();
 	}
 
 	/**
-	 * <p>getPropertiesFile.</p>
-	 *
+	 * <p>
+	 * getPropertiesFile.
+	 * </p>
 	 * @return a {@link java.io.File} object
 	 */
 	public File getPropertiesFile() {
@@ -53,8 +56,9 @@ public class TestRunArguments {
 	}
 
 	/**
-	 * <p>Getter for the field <code>outputDir</code>.</p>
-	 *
+	 * <p>
+	 * Getter for the field <code>outputDir</code>.
+	 * </p>
 	 * @return a {@link java.lang.String} object
 	 */
 	public String getOutputDir() {

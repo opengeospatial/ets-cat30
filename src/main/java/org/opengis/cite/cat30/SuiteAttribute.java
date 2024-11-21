@@ -55,8 +55,9 @@ public enum SuiteAttribute {
 	}
 
 	/**
-	 * <p>getType.</p>
-	 *
+	 * <p>
+	 * getType.
+	 * </p>
 	 * @return a {@link java.lang.Class} object
 	 */
 	public Class getType() {
@@ -64,8 +65,9 @@ public enum SuiteAttribute {
 	}
 
 	/**
-	 * <p>getName.</p>
-	 *
+	 * <p>
+	 * getName.
+	 * </p>
 	 * @return a {@link java.lang.String} object
 	 */
 	public String getName() {

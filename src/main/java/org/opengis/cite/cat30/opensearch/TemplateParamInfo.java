@@ -33,7 +33,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Constructs a new TemplateParamInfo with the given qualified name.
-	 *
 	 * @param name A QName representing the name of the parameter.
 	 * @param isRequired A boolean value indicating whether or not the parameter is
 	 * required.
@@ -69,7 +68,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Get the default value of the parameter.
-	 *
 	 * @return A instance of the parameter's type, or a zero-length string if it has not
 	 * been set.
 	 */
@@ -79,7 +77,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Set the default value of the parameter.
-	 *
 	 * @param defaultValue A type-compatible value.
 	 */
 	public void setDefaultValue(Object defaultValue) {
@@ -91,7 +88,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Get the data type of the parameter.
-	 *
 	 * @return The parameter type.
 	 */
 	public Class getType() {
@@ -100,7 +96,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Set the data type of the parameter (java.lang.String by default).
-	 *
 	 * @param type The new data type.
 	 */
 	public void setType(Class type) {
@@ -109,7 +104,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Get the value of isRequired
-	 *
 	 * @return the value of isRequired
 	 */
 	public boolean isRequired() {
@@ -118,7 +112,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Set the value of isRequired
-	 *
 	 * @param isRequired new value of isRequired
 	 */
 	public void setIsRequired(boolean isRequired) {
@@ -127,7 +120,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Get the qualified name of the parameter.
-	 *
 	 * @return A QName object specifying a name.
 	 */
 	public QName getName() {
@@ -136,7 +128,6 @@ public class TemplateParamInfo {
 
 	/**
 	 * Set the (qualified) name of the parameter.
-	 *
 	 * @param name A QName object.
 	 */
 	public void setName(QName name) {

@@ -31,7 +31,9 @@ public class OpenSearchPreconditions {
 	}
 
 	/**
-	 * <p>Constructor for OpenSearchPreconditions.</p>
+	 * <p>
+	 * Constructor for OpenSearchPreconditions.
+	 * </p>
 	 */
 	public OpenSearchPreconditions() {
 		this.cswClient = new CSWClient();
@@ -65,7 +67,6 @@ public class OpenSearchPreconditions {
 	 * is stored as the value of the suite attribute
 	 * {@link org.opengis.cite.cat30.SuiteAttribute#OPENSEARCH_DESCR}.
 	 * </p>
-	 *
 	 * @param testContext Information about the current test run.
 	 * @see "OGC 12-176r5, Table 17: Service constraints"
 	 */

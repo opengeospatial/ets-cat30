@@ -48,10 +48,9 @@ public class TestNGController implements TestSuiteController {
 	 * <pre>
 	 * ets-cat30-${version}-aio.jar [-o|--outputDir $TMPDIR] [test-run-props.xml]
 	 * </pre>
-	 *
 	 * @param args Test run arguments (optional).
-	 * @throws java.lang.Exception If the test run cannot be executed (usually due to unsatisfied
-	 * pre-conditions).
+	 * @throws java.lang.Exception If the test run cannot be executed (usually due to
+	 * unsatisfied pre-conditions).
 	 */
 	public static void main(String[] args) throws Exception {
 		TestRunArguments testRunArgs = new TestRunArguments();
@@ -82,7 +81,6 @@ public class TestNGController implements TestSuiteController {
 
 	/**
 	 * Construct a controller that writes results to the given output directory.
-	 *
 	 * @param outputDir The location of the directory in which test results will be
 	 * written. It will be created if it does not exist.
 	 */

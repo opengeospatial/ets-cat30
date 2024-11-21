@@ -54,7 +54,6 @@ public class ETSAssert {
 
 	/**
 	 * Asserts that the qualified name of a DOM Node matches the expected value.
-	 *
 	 * @param node The Node to check.
 	 * @param qName A QName object containing a namespace name (URI) and a local part.
 	 */
@@ -76,7 +75,6 @@ public class ETSAssert {
 	 * <li>csw: {@value org.opengis.cite.cat30.Namespaces#CSW}</li>
 	 * <li>dc: {@value org.opengis.cite.cat30.Namespaces#DCMES}</li>
 	 * </ul>
-	 *
 	 * @param expr A valid XPath 1.0 expression.
 	 * @param context The context node (Document or Element).
 	 * @param namespaceBindings A collection of namespace bindings for the XPath
@@ -112,7 +110,6 @@ public class ETSAssert {
 
 	/**
 	 * Asserts that an XML resource is schema-valid.
-	 *
 	 * @param validator The Validator to use.
 	 * @param source The XML Source to be validated.
 	 */
@@ -133,7 +130,6 @@ public class ETSAssert {
 	 * Asserts that an XML resource satisfies all applicable constraints specified in a
 	 * Schematron (ISO 19757-3) schema. The "xslt2" query language binding is supported.
 	 * All patterns are checked.
-	 *
 	 * @param schemaRef A URL that denotes the location of a Schematron schema.
 	 * @param xmlSource The XML Source to be validated.
 	 */
@@ -156,7 +152,6 @@ public class ETSAssert {
 	/**
 	 * Asserts that the given XML entity contains the expected number of descendant
 	 * elements having the specified name.
-	 *
 	 * @param xmlEntity A Document representing an XML entity.
 	 * @param elementName The qualified name of the element.
 	 * @param expectedCount The expected number of occurrences.
@@ -176,7 +171,6 @@ public class ETSAssert {
 	 * <li>[local name] = "ExceptionReport"</li>
 	 * <li>[namespace name] = "http://www.opengis.net/ows/2.0"</li>
 	 * </ul>
-	 *
 	 * @param rsp A ClientResponse object representing an HTTP response message.
 	 * @param exceptionCode The expected OGC exception code.
 	 * @param locator A case-insensitive string value expected to occur in the locator
@@ -223,7 +217,6 @@ public class ETSAssert {
 	 * <li>georss:box (EPSG 4326)</li>
 	 * <li>georss:where/{http://www.opengis.net/gml}Envelope</li>
 	 * </ul>
-	 *
 	 * @param bbox An envelope specifying a spatial extent in some CRS.
 	 * @param results A Source object for reading the query results (the document element
 	 * is typically csw:GetRecordsResponse or atom:feed).
@@ -267,7 +260,6 @@ public class ETSAssert {
 
 	/**
 	 * Asserts that the given response entity includes no search results.
-	 *
 	 * @param entity A Document representing a search response (atom:feed,
 	 * csw:GetRecordsResponse, or rss).
 	 */
@@ -297,7 +289,6 @@ public class ETSAssert {
 	 * Asserts that the given search terms all occur in the content of each record in the
 	 * given collection. The context includes the text content of all child elements and
 	 * their attributes. The comparison is not case-sensitive.
-	 *
 	 * @param recordList A list of nodes representing catalog records (csw:Record or
 	 * atom:entry).
 	 * @param searchTerms A list of search terms.
