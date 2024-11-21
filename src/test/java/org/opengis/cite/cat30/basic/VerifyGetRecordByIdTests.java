@@ -1,7 +1,6 @@
 package org.opengis.cite.cat30.basic;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.HttpMethod;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
@@ -24,11 +22,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.opengis.cite.cat30.CAT3;
 import org.opengis.cite.cat30.SuiteAttribute;
 import org.opengis.cite.cat30.TestCommon;
 import org.opengis.cite.cat30.util.ClientUtils;
-import org.opengis.cite.cat30.util.ServiceMetadataUtils;
 import org.opengis.cite.cat30.util.ValidationUtils;
 import org.testng.ITestContext;
 import org.w3c.dom.Document;

@@ -9,19 +9,22 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.core.MediaType;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
+import org.opengis.cite.cat30.Namespaces;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import jakarta.ws.rs.core.MediaType;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
-import org.opengis.cite.cat30.Namespaces;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * This class contains various utility methods for querying or reading representations of
