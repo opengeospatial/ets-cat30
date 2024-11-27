@@ -313,12 +313,6 @@ public class OpenSearchCoreTests extends CommonFixture {
 	 * @see <a target="_blank" href=
 	 * "http://www.opensearch.org/Documentation/Developer_best_practices_guide" >Developer
 	 * best practices guide</a>
-	 * @see <a target="_blank" href=
-	 * "http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_Query_element"
-	 * >OpenSearch Query element</a>
-	 * @see <a target="_blank" href=
-	 * "http://www.opensearch.org/Documentation/Developer_best_practices_guide" >Developer
-	 * best practices guide</a>
 	 */
 	@Test(description = "OpenSearchDescription: Query element")
 	public void executeExampleQueries() {
