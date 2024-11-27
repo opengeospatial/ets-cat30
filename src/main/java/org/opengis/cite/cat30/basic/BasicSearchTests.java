@@ -92,10 +92,16 @@ public class BasicSearchTests extends CommonFixture {
 	 */
 	private List<String> recordTopics;
 
+	/**
+	 * @param extent
+	 */
 	void setExtent(Envelope extent) {
 		this.geoExtent = extent;
 	}
 
+	/**
+	 * @param uri
+	 */
 	void setGetEndpoint(URI uri) {
 		this.getURI = uri;
 	}

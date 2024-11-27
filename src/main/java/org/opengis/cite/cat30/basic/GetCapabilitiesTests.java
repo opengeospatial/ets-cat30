@@ -86,7 +86,7 @@ public class GetCapabilitiesTests extends CommonFixture {
 	 * request.
 	 * <p>
 	 * The <code>Accept</code> request header expresses a preference for a representation
-	 * of type {@value javax.ws.rs.core.MediaType#APPLICATION_XML}.
+	 * of type {@value jakarta.ws.rs.core.MediaType#APPLICATION_XML}.
 	 * </p>
 	 *
 	 * @see "OGC 06-121r9, 7.2.1: GetCapabilities request parameters"

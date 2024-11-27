@@ -68,6 +68,9 @@ public class BasicGetRecordsTests extends CommonFixture {
 	 */
 	private DatasetInfo datasetInfo;
 
+	/**
+	 * @param uri
+	 */
 	void setGetEndpoint(URI uri) {
 		this.getURI = uri;
 	}

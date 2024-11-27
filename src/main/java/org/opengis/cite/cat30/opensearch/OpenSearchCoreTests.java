@@ -104,6 +104,9 @@ public class OpenSearchCoreTests extends CommonFixture {
 	 */
 	private List<String> recordTitles;
 
+	/**
+	 * @param searchTerm
+	 */
 	void setSearchTerm(String searchTerm) {
 		this.searchTerm = searchTerm;
 	}

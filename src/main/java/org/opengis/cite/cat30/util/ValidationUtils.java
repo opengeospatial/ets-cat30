@@ -35,7 +35,14 @@ import org.xml.sax.SAXException;
  */
 public class ValidationUtils {
 
+	/**
+	 * ROOT_PKG
+	 */
 	static final String ROOT_PKG = "/org/opengis/cite/cat30/";
+
+	/**
+	 * FACTORY_RELAXNG_COMPACT
+	 */
 	static final String FACTORY_RELAXNG_COMPACT = "com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory";
 
 	private static final XMLCatalogResolver SCH_RESOLVER = initCatalogResolver();

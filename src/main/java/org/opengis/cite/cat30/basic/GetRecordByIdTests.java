@@ -89,6 +89,9 @@ public class GetRecordByIdTests extends CommonFixture {
 	 */
 	private List<String> idList;
 
+	/**
+	 * @param idList
+	 */
 	void setIdList(List<String> idList) {
 		this.idList = idList;
 	}
