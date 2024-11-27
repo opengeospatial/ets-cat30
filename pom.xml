@@ -7,7 +7,6 @@
     <version>13</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opengis.cite</groupId>
   <artifactId>ets-cat30</artifactId>
   <version>1.5-SNAPSHOT</version>
   <packaging>jar</packaging>
