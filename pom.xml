@@ -4,8 +4,9 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>ets-common</artifactId>
-    <version>13</version>
+    <version>14-SNAPSHOT</version>
   </parent>
+
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ets-cat30</artifactId>
   <version>1.6-SNAPSHOT</version>
@@ -77,24 +78,14 @@
       <artifactId>teamengine-spi</artifactId>
       <exclusions>
         <exclusion>
-          <artifactId>xercesImpl</artifactId>
-          <groupId>xerces</groupId>
-        </exclusion>
-        <exclusion>
-        	<groupId>xml-apis</groupId>
-        	<artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opengis.cite</groupId>
       <artifactId>schema-utils</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>xercesImpl</artifactId>
-          <groupId>xerces</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
@@ -127,12 +118,6 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>jcommander</artifactId>
-          <groupId>com.beust</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opengis</groupId>
