@@ -1,30 +1,68 @@
 package org.opengis.cite.cat30;
 
 /**
- * Defines keys used to access localized messages for assertion errors. The
- * messages are stored in Properties files that are encoded in ISO-8859-1
- * (Latin-1). For some languages the {@code native2ascii} tool must be used to
- * process the files and produce escaped Unicode characters.
+ * Defines keys used to access localized messages for assertion errors. The messages are
+ * stored in Properties files that are encoded in ISO-8859-1 (Latin-1). For some languages
+ * the {@code native2ascii} tool must be used to process the files and produce escaped
+ * Unicode characters.
  */
 public class ErrorMessageKeys {
 
-    public static final String NOT_SCHEMA_VALID = "NotSchemaValid";
-    public static final String EMPTY_STRING = "EmptyString";
-    public static final String XPATH_RESULT = "XPathResult";
-    public static final String NAMESPACE_NAME = "NamespaceName";
-    public static final String LOCAL_NAME = "LocalName";
-    public static final String XML_ERROR = "XMLError";
-    public static final String XPATH_ERROR = "XPathError";
-    public static final String MISSING_INFOSET_ITEM = "MissingInfosetItem";
-    public static final String UNEXPECTED_STATUS = "UnexpectedStatus";
-    public static final String UNEXPECTED_MEDIA_TYPE = "UnexpectedMediaType";
-    public static final String MISSING_ENTITY = "MissingEntity";
-    public static final String EMPTY_RESULT_SET = "EmptyResultSet";
-    public static final String RESULT_SET_SIZE = "ResultSetSize";
-    public static final String ID_NOT_FOUND = "IdNotFound";
-    public static final String NOT_XML = "NotXML";
-    public static final String OPENSEARCH_UNAVAIL = "OpenSearchUnavailable";
-    public static final String NAMED_ITEM_NOT_FOUND = "NamedItemNotFound";
-    public static final String INFOSET_ITEM_VALUE = "InfosetItemValue";
-    public static final String CONSTRAINT_VIOLATION = "ConstraintViolation";
+	/** Constant <code>NOT_SCHEMA_VALID="NotSchemaValid"</code> */
+	public static final String NOT_SCHEMA_VALID = "NotSchemaValid";
+
+	/** Constant <code>EMPTY_STRING="EmptyString"</code> */
+	public static final String EMPTY_STRING = "EmptyString";
+
+	/** Constant <code>XPATH_RESULT="XPathResult"</code> */
+	public static final String XPATH_RESULT = "XPathResult";
+
+	/** Constant <code>NAMESPACE_NAME="NamespaceName"</code> */
+	public static final String NAMESPACE_NAME = "NamespaceName";
+
+	/** Constant <code>LOCAL_NAME="LocalName"</code> */
+	public static final String LOCAL_NAME = "LocalName";
+
+	/** Constant <code>XML_ERROR="XMLError"</code> */
+	public static final String XML_ERROR = "XMLError";
+
+	/** Constant <code>XPATH_ERROR="XPathError"</code> */
+	public static final String XPATH_ERROR = "XPathError";
+
+	/** Constant <code>MISSING_INFOSET_ITEM="MissingInfosetItem"</code> */
+	public static final String MISSING_INFOSET_ITEM = "MissingInfosetItem";
+
+	/** Constant <code>UNEXPECTED_STATUS="UnexpectedStatus"</code> */
+	public static final String UNEXPECTED_STATUS = "UnexpectedStatus";
+
+	/** Constant <code>UNEXPECTED_MEDIA_TYPE="UnexpectedMediaType"</code> */
+	public static final String UNEXPECTED_MEDIA_TYPE = "UnexpectedMediaType";
+
+	/** Constant <code>MISSING_ENTITY="MissingEntity"</code> */
+	public static final String MISSING_ENTITY = "MissingEntity";
+
+	/** Constant <code>EMPTY_RESULT_SET="EmptyResultSet"</code> */
+	public static final String EMPTY_RESULT_SET = "EmptyResultSet";
+
+	/** Constant <code>RESULT_SET_SIZE="ResultSetSize"</code> */
+	public static final String RESULT_SET_SIZE = "ResultSetSize";
+
+	/** Constant <code>ID_NOT_FOUND="IdNotFound"</code> */
+	public static final String ID_NOT_FOUND = "IdNotFound";
+
+	/** Constant <code>NOT_XML="NotXML"</code> */
+	public static final String NOT_XML = "NotXML";
+
+	/** Constant <code>OPENSEARCH_UNAVAIL="OpenSearchUnavailable"</code> */
+	public static final String OPENSEARCH_UNAVAIL = "OpenSearchUnavailable";
+
+	/** Constant <code>NAMED_ITEM_NOT_FOUND="NamedItemNotFound"</code> */
+	public static final String NAMED_ITEM_NOT_FOUND = "NamedItemNotFound";
+
+	/** Constant <code>INFOSET_ITEM_VALUE="InfosetItemValue"</code> */
+	public static final String INFOSET_ITEM_VALUE = "InfosetItemValue";
+
+	/** Constant <code>CONSTRAINT_VIOLATION="ConstraintViolation"</code> */
+	public static final String CONSTRAINT_VIOLATION = "ConstraintViolation";
+
 }

@@ -13,9 +13,14 @@
       <unpack>true</unpack>
       <scope>runtime</scope>
       <excludes>
-        <exclude>com.sun.jersey:jersey-servlet</exclude>
-        <exclude>com.sun.jersey:jersey-server</exclude>
+        <exclude>org.glassfish.jersey.core:jersey-server</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
+  <!-- This merges duplicate files in META-INF/services -->
+  <containerDescriptorHandlers>
+    <containerDescriptorHandler>
+      <handlerName>metaInf-services</handlerName>
+    </containerDescriptorHandler>
+  </containerDescriptorHandlers>
 </assembly>

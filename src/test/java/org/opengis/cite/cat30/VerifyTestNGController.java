@@ -28,43 +28,39 @@ import org.w3c.dom.Document;
  */
 public class VerifyTestNGController {
 
-    private static DocumentBuilder docBuilder;
-    private Properties testRunProps;
+	private static DocumentBuilder docBuilder;
 
-    @BeforeClass
-    public static void initParser() throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        dbf.setValidating(false);
-        dbf.setFeature(
-                "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                false);
-        docBuilder = dbf.newDocumentBuilder();
-    }
+	private Properties testRunProps;
 
-    @Before
-    public void loadDefaultTestRunProperties()
-            throws InvalidPropertiesFormatException, IOException {
-        this.testRunProps = new Properties();
-        this.testRunProps.loadFromXML(getClass().getResourceAsStream(
-                "/test-run-props.xml"));
-    }
+	@BeforeClass
+	public static void initParser() throws ParserConfigurationException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		dbf.setValidating(false);
+		dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		docBuilder = dbf.newDocumentBuilder();
+	}
 
-    @Test
-    public void skipAllTests_sutIsUnavailable() throws Exception {
-        URL testSubject = getClass().getResource("basic-unavailable.xml");
-        this.testRunProps.setProperty(TestRunArg.IUT.toString(), testSubject
-                .toURI().toString());
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream(1024);
-        this.testRunProps.storeToXML(outStream, "Integration test");
-        Document testRunArgs = docBuilder.parse(new ByteArrayInputStream(
-                outStream.toByteArray()));
-        TestNGController controller = new TestNGController();
-        Source source = controller.doTestRun(testRunArgs);
-        String xpathSkipped = "/testng-results/@skipped";
-        XdmValue skipped = XMLUtils.evaluateXPath2(source, xpathSkipped, null);
-        // all tests should have been skipped
-        int numSkipped = Integer.parseInt(skipped.getUnderlyingValue().getStringValue());
-        assertEquals("Unexpected number of fail verdicts.", 52, numSkipped);
-    }
+	@Before
+	public void loadDefaultTestRunProperties() throws InvalidPropertiesFormatException, IOException {
+		this.testRunProps = new Properties();
+		this.testRunProps.loadFromXML(getClass().getResourceAsStream("/test-run-props.xml"));
+	}
+
+	@Test
+	public void skipAllTests_sutIsUnavailable() throws Exception {
+		URL testSubject = this.getClass().getResource("basic-unavailable.xml");
+		this.testRunProps.setProperty(TestRunArg.IUT.toString(), testSubject.toURI().toString());
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream(1024);
+		this.testRunProps.storeToXML(outStream, "Integration test");
+		Document testRunArgs = docBuilder.parse(new ByteArrayInputStream(outStream.toByteArray()));
+		TestNGController controller = new TestNGController();
+		Source source = controller.doTestRun(testRunArgs);
+		String xpathSkipped = "/testng-results/@skipped";
+		XdmValue skipped = XMLUtils.evaluateXPath2(source, xpathSkipped, null);
+		// all tests should have been skipped
+		int numSkipped = Integer.parseInt(skipped.getUnderlyingValue().getStringValue());
+		assertEquals("Unexpected number of fail verdicts.", 52, numSkipped);
+	}
+
 }

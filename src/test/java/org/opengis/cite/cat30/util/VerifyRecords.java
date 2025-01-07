@@ -17,25 +17,26 @@ import org.opengis.cite.cat30.Namespaces;
  */
 public class VerifyRecords {
 
-    public VerifyRecords() {
-    }
+	public VerifyRecords() {
+	}
 
-    @Test
-    public void findRecordsWithSubject() throws URISyntaxException {
-        URL url = getClass().getResource("/rsp/GetRecordsResponse-full.xml");
-        File dataFile = new File(url.toURI());
-        QName subject = new QName(Namespaces.DCMES, "subject");
-        XdmValue results = Records.findRecordsInSampleData(dataFile, subject);
-        assertEquals("Unexpected number of results", 5, results.size());
-    }
+	@Test
+	public void findRecordsWithSubject() throws URISyntaxException {
+		URL url = getClass().getResource("/rsp/GetRecordsResponse-full.xml");
+		File dataFile = new File(url.toURI());
+		QName subject = new QName(Namespaces.DCMES, "subject");
+		XdmValue results = Records.findRecordsInSampleData(dataFile, subject);
+		assertEquals("Unexpected number of results", 5, results.size());
+	}
 
-    @Test
-    public void findRecordsWithTitleAndLanguage() throws URISyntaxException {
-        URL url = getClass().getResource("/rsp/GetRecordsResponse-full.xml");
-        File dataFile = new File(url.toURI());
-        QName title = new QName(Namespaces.DCMES, "title");
-        QName lang = new QName(Namespaces.DCMES, "language");
-        XdmValue results = Records.findRecordsInSampleData(dataFile, title, lang);
-        assertEquals("Unexpected number of results", 10, results.size());
-    }
+	@Test
+	public void findRecordsWithTitleAndLanguage() throws URISyntaxException {
+		URL url = getClass().getResource("/rsp/GetRecordsResponse-full.xml");
+		File dataFile = new File(url.toURI());
+		QName title = new QName(Namespaces.DCMES, "title");
+		QName lang = new QName(Namespaces.DCMES, "language");
+		XdmValue results = Records.findRecordsInSampleData(dataFile, title, lang);
+		assertEquals("Unexpected number of results", 10, results.size());
+	}
+
 }

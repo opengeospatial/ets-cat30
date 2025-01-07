@@ -25,43 +25,43 @@ import org.xml.sax.SAXException;
  */
 public class VerifyOpenSearchTemplateUtils {
 
-    private static DocumentBuilder docBuilder;
+	private static DocumentBuilder docBuilder;
 
-    public VerifyOpenSearchTemplateUtils() {
-    }
+	public VerifyOpenSearchTemplateUtils() {
+	}
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        docBuilder = dbf.newDocumentBuilder();
-    }
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		docBuilder = dbf.newDocumentBuilder();
+	}
 
-    @Test
-    public void buildRequestURIWithBox() throws SAXException, IOException {
-        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/opensearch/OpenSearchDescription-valid.xml"));
-        List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(doc);
-        Element url1 = (Element) urlTemplates.get(0);
-        Map<QName, String> values = new HashMap<>();
-        values.put(new QName(Namespaces.OSD11, "searchTerms"), "alpha");
-        values.put(new QName(Namespaces.OS_GEO, "box"), "-123.45,48.99,-122.45,49.49");
-        URI uri = OpenSearchTemplateUtils.buildRequestURI(url1, values);
-        String query = uri.getQuery();
-        assertEquals("q=alpha&pw=1&box=-123.45,48.99,-122.45,49.49&format=atom", query);
-    }
+	@Test
+	public void buildRequestURIWithBox() throws SAXException, IOException {
+		Document doc = docBuilder
+			.parse(this.getClass().getResourceAsStream("/opensearch/OpenSearchDescription-valid.xml"));
+		List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(doc);
+		Element url1 = (Element) urlTemplates.get(0);
+		Map<QName, String> values = new HashMap<>();
+		values.put(new QName(Namespaces.OSD11, "searchTerms"), "alpha");
+		values.put(new QName(Namespaces.OS_GEO, "box"), "-123.45,48.99,-122.45,49.49");
+		URI uri = OpenSearchTemplateUtils.buildRequestURI(url1, values);
+		String query = uri.getQuery();
+		assertEquals("q=alpha&pw=1&box=-123.45,48.99,-122.45,49.49&format=atom", query);
+	}
 
-    @Test
-    public void buildRequestURIWithIllegalChars() throws SAXException, IOException {
-        Document doc = docBuilder.parse(this.getClass().getResourceAsStream(
-                "/opensearch/OpenSearchDescription-id.xml"));
-        List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(doc);
-        Element url1 = (Element) urlTemplates.get(0);
-        Map<QName, String> values = new HashMap<>();
-        String id = "{5d0060fe-d5c4-4307-acc4-e0810c21b6aa}";
-        values.put(new QName(Namespaces.OS_GEO, "uid"), URIUtils.getPercentEncodedString(id));
-        URI uri = OpenSearchTemplateUtils.buildRequestURI(url1, values);
-        assertEquals("q=&pw=1&id={5d0060fe-d5c4-4307-acc4-e0810c21b6aa}", uri.getQuery());
-    }
+	@Test
+	public void buildRequestURIWithIllegalChars() throws SAXException, IOException {
+		Document doc = docBuilder
+			.parse(this.getClass().getResourceAsStream("/opensearch/OpenSearchDescription-id.xml"));
+		List<Node> urlTemplates = ServiceMetadataUtils.getOpenSearchURLTemplates(doc);
+		Element url1 = (Element) urlTemplates.get(0);
+		Map<QName, String> values = new HashMap<>();
+		String id = "{5d0060fe-d5c4-4307-acc4-e0810c21b6aa}";
+		values.put(new QName(Namespaces.OS_GEO, "uid"), URIUtils.getPercentEncodedString(id));
+		URI uri = OpenSearchTemplateUtils.buildRequestURI(url1, values);
+		assertEquals("q=&pw=1&id={5d0060fe-d5c4-4307-acc4-e0810c21b6aa}", uri.getQuery());
+	}
 
 }
