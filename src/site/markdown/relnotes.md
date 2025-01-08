@@ -1,6 +1,9 @@
 # Release Notes
 
 ## 1.6 (2025-01)
+
+Attention: Java 17 and Tomcat 10.1 are required.
+
 * [#55](https://github.com/opengeospatial/ets-cat30/issues/55) - Migrate test suite to TEAM Engine 6 (Java 17)
 * [#56](https://github.com/opengeospatial/ets-cat30/pull/56) - Upgrade to geomatics-geotk version 1.17-SNAPSHOT
 
